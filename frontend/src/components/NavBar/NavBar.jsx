@@ -16,7 +16,7 @@ export default function NavBar() {
                     <img
                         src={theme === "dark" ? logoDark : logoLight}
                         alt="Logo clínica"
-                        className="h-12 w-auto mt-1.5 mb-1.5 filter-none"
+                        className="h-12 w-auto mt-1 mb-1 filter-none"
                     />
                     <span className="hidden md:inline text-lg font-bold text-[var(--primary)]">
                         STURN
