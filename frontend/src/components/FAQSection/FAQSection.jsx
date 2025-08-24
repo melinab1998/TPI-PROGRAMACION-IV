@@ -1,5 +1,6 @@
 import React from "react";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const faqData = [
     {
@@ -22,10 +23,27 @@ export default function FAQSection() {
             <h2 className="text-3xl font-bold mb-8 text-center">Preguntas Frecuentes</h2>
             <Accordion type="single" collapsible className="w-full">
                 {faqData.map((item, index) => (
-                    <AccordionItem key={index} value={`item-${index + 1}`}>
-                        <AccordionTrigger>{item.question}</AccordionTrigger>
-                        <AccordionContent>{item.answer}</AccordionContent>
-                    </AccordionItem>
+                    <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.2 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 }}
+                    >
+                        <AccordionItem value={`item-${index + 1}`}>
+                            <AccordionTrigger>{item.question}</AccordionTrigger>
+                            <AnimatePresence>
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <AccordionContent>{item.answer}</AccordionContent>
+                                </motion.div>
+                            </AnimatePresence>
+                        </AccordionItem>
+                    </motion.div>
                 ))}
             </Accordion>
         </section>
