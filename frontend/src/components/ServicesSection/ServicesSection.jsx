@@ -8,7 +8,7 @@ import { CgBrackets } from "react-icons/cg";
 import { motion } from "framer-motion";
 
 export default function ServicesSection() {
-    const servicios = [
+    const services = [
         {
             title: "Odontología General",
             description: "Revisiones completas, limpiezas profesionales y tratamientos básicos para mantener tu salud bucal.",
@@ -41,9 +41,9 @@ export default function ServicesSection() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {servicios.map((servicio, index) => (
+                {services.map((service, index) => (
                     <motion.div
-                        key={servicio.title}
+                        key={service.title}
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true, amount: 0.2 }}
@@ -53,12 +53,12 @@ export default function ServicesSection() {
                         <Card className="group hover:shadow-lg transition-all duration-300 h-full">
                             <CardHeader className="flex flex-col items-center">
                                 <div className="p-3 mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                                    {servicio.icon}
+                                    {service.icon}
                                 </div>
-                                <CardTitle className="text-xl">{servicio.title}</CardTitle>
+                                <CardTitle className="text-xl">{service.title}</CardTitle>
                             </CardHeader>
                             <CardContent className="text-center">
-                                <p className="text-muted-foreground">{servicio.description}</p>
+                                <p className="text-muted-foreground">{service.description}</p>
                                 <Button variant="link" className="mt-6 text-primary hover:no-underline">
                                     Más información <FaArrowRight className="inline-block h-4 w-4 ml-1" />
                                 </Button>
