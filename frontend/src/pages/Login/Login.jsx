@@ -3,20 +3,10 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
-import { useState } from "react"
+
 
 export default function Login() {
-  const [formData, setFormData] = useState({ email: "", password: "" })
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log("Login con:", formData)
-    // Aquí deberías llamar a tu backend para autenticar
-  }
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen  px-4">
@@ -27,7 +17,7 @@ export default function Login() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form  className="space-y-4">
             <div>
               <Label htmlFor="email" className="mb-4">Correo electrónico</Label>
               <Input
@@ -35,8 +25,6 @@ export default function Login() {
                 name="email"
                 placeholder="Ingrese el email..."
                 type="email"
-                value={formData.email}
-                onChange={handleChange}
                 required
                 className="border-2 border-[#2CD4D4] focus:ring-0 focus:outline-none focus:border-[#2CD4D4]"
               />
@@ -48,8 +36,6 @@ export default function Login() {
                 name="password"
                 placeholder="Ingrese la contraseña..."
                 type="password"
-                value={formData.password}
-                onChange={handleChange}
                 required
                 className="border-2 border-[#2CD4D4] focus:ring-0 focus:outline-none focus:border-[#2CD4D4]"
               />
