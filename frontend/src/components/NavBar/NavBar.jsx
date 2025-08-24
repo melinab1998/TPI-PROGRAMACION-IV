@@ -24,7 +24,7 @@ export default function NavBar() {
                     </span>
                 </div>
                 <div className="flex gap-4 items-center">
-                    <Button variant="ghost">Inicio</Button>
+                    <Link to="/"><Button variant="ghost">Inicio</Button></Link>
                     <Button variant="ghost">Servicios</Button>
                     <Button variant="ghost">Contacto</Button>
                     <Link to="/iniciar-sesion">
