@@ -1,5 +1,4 @@
 import React from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ClipboardCheck, Phone, Heart, ShieldCheck, Award } from "lucide-react";
 import { motion } from "framer-motion";
