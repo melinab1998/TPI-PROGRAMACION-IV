@@ -4,6 +4,7 @@ import logoLight from "@/img/logo-light-1.png";
 import logoDark from "@/img/logo-dark-1.png";
 import ModeToggle from "@/components/ui/mode-toggle";
 import { useTheme } from "next-themes";
+import { Link } from "react-router-dom"
 
 export default function NavBar() {
 
@@ -26,9 +27,11 @@ export default function NavBar() {
                     <Button variant="ghost">Inicio</Button>
                     <Button variant="ghost">Servicios</Button>
                     <Button variant="ghost">Contacto</Button>
+                    <Link to="/iniciar-sesion">
                     <Button variant="outline" className="hidden md:inline">
                         Iniciar sesión
                     </Button>
+                    </Link>
                     <ModeToggle />
                 </div>
             </div>
