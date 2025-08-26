@@ -25,7 +25,9 @@ export default function NavBar() {
                 </div>
                 <div className="flex gap-4 items-center">
                     <Link to="/"><Button variant="ghost">Inicio</Button></Link>
+                    <Link to="servicios">
                     <Button variant="ghost">Servicios</Button>
+                    </Link>
                     <Button variant="ghost">Contacto</Button>
                     <Link to="/iniciar-sesion">
                     <Button variant="outline" className="hidden md:inline">
