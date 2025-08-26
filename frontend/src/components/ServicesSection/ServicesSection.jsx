@@ -6,6 +6,7 @@ import { FaArrowRight } from "react-icons/fa";
 import { TbMoodSpark } from "react-icons/tb";
 import { CgBrackets } from "react-icons/cg";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function ServicesSection() {
     const services = [
@@ -30,6 +31,12 @@ export default function ServicesSection() {
         hidden: { opacity: 0, y: 30 },
         visible: { opacity: 1, y: 0 },
     };
+
+    const navigate = useNavigate();
+    const handleClick = () => {
+        navigate("/servicios");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
 
     return (
         <section className="max-w-7xl mx-auto px-4 py-16 sm:py-20">
@@ -59,8 +66,8 @@ export default function ServicesSection() {
                             </CardHeader>
                             <CardContent className="text-center">
                                 <p className="text-muted-foreground">{service.description}</p>
-                                <Button variant="link" className="mt-6 text-primary hover:no-underline">
-                                    Más información <FaArrowRight className="inline-block h-4 w-4 ml-1" />
+                                <Button onClick={handleClick} variant="link" className="mt-6 text-primary hover:no-underline cursor-pointer">
+                                    Ir a servicios <FaArrowRight className="inline-block h-4 w-4 ml-1" />
                                 </Button>
                             </CardContent>
                         </Card>
