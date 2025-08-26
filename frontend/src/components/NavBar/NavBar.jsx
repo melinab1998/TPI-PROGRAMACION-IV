@@ -20,16 +20,16 @@ export default function NavBar() {
                         className="h-12 w-auto mt-1 mb-1 filter-none"
                     />
                     <span className="hidden md:inline text-lg font-bold text-[var(--primary)]">
-                        STURN
+                        TURNANDO
                     </span>
                 </div>
                 <div className="flex gap-4 items-center">
                     <Link to="/"><Button variant="ghost">Inicio</Button></Link>
-                    <Link to="servicios">
+                    <Link to="services">
                     <Button variant="ghost">Servicios</Button>
                     </Link>
                     <Button variant="ghost">Contacto</Button>
-                    <Link to="/iniciar-sesion">
+                    <Link to="/login">
                     <Button variant="outline" className="hidden md:inline">
                         Iniciar sesión
                     </Button>

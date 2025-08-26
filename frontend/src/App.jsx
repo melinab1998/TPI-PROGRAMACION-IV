@@ -4,14 +4,16 @@ import Layout from "./components/Layout/Layout";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import ServicesPage from "./pages/Services/Services";
+import Register from "./pages/Register/Register";
 
 function App() {
   return (
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="iniciar-sesion" element={<Login />} />
-          <Route path="servicios" element={<ServicesPage />} />
+          <Route path="login" element={<Login />} />
+          <Route path="services" element={<ServicesPage />} />
+          <Route path="register" element={<Register/>}/>
         </Route>
       </Routes>
   );

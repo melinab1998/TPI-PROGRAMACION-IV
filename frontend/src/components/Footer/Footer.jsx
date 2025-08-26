@@ -36,9 +36,10 @@ export default function Footer() {
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Horario de atención</h3>
                         <div className="text-muted-foreground space-y-2">
-                            <div className="flex justify-between"><span>Lunes - Viernes</span><span>8:00 - 20:00</span></div>
-                            <div className="flex justify-between"><span>Sábados</span><span>9:00 - 14:00</span></div>
-                            <div className="flex justify-between"><span>Domingos</span><span>Cerrado</span></div>
+                            <div className="flex justify-between"><span>Lunes</span><span>14:00 - 20:00</span></div>
+                            <div className="flex justify-between"><span>Miércoles</span><span>9:00 - 20:00</span></div>
+                            <div className="flex justify-between"><span>Jueves</span><span>9:00 - 20:00</span></div>
+
                         </div>
                     </div>
                 </div>
@@ -60,7 +61,7 @@ export default function Footer() {
                             </a>
                         </div>
                         <p className="text-sm text-muted-foreground text-center md:text-right">
-                            © {new Date().getFullYear()} Clínica Odontológica. Todos los derechos reservados.
+                            © {new Date().getFullYear()} Turnando. Todos los derechos reservados.
                         </p>
                     </div>
                 </div>

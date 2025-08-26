@@ -10,7 +10,7 @@ export default function Login() {
       <Card className="w-full max-w-md shadow-lg rounded-2xl">
         <CardHeader>
           <CardTitle className="text-center text-2xl font-bold">
-            Iniciar Sesión
+            Iniciar sesión
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -43,25 +43,24 @@ export default function Login() {
               />
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-between items-center py-2">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="remember"
+                  className="h-4 w-4 border-gray-300 rounded"
+                />
+                <label htmlFor="remember" className="text-sm">
+                  Recordar contraseña
+                </label>
+              </div>
+
               <Link
                 to="/forgot-password"
-                className="text-sm text-accent-foreground hover:underline"
+                className="text-sm hover:underline"
               >
                 ¿Olvidaste tu contraseña?
               </Link>
-            </div>
-
-            {/* Checkbox Recordar contraseña */}
-            <div className="flex items-center space-x-2 mt-2">
-              <input
-                type="checkbox"
-                id="remember"
-                className="h-4 w-4 text-primary border-gray-300 rounded"
-              />
-              <label htmlFor="remember" className="text-sm text-accent-foreground">
-                Recordar contraseña
-              </label>
             </div>
 
             <Button type="submit" className="w-full">
@@ -69,12 +68,12 @@ export default function Login() {
             </Button>
           </form>
 
-          <p className="mt-4 text-center text-sm text-accent-foreground">
+          <div className="text-center text-sm mt-4">
             ¿No tienes cuenta?{" "}
-            <Link to="/register" className="hover:underline">
-              Regístrate
-            </Link>
-          </p>
+            <Button variant="link" className="p-0">
+              <Link to="/register">Regístrate</Link>
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
