@@ -19,20 +19,26 @@ export default function NavBar() {
                         alt="Logo clínica"
                         className="h-12 w-auto mt-1 mb-1 filter-none"
                     />
-                    <span className="hidden md:inline text-lg font-bold text-[var(--primary)]">
+                    <span
+                        className="hidden md:inline text-lg font-bold bg-clip-text text-transparent"
+                        style={{
+                            backgroundImage: "linear-gradient(90deg, var(--primary) 0%, #00baba 50%, var(--primary) 100%)"
+                        }}
+                    >
                         TURNANDO
                     </span>
+
                 </div>
                 <div className="flex gap-4 items-center">
                     <Link to="/"><Button variant="ghost">Inicio</Button></Link>
                     <Link to="services">
-                    <Button variant="ghost">Servicios</Button>
+                        <Button variant="ghost">Servicios</Button>
                     </Link>
-                    <Button variant="ghost">Contacto</Button>
+                    <Link to="/contact"><Button variant="ghost">Contacto</Button></Link>
                     <Link to="/login">
-                    <Button variant="outline" className="hidden md:inline">
-                        Iniciar sesión
-                    </Button>
+                        <Button variant="outline" className="hidden md:inline">
+                            Iniciar sesión
+                        </Button>
                     </Link>
                     <ModeToggle />
                 </div>
