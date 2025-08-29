@@ -20,24 +20,25 @@ export default function Register() {
             </CardHeader>
             <CardContent className="space-y-4">
                 <form className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="nombre">Nombre</Label>
-                            <Input
-                                id="nombre"
-                                type="text"
-                                placeholder="Juan"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="apellido">Apellido</Label>
-                            <Input
-                                id="apellido"
-                                type="text"
-                                placeholder="Pérez"
-                            />
-                        </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="nombre">Nombre</Label>
+                        <Input
+                            id="nombre"
+                            type="text"
+                            placeholder="Juan"
+                        />
                     </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="apellido">Apellido</Label>
+                        <Input
+                            id="apellido"
+                            type="text"
+                            placeholder="Pérez"
+                        />
+                    </div>
+
 
                     <div className="space-y-2">
                         <Label htmlFor="dni">DNI</Label>
@@ -121,9 +122,9 @@ export default function Register() {
                 <div className="text-center text-sm mt-4">
                     ¿Ya tienes una cuenta?{" "}
                     <Link to="/login">
-                    <Button variant="link" className="p-0">
-                        Inicia sesión
-                    </Button>
+                        <Button variant="link" className="p-0">
+                            Inicia sesión
+                        </Button>
                     </Link>
                 </div>
             </CardContent>
