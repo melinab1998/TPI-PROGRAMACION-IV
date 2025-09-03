@@ -6,9 +6,9 @@ import { Label } from "@/components/ui/label";
 import { FaCalendarAlt } from "react-icons/fa";
 
 const doctorsData = [
-  { id: 1, name: "Dr. Juan Pérez", social: "OSDE", image: "https://via.placeholder.com/150" },
-  { id: 2, name: "Dra. Laura Gómez", social: "Particular", image: "https://via.placeholder.com/150" },
-  { id: 3, name: "Dr. Martín López", social: "OSDE", image: "https://via.placeholder.com/150" },
+  { id: 1, name: "Dr. Juan Pérez", social: "OSDE", image: "https://via.placeholder.com/150", phone:"3413333333" },
+  { id: 2, name: "Dra. Laura Gómez", social: "Particular", image: "https://via.placeholder.com/150", phone:"3413333333" },
+  { id: 3, name: "Dr. Martín López", social: "OSDE", image: "https://via.placeholder.com/150", phone:"3413333333" },
 ];
 
 export default function TurnosPage() {
@@ -82,6 +82,7 @@ export default function TurnosPage() {
                   className="w-32 h-32 rounded-full mb-4 object-cover bg-white"
                 />
                 <CardTitle>{doc.name}</CardTitle>
+                <p className="text-muted-foreground text-sm">Teléfono:{doc.phone}</p>
               </CardHeader>
               <CardContent className="text-center">
                 <Button
