@@ -1,20 +1,23 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FaCalendarAlt } from "react-icons/fa";
 
 const doctorsData = [
-  { id: 1, name: "Dr. Juan Pérez", social: "OSDE", phone:"3413333333" },
-  { id: 2, name: "Dra. Laura Gómez", social: "Particular", phone:"3413333333" },
-  { id: 3, name: "Dr. Martín López", social: "OSDE", phone:"3413333333" },
+  { id: 1, name: "Dr. Juan Pérez", social: "OSDE", phone: "3413333333" },
+  { id: 2, name: "Dra. Laura Gómez", social: "Particular", phone: "3413333333" },
+  { id: 3, name: "Dr. Martín López", social: "OSDE", phone: "3413333333" },
 ];
 
-export default function TurnosPage() {
+export default function Appointments() {
   const [selectedProfessional, setSelectedProfessional] = useState("");
   const [selectedSocial, setSelectedSocial] = useState("");
   const [filteredDoctors, setFilteredDoctors] = useState([]);
+  const navigate = useNavigate();
+
 
   const handleSearch = () => {
     const prof = selectedProfessional.trim().toLowerCase();
@@ -83,11 +86,11 @@ export default function TurnosPage() {
                 <CardTitle>{doc.name}</CardTitle>
                 <p className="text-muted-foreground text-sm mt-2">Teléfono: {doc.phone}</p>
               </CardHeader>
-              <CardContent className="flex justify-center mt-4">
+              <CardContent className="flex justify-center mt-2">
                 <Button
                   variant="outline"
                   className="flex items-center justify-center gap-2"
-                  onClick={() => window.open(`/calendario/${doc.id}`, "_blank")}
+                  onClick={() => navigate(`/calendar/${doc.id}`)}
                 >
                   <FaCalendarAlt /> Solicitar Turno
                 </Button>

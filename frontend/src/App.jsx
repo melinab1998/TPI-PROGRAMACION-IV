@@ -6,7 +6,7 @@ import Login from "./pages/Login/Login";
 import ServicesPage from "./pages/Services/Services";
 import Register from "./pages/Register/Register";
 import Contact from "./pages/Contact/Contact";
-import Turn from "./pages/Turn/Turn";
+import Appointments from "./pages/Appointments/Appointments";
 import Calendar from "./pages/Calendar/Calendar";
 
 function App() {
@@ -18,8 +18,8 @@ function App() {
           <Route path="services" element={<ServicesPage />} />
           <Route path="register" element={<Register/>}/>
           <Route path="contact" element={<Contact/>}/>
-          <Route path="turnos" element={<Turn />} />
-          <Route path="calendario/:id" element={<Calendar />} />
+          <Route path="appointments" element={<Appointments />} />
+          <Route path="calendar/:id" element={<Calendar />} />
         </Route>
       </Routes>
   );
