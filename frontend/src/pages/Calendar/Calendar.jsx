@@ -100,15 +100,19 @@ export default function CalendarPage() {
                                 </p>
                             </div>
 
-                            <ScrollArea className="h-80 pr-4">
+                            <ScrollArea className="h-80">
                                 {(doctorAvailability[format(date, "yyyy-MM-dd")] || []).length > 0 ? (
-                                    <div className="grid grid-cols-2 gap-3">
+                                    <div className="grid grid-cols-2 gap-3 p-1">
                                         {doctorAvailability[format(date, "yyyy-MM-dd")].map((timeSlot) => (
                                             <Button
                                                 key={timeSlot}
                                                 variant={time === timeSlot ? "default" : "outline"}
                                                 size="lg"
-                                                className="h-12 rounded-lg text-base transition-all"
+                                                className={`h-12 rounded-lg text-base transition-all border-2 
+            ${time === timeSlot
+                                                        ? "border-primary ring-2 ring-primary/50"
+                                                        : "border-border hover:ring-primary/30"
+                                                    }`}
                                                 onClick={() => setTime(timeSlot)}
                                             >
                                                 {timeSlot}
