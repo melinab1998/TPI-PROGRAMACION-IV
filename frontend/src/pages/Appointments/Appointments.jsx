@@ -1,20 +1,28 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FaCalendarAlt } from "react-icons/fa";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const doctorsData = [
-  { id: 1, name: "Dr. Juan Pérez", social: "OSDE", image: "https://via.placeholder.com/150", phone:"3413333333" },
-  { id: 2, name: "Dra. Laura Gómez", social: "Particular", image: "https://via.placeholder.com/150", phone:"3413333333" },
-  { id: 3, name: "Dr. Martín López", social: "OSDE", image: "https://via.placeholder.com/150", phone:"3413333333" },
+  { id: 1, name: "Dr. Juan Pérez", social: "OSDE" },
+  { id: 2, name: "Dra. Laura Gómez", social: "Particular" },
+  { id: 3, name: "Dr. Martín López", social: "OSDE" },
 ];
 
-export default function TurnosPage() {
+export default function Appointments() {
   const [selectedProfessional, setSelectedProfessional] = useState("");
   const [selectedSocial, setSelectedSocial] = useState("");
   const [filteredDoctors, setFilteredDoctors] = useState([]);
+  const navigate = useNavigate();
 
   const handleSearch = () => {
     const prof = selectedProfessional.trim().toLowerCase();
@@ -31,38 +39,39 @@ export default function TurnosPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-16">
-      <h1 className="text-3xl font-bold mb-8">Reservar Turno</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">Reservar Turno</h1>
 
       {/* Filtros */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div>
-          <Input
-            list="professionals"
-            value={selectedProfessional}
-            onChange={(e) => setSelectedProfessional(e.target.value)}
-            placeholder="Buscar por Profesional..."
-          />
-          <datalist id="professionals">
+        {/* Profesionales */}
+        <Select onValueChange={(value) => setSelectedProfessional(value)}>
+          <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
+            <SelectValue placeholder="Buscar por Profesional..." />
+          </SelectTrigger>
+          <SelectContent>
             {doctorsData.map((doc) => (
-              <option key={doc.id} value={doc.name} />
+              <SelectItem key={doc.id} value={doc.name}>
+                {doc.name}
+              </SelectItem>
             ))}
-          </datalist>
-        </div>
+          </SelectContent>
+        </Select>
 
-        <div>
-          <Input
-            list="socials"
-            value={selectedSocial}
-            onChange={(e) => setSelectedSocial(e.target.value)}
-            placeholder="Buscar por Obra Social o Particular..."
-          />
-          <datalist id="socials">
+        {/* Obras sociales */}
+        <Select onValueChange={(value) => setSelectedSocial(value)}>
+          <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
+            <SelectValue placeholder="Buscar por Obra Social o Particular..." />
+          </SelectTrigger>
+          <SelectContent>
             {[...new Set(doctorsData.map((d) => d.social))].map((s) => (
-              <option key={s} value={s} />
+              <SelectItem key={s} value={s}>
+                {s}
+              </SelectItem>
             ))}
-          </datalist>
-        </div>
+          </SelectContent>
+        </Select>
 
+        {/* Botón de búsqueda */}
         <div className="flex items-end">
           <Button className="w-full" onClick={handleSearch}>
             Buscar
@@ -76,21 +85,17 @@ export default function TurnosPage() {
           {filteredDoctors.map((doc) => (
             <Card key={doc.id} className="hover:shadow-lg transition-all">
               <CardHeader className="flex flex-col items-center">
-                <img
-                  src={doc.image}
-                  alt={doc.name}
-                  className="w-32 h-32 rounded-full mb-4 object-cover bg-white"
-                />
+                <Avatar className="w-32 h-32 mb-4">
+                  <AvatarImage src={`https://i.pravatar.cc/150?img=${doc.id + 10}`} />
+                  <AvatarFallback>👤</AvatarFallback>
+                </Avatar>
                 <CardTitle>{doc.name}</CardTitle>
-                <p className="text-muted-foreground text-sm">Teléfono:{doc.phone}</p>
               </CardHeader>
-              <CardContent className="text-center">
+              <CardContent className="flex justify-center">
                 <Button
                   variant="outline"
-                  className="mt-4 flex items-center justify-center gap-2"
-                  onClick={() =>
-                    window.open(`/calendario/${doc.id}`, "_blank")
-                  }
+                  className="flex items-center justify-center gap-2"
+                  onClick={() => navigate(`/calendar/${doc.id}`)}
                 >
                   <FaCalendarAlt /> Solicitar Turno
                 </Button>
@@ -100,7 +105,7 @@ export default function TurnosPage() {
         </div>
       ) : (
         <p className="text-center text-muted-foreground">
-          {filteredDoctors.length === 0 ? "No hay especialistas que coincidan con la búsqueda." : ""}
+          No hay especialistas que coincidan con la búsqueda.
         </p>
       )}
     </div>

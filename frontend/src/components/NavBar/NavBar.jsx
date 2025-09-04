@@ -36,8 +36,8 @@ export default function NavBar() {
 
           {isLoggedIn ? (
             <>
-              <Link to="/turnos"><Button variant="ghost">Turnos</Button></Link>
-              <Link to="/perfil"><Button variant="ghost">Ver Perfil</Button></Link>
+              <Link to="/appointments"><Button variant="ghost">Turnos</Button></Link>
+              <Link to="/profile"><Button variant="ghost">Mi Perfil</Button></Link>
               <Button variant="outline" className="hidden md:inline" onClick={logout}>
                 Cerrar sesión
               </Button>
