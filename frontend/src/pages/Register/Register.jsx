@@ -165,7 +165,7 @@ export default function Register() {
                     </div>
                 </form>
 
-                <div className="text-center text-sm mt-6 pt-4 border-t">
+                <div className="text-center text-sm mt-5 pt-4 border-t">
                     ¿Ya tienes una cuenta?{" "}
                     <Link to="/login">
                         <Button variant="link" className="p-0 font-medium">
