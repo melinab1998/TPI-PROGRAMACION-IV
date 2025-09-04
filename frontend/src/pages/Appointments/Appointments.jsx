@@ -7,9 +7,9 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FaCalendarAlt } from "react-icons/fa";
 
 const doctorsData = [
-  { id: 1, name: "Dr. Juan Pérez", social: "OSDE", phone: "3413333333" },
-  { id: 2, name: "Dra. Laura Gómez", social: "Particular", phone: "3413333333" },
-  { id: 3, name: "Dr. Martín López", social: "OSDE", phone: "3413333333" },
+  { id: 1, name: "Dr. Juan Pérez", social: "OSDE" },
+  { id: 2, name: "Dra. Laura Gómez", social: "Particular" },
+  { id: 3, name: "Dr. Martín López", social: "OSDE" },
 ];
 
 export default function Appointments() {
@@ -35,8 +35,6 @@ export default function Appointments() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-16">
       <h1 className="text-3xl font-bold mb-8 text-center">Reservar Turno</h1>
-
-      {/* Filtros */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div>
           <Input
@@ -44,6 +42,7 @@ export default function Appointments() {
             value={selectedProfessional}
             onChange={(e) => setSelectedProfessional(e.target.value)}
             placeholder="Buscar por Profesional..."
+            className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
           />
           <datalist id="professionals">
             {doctorsData.map((doc) => (
@@ -58,6 +57,8 @@ export default function Appointments() {
             value={selectedSocial}
             onChange={(e) => setSelectedSocial(e.target.value)}
             placeholder="Buscar por Obra Social o Particular..."
+            className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
+
           />
           <datalist id="socials">
             {[...new Set(doctorsData.map((d) => d.social))].map((s) => (
@@ -72,8 +73,6 @@ export default function Appointments() {
           </Button>
         </div>
       </div>
-
-      {/* Resultados */}
       {filteredDoctors.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredDoctors.map((doc) => (
@@ -84,9 +83,8 @@ export default function Appointments() {
                   <AvatarFallback>👤</AvatarFallback>
                 </Avatar>
                 <CardTitle>{doc.name}</CardTitle>
-                <p className="text-muted-foreground text-sm mt-2">Teléfono: {doc.phone}</p>
               </CardHeader>
-              <CardContent className="flex justify-center mt-2">
+              <CardContent className="flex justify-center">
                 <Button
                   variant="outline"
                   className="flex items-center justify-center gap-2"
