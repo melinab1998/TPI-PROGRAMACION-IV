@@ -50,7 +50,6 @@ export default function CalendarPage() {
             time,
             ...formData,
         })
-        // NOTE: A good practice is to avoid using alert(), you can create a custom modal instead.
         alert("Turno reservado con éxito!")
         setTime(null)
         setFormData({ email: "", motivoConsulta: "Consulta" })
@@ -62,7 +61,7 @@ export default function CalendarPage() {
                 Disponibilidad de {doctor.name}
             </h2>
 
-            <div className="rounded-xl border p-8 shadow-lg bg-card text-card-foreground">
+            <div className="rounded-2xl border p-8 shadow-lg bg-card text-card-foreground">
                 <div className="flex max-md:flex-col gap-10">
                     <div className="md:w-1/2">
                         <Calendar
@@ -75,7 +74,7 @@ export default function CalendarPage() {
                             }}
                             locale={es}
                             className={`
-    p-4 text-lg
+    p-4 text-lg rounded-2xl
     [&_.rdp-day]:h-16 [&_.rdp-day]:w-16
     [&_.rdp-day_selected]:text-primary-foreground [&_.rdp-day_selected]:bg-primary
     [&_.rdp-day_selected]:rounded-full [&_.rdp-day]:rounded-full
