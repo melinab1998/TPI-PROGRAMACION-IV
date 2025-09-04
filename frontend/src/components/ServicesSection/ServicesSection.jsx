@@ -34,7 +34,7 @@ export default function ServicesSection() {
 
     const navigate = useNavigate();
     const handleClick = () => {
-        navigate("/servicios");
+        navigate("/services");
         window.scrollTo({ top: 0, behavior: "smooth" });
       };
 

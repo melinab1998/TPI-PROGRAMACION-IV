@@ -41,7 +41,7 @@ export default function Register() {
                                     id="nombre"
                                     type="text"
                                     placeholder="Juan"
-                                    className="pl-10 py-2.5"
+                                    className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
                                 />
                             </div>
                         </div>
@@ -56,7 +56,7 @@ export default function Register() {
                                     id="apellido"
                                     type="text"
                                     placeholder="Pérez"
-                                    className="pl-10 py-2.5"
+                                    className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
                                 />
                             </div>
                         </div>
@@ -71,11 +71,13 @@ export default function Register() {
                                     id="dni"
                                     type="text"
                                     placeholder="12345678"
-                                    className="pl-10 py-2.5"
+                                    className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
                                 />
                             </div>
                         </div>
                     </div>
+
+                    {/* Columna derecha */}
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-sm font-medium">
@@ -87,7 +89,7 @@ export default function Register() {
                                     id="email"
                                     type="email"
                                     placeholder="ejemplo@email.com"
-                                    className="pl-10 py-2.5"
+                                    className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
                                 />
                             </div>
                         </div>
@@ -102,7 +104,7 @@ export default function Register() {
                                     id="password"
                                     type={showPassword ? "text" : "password"}
                                     placeholder="********"
-                                    className="pl-10 pr-10 py-2.5"
+                                    className="pl-10 pr-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
                                 />
                                 <Button
                                     type="button"
@@ -133,7 +135,7 @@ export default function Register() {
                                     id="confirmPassword"
                                     type={showConfirmPassword ? "text" : "password"}
                                     placeholder="********"
-                                    className="pl-10 pr-10 py-2.5"
+                                    className="pl-10 pr-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
                                 />
                                 <Button
                                     type="button"
@@ -158,6 +160,7 @@ export default function Register() {
                             </div>
                         </div>
                     </div>
+
                     <div className="md:col-span-2 pt-2">
                         <Button type="submit" className="w-full py-2.5 text-base">
                             Registrarse
@@ -165,7 +168,7 @@ export default function Register() {
                     </div>
                 </form>
 
-                <div className="text-center text-sm mt-6 pt-4 border-t">
+                <div className="text-center text-sm mt-5 pt-4 border-t">
                     ¿Ya tienes una cuenta?{" "}
                     <Link to="/login">
                         <Button variant="link" className="p-0 font-medium">

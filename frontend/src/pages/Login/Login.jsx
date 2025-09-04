@@ -11,8 +11,8 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login();         
-    navigate("/");    
+    login();
+    navigate("/");
   };
 
   return (
@@ -27,12 +27,27 @@ export default function Login() {
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <Label htmlFor="email" className="mb-4">Correo electrónico</Label>
-              <Input id="email" name="email" type="email" placeholder="Ingrese el email..." required />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Ingrese el email..."
+                required
+                className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
+              />
+
             </div>
 
             <div>
               <Label htmlFor="password" className="mb-4">Contraseña</Label>
-              <Input id="password" name="password" type="password" placeholder="Ingrese la contraseña..." required />
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Ingrese la contraseña..."
+                required
+                className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
+              />
             </div>
 
             <div className="flex justify-between items-center py-2">
@@ -46,8 +61,13 @@ export default function Login() {
             <Button type="submit" className="w-full">Ingresar</Button>
           </form>
 
-          <div className="text-center text-sm mt-4">
-            ¿No tienes cuenta? <Link to="/register" className="hover:underline">Regístrate</Link>
+          <div className="text-center text-sm mt-5 pt-4 border-t">
+            ¿No tienes cuenta?{" "}
+            <Link to="/register">
+              <Button variant="link" className="p-0 font-medium">
+                Regístrate
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>
