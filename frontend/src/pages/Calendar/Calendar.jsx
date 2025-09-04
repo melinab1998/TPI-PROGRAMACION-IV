@@ -1,23 +1,22 @@
 import React, { useState } from "react"
 import { useParams } from "react-router-dom"
-import { format } from "date-fns"
+import { format, parseISO } from "date-fns"
 import { es } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Calendar } from "@/components/ui/calendar"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { motion, AnimatePresence } from "framer-motion"
+import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { motion, AnimatePresence } from "framer-motion"
 
 // Simulación de datos
 const availability = {
     1: {
-        "2025-09-02": ["08:00", "09:00", "10:00", "11:00"],
-        "2025-09-03": ["09:00", "10:00", "11:00", "12:00"],
-        "2025-09-04": ["08:00", "09:30", "11:00", "12:30"],
-        "2025-09-05": ["08:00", "09:00", "10:00", "11:00"],
-        "2025-09-06": ["09:00", "10:00", "11:00", "12:00", "13:00", "15:00", "16:00", "20:00"],
+        "2025-09-04": ["08:00", "09:00", "10:00", "11:00"],
+        "2025-09-06": ["09:00", "10:00", "11:00", "12:00"],
+        "2025-09-08": ["08:00", "09:30", "11:00", "12:30"],
+        "2025-09-10": ["08:00", "09:00", "10:00", "11:00"],
+        "2025-09-12": ["09:00", "10:00", "11:00", "12:00", "13:00", "15:00", "16:00", "20:00"],
     },
 }
 
@@ -68,26 +67,44 @@ export default function CalendarPage() {
                             mode="single"
                             selected={date}
                             onSelect={(newDate) => {
-                                if (!newDate) return;
-                                setDate(newDate);
-                                setTime(null);
+                                if (!newDate) return
+                                setDate(newDate)
+                                setTime(null)
                             }}
                             locale={es}
                             className={`
-    p-4 text-lg rounded-2xl
-    [&_.rdp-day]:h-16 [&_.rdp-day]:w-16
-    [&_.rdp-day_selected]:text-primary-foreground [&_.rdp-day_selected]:bg-primary
-    [&_.rdp-day_selected]:rounded-full [&_.rdp-day]:rounded-full
-    [&_.rdp-caption]:mb-4 [&_.rdp-caption_label]:text-lg
-  `}
+                                p-4 text-lg rounded-2xl
+                                [&_.rdp-day]:h-16 [&_.rdp-day]:w-16
+                                [&_.rdp-day_selected]:text-primary-foreground [&_.rdp-day_selected]:bg-primary
+                                [&_.rdp-day_selected]:rounded-full [&_.rdp-day]:rounded-full
+                                [&_.rdp-caption]:mb-4 [&_.rdp-caption_label]:text-lg
+                            `}
+                            modifiers={{
+                                available: Object.keys(doctorAvailability).map((dateStr) => parseISO(dateStr)),
+                                today: today,
+                            }}
+                            modifiersClassNames={{
+                                available: "bg-accent text-accent-foreground font-medium hover:bg-accent/80 transition rounded-full",
+                                today: "ring-2 ring-primary font-bold rounded-full",
+                            }}
                             dayClassName={(day) => {
-                                const formattedDay = format(day, "yyyy-MM-dd");
-                                const availableDatesStrings = Object.keys(doctorAvailability);
+                                const formattedDay = format(day, "yyyy-MM-dd")
+                                const isAvailable = Object.keys(doctorAvailability).includes(formattedDay)
+                                const isCurrentDay = day.toDateString() === today.toDateString()
 
-                                if (availableDatesStrings.includes(formattedDay)) {
-                                    return "bg-accent text-accent-foreground hover:bg-accent-foreground hover:text-accent cursor-pointer transition"
+                                let className = "rounded-full "
+
+                                if (isCurrentDay && isAvailable) {
+                                    className += "bg-accent text-accent-foreground font-semibold ring-2 ring-primary"
+                                } else if (isCurrentDay) {
+                                    className += "ring-2 ring-primary font-semibold"
+                                } else if (isAvailable) {
+                                    className += "bg-accent text-accent-foreground hover:bg-accent/80 transition"
+                                } else {
+                                    className += "text-muted-foreground opacity-60"
                                 }
-                                return "bg-muted text-muted-foreground opacity-60 hover:opacity-80 cursor-pointer transition"
+
+                                return className
                             }}
                             disabled={[{ before: today }]}
                         />
@@ -109,7 +126,7 @@ export default function CalendarPage() {
                                                 variant={time === timeSlot ? "default" : "outline"}
                                                 size="lg"
                                                 className={`h-12 rounded-lg text-base transition-all border-2 
-            ${time === timeSlot
+                                                    ${time === timeSlot
                                                         ? "border-primary ring-2 ring-primary/50"
                                                         : "border-border hover:ring-primary/30"
                                                     }`}
@@ -130,7 +147,6 @@ export default function CalendarPage() {
                 </div>
             </div>
 
-            {/* Modal de Reserva con mejor espaciado */}
             <AnimatePresence>
                 {time && (
                     <motion.div
@@ -175,7 +191,6 @@ export default function CalendarPage() {
                             </div>
 
                             <form onSubmit={handleSubmit} className="space-y-5">
-
                                 <div className="space-y-5">
                                     <Label className="text-base">Motivo del turno</Label>
                                     <RadioGroup
