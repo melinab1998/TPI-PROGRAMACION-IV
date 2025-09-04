@@ -1,10 +1,16 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FaCalendarAlt } from "react-icons/fa";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const doctorsData = [
   { id: 1, name: "Dr. Juan Pérez", social: "OSDE" },
@@ -17,7 +23,6 @@ export default function Appointments() {
   const [selectedSocial, setSelectedSocial] = useState("");
   const [filteredDoctors, setFilteredDoctors] = useState([]);
   const navigate = useNavigate();
-
 
   const handleSearch = () => {
     const prof = selectedProfessional.trim().toLowerCase();
@@ -35,44 +40,46 @@ export default function Appointments() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-16">
       <h1 className="text-3xl font-bold mb-8 text-center">Reservar Turno</h1>
+
+      {/* Filtros */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div>
-          <Input
-            list="professionals"
-            value={selectedProfessional}
-            onChange={(e) => setSelectedProfessional(e.target.value)}
-            placeholder="Buscar por Profesional..."
-            className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
-          />
-          <datalist id="professionals">
+        {/* Profesionales */}
+        <Select onValueChange={(value) => setSelectedProfessional(value)}>
+          <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
+            <SelectValue placeholder="Buscar por Profesional..." />
+          </SelectTrigger>
+          <SelectContent>
             {doctorsData.map((doc) => (
-              <option key={doc.id} value={doc.name} />
+              <SelectItem key={doc.id} value={doc.name}>
+                {doc.name}
+              </SelectItem>
             ))}
-          </datalist>
-        </div>
+          </SelectContent>
+        </Select>
 
-        <div>
-          <Input
-            list="socials"
-            value={selectedSocial}
-            onChange={(e) => setSelectedSocial(e.target.value)}
-            placeholder="Buscar por Obra Social o Particular..."
-            className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
-
-          />
-          <datalist id="socials">
+        {/* Obras sociales */}
+        <Select onValueChange={(value) => setSelectedSocial(value)}>
+          <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
+            <SelectValue placeholder="Buscar por Obra Social o Particular..." />
+          </SelectTrigger>
+          <SelectContent>
             {[...new Set(doctorsData.map((d) => d.social))].map((s) => (
-              <option key={s} value={s} />
+              <SelectItem key={s} value={s}>
+                {s}
+              </SelectItem>
             ))}
-          </datalist>
-        </div>
+          </SelectContent>
+        </Select>
 
+        {/* Botón de búsqueda */}
         <div className="flex items-end">
           <Button className="w-full" onClick={handleSearch}>
             Buscar
           </Button>
         </div>
       </div>
+
+      {/* Resultados */}
       {filteredDoctors.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredDoctors.map((doc) => (
@@ -104,4 +111,3 @@ export default function Appointments() {
     </div>
   );
 }
-
