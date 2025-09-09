@@ -90,26 +90,6 @@ export default function CalendarPage() {
                             classNames={{
                                 day: "rounded-full mx-0.5 my-0.5",
                             }}
-                            dayClassName={(day) => {
-                                const formattedDay = format(day, "yyyy-MM-dd")
-                                const isAvailable = Object.keys(doctorAvailability).includes(formattedDay)
-                                const isCurrentDay = day.toDateString() === today.toDateString()
-
-                                let className = "rounded-full "
-
-                                if (isCurrentDay && isAvailable) {
-                                    className += "bg-accent text-accent-foreground font-semibold ring-2 ring-primary"
-                                } else if (isCurrentDay) {
-                                    className += "ring-2 ring-primary font-semibold"
-                                } else if (isAvailable) {
-                                    className += "bg-accent text-accent-foreground hover:bg-accent/80 transition"
-                                } else {
-                                    className += "text-muted-foreground opacity-60"
-                                }
-
-                                return className
-                            }}
-                            disabled={[{ before: today }]}
                         />
                     </div>
                     <div className="md:w-1/2">
