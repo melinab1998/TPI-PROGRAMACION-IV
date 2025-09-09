@@ -12,11 +12,11 @@ import { motion, AnimatePresence } from "framer-motion"
 // Simulación de datos
 const availability = {
     1: {
-        "2025-09-04": ["08:00", "09:00", "10:00", "11:00"],
-        "2025-09-06": ["09:00", "10:00", "11:00", "12:00"],
-        "2025-09-08": ["08:00", "09:30", "11:00", "12:30"],
         "2025-09-10": ["08:00", "09:00", "10:00", "11:00"],
-        "2025-09-12": ["09:00", "10:00", "11:00", "12:00", "13:00", "15:00", "16:00", "20:00"],
+        "2025-09-11": ["09:00", "10:00", "11:00", "12:00"],
+        "2025-09-15": ["08:00", "09:30", "11:00", "12:30"],
+        "2025-09-20": ["08:00", "09:00", "10:00", "11:00"],
+        "2025-09-21": ["09:00", "10:00", "11:00", "12:00", "13:00", "15:00", "16:00", "20:00"],
     },
 }
 
@@ -61,7 +61,7 @@ export default function CalendarPage() {
             </h2>
 
             <div className="rounded-2xl border p-8 shadow-lg bg-card text-card-foreground">
-                <div className="flex max-md:flex-col gap-10">
+                <div className="flex max-md:flex-col gap-18">
                     <div className="md:w-1/2">
                         <Calendar
                             mode="single"
@@ -73,40 +73,25 @@ export default function CalendarPage() {
                             }}
                             locale={es}
                             className={`
-                                p-4 text-lg rounded-2xl
-                                [&_.rdp-day]:h-16 [&_.rdp-day]:w-16
-                                [&_.rdp-day_selected]:text-primary-foreground [&_.rdp-day_selected]:bg-primary
-                                [&_.rdp-day_selected]:rounded-full [&_.rdp-day]:rounded-full
-                                [&_.rdp-caption]:mb-4 [&_.rdp-caption_label]:text-lg
-                            `}
+    p-4 text-lg rounded-2xl
+    [&_.rdp-day]:h-16 [&_.rdp-day]:w-16
+    [&_.rdp-day_selected]:text-primary-foreground [&_.rdp-day_selected]:bg-primary
+    [&_.rdp-day_selected]:rounded-full [&_.rdp-day]:rounded-full
+    [&_.rdp-caption]:mb-4 [&_.rdp-caption_label]:text-lg
+    [&_.rdp-nav_button]:rounded-full [&_.rdp-nav_button]:h-6 [&_.rdp-nav_button]:w-6
+    [&_.rdp-nav_button]:hover:bg-accent [&_.rdp-nav_button]:transition
+  `}
                             modifiers={{
                                 available: Object.keys(doctorAvailability).map((dateStr) => parseISO(dateStr)),
                                 today: today,
                             }}
                             modifiersClassNames={{
-                                available: "bg-accent text-accent-foreground font-medium hover:bg-accent/80 transition rounded-full",
-                                today: "ring-2 ring-primary font-bold rounded-full",
+                                available: "bg-accent text-accent-foreground font-medium hover:bg-accent/70 transition rounded-full",
+                                today: "rounded-full mx-0.5 my-0.5",
                             }}
-                            dayClassName={(day) => {
-                                const formattedDay = format(day, "yyyy-MM-dd")
-                                const isAvailable = Object.keys(doctorAvailability).includes(formattedDay)
-                                const isCurrentDay = day.toDateString() === today.toDateString()
-
-                                let className = "rounded-full "
-
-                                if (isCurrentDay && isAvailable) {
-                                    className += "bg-accent text-accent-foreground font-semibold ring-2 ring-primary"
-                                } else if (isCurrentDay) {
-                                    className += "ring-2 ring-primary font-semibold"
-                                } else if (isAvailable) {
-                                    className += "bg-accent text-accent-foreground hover:bg-accent/80 transition"
-                                } else {
-                                    className += "text-muted-foreground opacity-60"
-                                }
-
-                                return className
+                            classNames={{
+                                day: "rounded-full mx-0.5 my-0.5",
                             }}
-                            disabled={[{ before: today }]}
                         />
                     </div>
                     <div className="md:w-1/2">
