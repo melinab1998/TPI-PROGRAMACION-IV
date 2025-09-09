@@ -12,11 +12,11 @@ import { motion, AnimatePresence } from "framer-motion"
 // Simulación de datos
 const availability = {
     1: {
-        "2025-09-04": ["08:00", "09:00", "10:00", "11:00"],
-        "2025-09-06": ["09:00", "10:00", "11:00", "12:00"],
-        "2025-09-08": ["08:00", "09:30", "11:00", "12:30"],
         "2025-09-10": ["08:00", "09:00", "10:00", "11:00"],
-        "2025-09-12": ["09:00", "10:00", "11:00", "12:00", "13:00", "15:00", "16:00", "20:00"],
+        "2025-09-11": ["09:00", "10:00", "11:00", "12:00"],
+        "2025-09-15": ["08:00", "09:30", "11:00", "12:30"],
+        "2025-09-20": ["08:00", "09:00", "10:00", "11:00"],
+        "2025-09-21": ["09:00", "10:00", "11:00", "12:00", "13:00", "15:00", "16:00", "20:00"],
     },
 }
 
@@ -61,7 +61,7 @@ export default function CalendarPage() {
             </h2>
 
             <div className="rounded-2xl border p-8 shadow-lg bg-card text-card-foreground">
-                <div className="flex max-md:flex-col gap-10">
+                <div className="flex max-md:flex-col gap-18">
                     <div className="md:w-1/2">
                         <Calendar
                             mode="single"
@@ -86,6 +86,9 @@ export default function CalendarPage() {
                             modifiersClassNames={{
                                 available: "bg-accent text-accent-foreground font-medium hover:bg-accent/80 transition rounded-full",
                                 today: "ring-2 ring-primary font-bold rounded-full",
+                            }}
+                            classNames={{
+                                day: "rounded-full mx-0.5 my-0.5", 
                             }}
                             dayClassName={(day) => {
                                 const formattedDay = format(day, "yyyy-MM-dd")
