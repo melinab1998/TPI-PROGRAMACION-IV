@@ -84,11 +84,11 @@ export default function CalendarPage() {
                                 today: today,
                             }}
                             modifiersClassNames={{
-                                available: "bg-accent text-accent-foreground font-medium hover:bg-accent/80 transition rounded-full",
-                                today: "ring-2 ring-primary font-bold rounded-full",
+                                available: "bg-accent text-accent-foreground font-medium hover:bg-accent/70 transition rounded-full",
+                                today: "rounded-full mx-0.5 my-0.5",
                             }}
                             classNames={{
-                                day: "rounded-full mx-0.5 my-0.5", 
+                                day: "rounded-full mx-0.5 my-0.5",
                             }}
                             dayClassName={(day) => {
                                 const formattedDay = format(day, "yyyy-MM-dd")
