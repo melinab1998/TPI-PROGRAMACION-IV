@@ -4,7 +4,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export default function DoctorProfile() {
     return (
-        <section className="max-w-4xl mx-auto mt-20 px-4">
+        <section className="max-w-4xl mx-auto px-4 mt-5 mb-5">
             <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -13,7 +13,7 @@ export default function DoctorProfile() {
             >
                 <Card className="bg-[var(--card)] border-[var(--border)] flex flex-col md:flex-row items-center p-6 gap-6">
                     <Avatar className="w-24 h-24">
-                        <AvatarImage src="/doctor.jpg" alt="Dra. Erica" />
+                        <AvatarImage src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?&w=128&h=128&fit=crop" alt="Dra. Erica" />
                         <AvatarFallback>EZ</AvatarFallback>
                     </Avatar>
                     <div>

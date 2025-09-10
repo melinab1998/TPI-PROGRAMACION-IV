@@ -67,7 +67,7 @@ export default function ServicesSection() {
                             <CardContent className="text-center">
                                 <p className="text-muted-foreground">{service.description}</p>
                                 <Button onClick={handleClick} variant="link" className="mt-6 text-primary hover:no-underline cursor-pointer">
-                                    Ir a servicios <FaArrowRight className="inline-block h-4 w-4 ml-1" />
+                                    Ver todos los servicios
                                 </Button>
                             </CardContent>
                         </Card>
