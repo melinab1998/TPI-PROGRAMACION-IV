@@ -1,28 +1,28 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  RiMedicineBottleLine, 
+import {
+  RiMedicineBottleLine,
   RiScissorsCutLine,
   RiSparkling2Line
 } from "react-icons/ri";
-import { 
-  CgBrackets, 
+import {
+  CgBrackets,
   CgAlignTop,
   CgSmileMouthOpen
 } from "react-icons/cg";
-import { 
+import {
   TbBrush,
   TbStar,
   TbDental
 } from "react-icons/tb";
-import { 
-  FaArrowRight, 
-  FaTimes, 
+import {
+  FaArrowRight,
+  FaTimes,
   FaTooth,
   FaCrown
 } from "react-icons/fa";
-import { 
+import {
   GiToothbrush,
   GiTooth
 } from "react-icons/gi";
@@ -174,7 +174,6 @@ export default function ServicesPage() {
                         onClick={() => setSelectedService(service)}
                       >
                         Más información
-                        <FaArrowRight className="inline-block h-4 w-4 ml-1" />
                       </Button>
                     </CardContent>
                   </Card>
@@ -198,13 +197,6 @@ export default function ServicesPage() {
               animate={{ scale: 1 }}
               exit={{ scale: 0.8 }}
             >
-              <button
-                className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 dark:hover:text-white cursor-pointer"
-                onClick={() => setSelectedService(null)}
-              >
-                <FaTimes className="h-5 w-5" />
-              </button>
-              
               <div className="flex flex-col items-center text-center">
                 <selectedService.icon className="h-12 w-12 text-primary mb-4" />
                 <span className="text-sm text-primary font-medium mb-1">{selectedService.category}</span>
@@ -223,6 +215,7 @@ export default function ServicesPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
     </section>
   );
 }
