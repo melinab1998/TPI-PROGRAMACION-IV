@@ -14,7 +14,7 @@ export default function TestimonialsSection() {
         <section className="max-w-6xl mx-auto mt-20 px-4">
             <h2 className="text-3xl font-bold mb-8 text-center">Nuestros Pacientes</h2>
             <motion.div
-                className="flex flex-col md:flex-row gap-6 justify-center"
+                className="flex flex-col md:flex-row gap-6 justify-center items-stretch"
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.3 }}
@@ -23,10 +23,11 @@ export default function TestimonialsSection() {
                 {patients.map(({ name, message, image }) => (
                     <motion.div
                         key={name}
+                        className="flex-1"
                         variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
                     >
-                        <Card className="flex-1 bg-[var(--card)] border-[var(--border)] p-6">
-                            <CardContent className="flex flex-col items-center text-center">
+                        <Card className="flex flex-col h-full bg-[var(--card)] border-[var(--border)] p-6">
+                            <CardContent className="flex flex-col items-center text-center h-full">
                                 <Avatar className="mb-4">
                                     <AvatarImage src={image} alt={name} />
                                     <AvatarFallback>{name[0]}</AvatarFallback>
@@ -45,4 +46,3 @@ export default function TestimonialsSection() {
         </section>
     );
 }
-
