@@ -1,5 +1,6 @@
 import React from "react";
-import { Phone, Mail, MapPin, Facebook, Instagram, Twitter } from "lucide-react";
+import { Phone, Mail, MapPin, Facebook, Instagram } from "lucide-react"; 
+import { FaXTwitter } from 'react-icons/fa6';
 
 export default function Footer() {
     return (
@@ -39,7 +40,6 @@ export default function Footer() {
                             <div className="flex justify-between"><span>Lunes</span><span>14:00 - 20:00</span></div>
                             <div className="flex justify-between"><span>Miércoles</span><span>9:00 - 20:00</span></div>
                             <div className="flex justify-between"><span>Jueves</span><span>9:00 - 20:00</span></div>
-
                         </div>
                     </div>
                 </div>
@@ -56,8 +56,8 @@ export default function Footer() {
                                 <span className="sr-only">Instagram</span>
                             </a>
                             <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                                <Twitter className="w-5 h-5" />
-                                <span className="sr-only">Twitter</span>
+                                <FaXTwitter className="w-5 h-5" />  
+                                <span className="sr-only">X</span>
                             </a>
                         </div>
                         <p className="text-sm text-muted-foreground text-center md:text-right">
@@ -69,4 +69,5 @@ export default function Footer() {
         </footer>
     );
 }
+
 
