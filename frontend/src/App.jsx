@@ -10,6 +10,7 @@ import Contact from "./pages/Contact/Contact";
 import Appointments from "./pages/Appointments/Appointments";
 import Calendar from "./pages/Calendar/Calendar";
 import { useAuth } from "@/hooks/useAuth"; 
+import PatientProfile from "./pages/PatientProfile/PatientProfile";
 function App() {
   const { isLoggedIn } = useAuth();
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="contact" element={<Contact />} />
         <Route path="appointments" element={<Appointments />} />
         <Route path="calendar/:id" element={<Calendar />} />
+        <Route path="profile" element={<PatientProfile/>}/>
       </Route>
     </Routes>
   );
