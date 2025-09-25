@@ -1,8 +1,8 @@
-import DoctorProfile from "@/components/DoctorProfile/DoctorProfile";
-import FAQSection from "@/components/FAQSection/FAQSection";
-import HeroSection from "@/components/HeroSection/HeroSection";
-import ServicesSection from "@/components/ServicesSection/ServicesSection";
-import TestimonialsSection from "@/components/TestimonialSection/TestimonialSection";
+import DoctorProfile from "@/components/Home/DoctorProfile/DoctorProfile";
+import FAQSection from "@/components/Home/FAQSection/FAQSection";
+import HeroSection from "@/components/Home/HeroSection/HeroSection";
+import ServicesSection from "@/components/Home/ServicesSection/ServicesSection";
+import TestimonialsSection from "@/components/Home/TestimonialSection/TestimonialSection";
 
 export default function Home() {
     return (
