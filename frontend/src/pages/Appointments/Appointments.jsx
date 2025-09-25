@@ -41,9 +41,7 @@ export default function Appointments() {
     <div className="max-w-5xl mx-auto px-4 py-16">
       <h1 className="text-3xl font-bold mb-8 text-center">Reservar Turno</h1>
 
-      {/* Filtros */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        {/* Profesionales */}
         <Select onValueChange={(value) => setSelectedProfessional(value)}>
           <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
             <SelectValue placeholder="Buscar por Profesional..." />
@@ -57,7 +55,6 @@ export default function Appointments() {
           </SelectContent>
         </Select>
 
-        {/* Obras sociales */}
         <Select onValueChange={(value) => setSelectedSocial(value)}>
           <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
             <SelectValue placeholder="Buscar por Obra Social o Particular..." />
@@ -70,16 +67,12 @@ export default function Appointments() {
             ))}
           </SelectContent>
         </Select>
-
-        {/* Botón de búsqueda */}
         <div className="flex items-end">
           <Button className="w-full" onClick={handleSearch}>
             Buscar
           </Button>
         </div>
       </div>
-
-      {/* Resultados */}
       {filteredDoctors.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredDoctors.map((doc) => (

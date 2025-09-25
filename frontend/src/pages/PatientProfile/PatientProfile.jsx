@@ -31,7 +31,6 @@ const PatientProfile = () => {
 
   return (
     <div className="container mx-auto p-6 max-w-4xl space-y-10 mt-10">
-      {/* Header */}
       <div className="flex items-center gap-4">
         <div className="p-2 bg-primary/10 rounded-lg">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-6 h-6 text-primary">
@@ -40,8 +39,6 @@ const PatientProfile = () => {
         </div>
         <h1 className="text-3xl font-bold text-foreground">Mi Perfil</h1>
       </div>
-
-      {/* Información Personal */}
       <Card className="border-border shadow-md">
         <CardHeader>
           <CardTitle className="text-xl text-foreground">Información Personal</CardTitle>
@@ -50,21 +47,19 @@ const PatientProfile = () => {
 
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {["name","lastName","dni","email"].map((field) => (
+            {["name", "lastName", "dni", "email"].map((field) => (
               <div key={field} className="space-y-2">
                 <Label className="text-sm font-medium text-foreground">
                   {field === "name" ? "Nombre" : field === "lastName" ? "Apellido" : field === "dni" ? "DNI" : "Email"}
                 </Label>
-                <Input 
-                  value={patientData[field]} 
-                  disabled 
-                  className="bg-muted/50 border-border h-11 focus-visible:ring-primary/30" 
+                <Input
+                  value={patientData[field]}
+                  disabled
+                  className="bg-muted/50 border-border h-11 focus-visible:ring-primary/30"
                 />
               </div>
             ))}
           </div>
-
-          {/* Botones de actualización */}
           <div className="flex flex-col sm:flex-row gap-3 mt-4 pt-6 border-t border-border">
             <Dialog open={emailModalOpen} onOpenChange={setEmailModalOpen}>
               <DialogTrigger asChild>
@@ -83,19 +78,19 @@ const PatientProfile = () => {
                 <form onSubmit={handleEmailSubmit} className="space-y-4 mt-4">
                   <div className="space-y-2">
                     <Label>Nuevo Email</Label>
-                    <Input 
-                      type="email" 
-                      value={email} 
-                      onChange={(e) => setEmail(e.target.value)} 
-                      required 
+                    <Input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
                       className="border-border focus-visible:ring-primary"
                     />
                   </div>
                   <div className="space-y-2">
                     <Label>Contraseña Actual</Label>
-                    <Input 
-                      type="password" 
-                      required 
+                    <Input
+                      type="password"
+                      required
                       className="border-border focus-visible:ring-primary"
                     />
                   </div>
@@ -123,17 +118,17 @@ const PatientProfile = () => {
                 </DialogHeader>
                 <form onSubmit={handlePasswordSubmit} className="space-y-4 mt-4">
                   {[
-                    {label:"Contraseña Actual", value:currentPassword, setter:setCurrentPassword},
-                    {label:"Nueva Contraseña", value:newPassword, setter:setNewPassword},
-                    {label:"Confirmar Nueva Contraseña", value:confirmPassword, setter:setConfirmPassword}
+                    { label: "Contraseña Actual", value: currentPassword, setter: setCurrentPassword },
+                    { label: "Nueva Contraseña", value: newPassword, setter: setNewPassword },
+                    { label: "Confirmar Nueva Contraseña", value: confirmPassword, setter: setConfirmPassword }
                   ].map((input, idx) => (
                     <div key={idx} className="space-y-2">
                       <Label>{input.label}</Label>
-                      <Input 
-                        type="password" 
-                        value={input.value} 
-                        onChange={(e) => input.setter(e.target.value)} 
-                        required 
+                      <Input
+                        type="password"
+                        value={input.value}
+                        onChange={(e) => input.setter(e.target.value)}
+                        required
                         className="border-border focus-visible:ring-primary"
                       />
                     </div>
@@ -148,8 +143,6 @@ const PatientProfile = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Historial de turnos */}
       <Card className="border-border shadow-md">
         <CardHeader>
           <CardTitle className="text-xl text-foreground">Historial de Turnos</CardTitle>

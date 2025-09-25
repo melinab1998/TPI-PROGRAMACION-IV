@@ -29,7 +29,6 @@ export default function Register() {
 
             <CardContent>
                 <form className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {/* Columna izquierda */}
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="nombre" className="text-sm font-medium">
@@ -76,8 +75,6 @@ export default function Register() {
                             </div>
                         </div>
                     </div>
-
-                    {/* Columna derecha */}
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-sm font-medium">

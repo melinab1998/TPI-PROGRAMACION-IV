@@ -32,7 +32,6 @@ export default function ServicesPage() {
   const [selectedService, setSelectedService] = useState(null);
 
   const services = [
-    // Odontología General
     {
       id: 1,
       category: "Odontología General",
@@ -60,8 +59,6 @@ export default function ServicesPage() {
       icon: RiScissorsCutLine,
       duration: "30-45 min",
     },
-
-    // Ortodoncia
     {
       id: 4,
       category: "Ortodoncia",
@@ -89,8 +86,6 @@ export default function ServicesPage() {
       icon: CgSmileMouthOpen,
       duration: "12-24 meses",
     },
-
-    // Estética Dental
     {
       id: 7,
       category: "Estética Dental",
