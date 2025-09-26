@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 export default function NavBar() {
   const { theme } = useTheme();
-  const { isLoggedIn, logout } = useAuth(); 
+  const { isLoggedIn, role, logout } = useAuth();
 
   return (
     <nav className="w-full border-b border-[var(--border)] bg-[var(--card)]">
@@ -36,8 +36,28 @@ export default function NavBar() {
 
           {isLoggedIn ? (
             <>
-              <Link to="/appointments"><Button variant="ghost">Turnos</Button></Link>
-              <Link to="/profile"><Button variant="ghost">Mi Perfil</Button></Link>
+              {role === "user" && (
+                <>
+                  <Link to="/appointments"><Button variant="ghost">Turnos</Button></Link>
+                  <Link to="/profile"><Button variant="ghost">Mi Perfil</Button></Link>
+                </>
+              )}
+
+              {role === "admin" && (
+                <>
+                  <Link to="/schedule"><Button variant="ghost">Agenda</Button></Link>
+                  <Link to="/patients"><Button variant="ghost">Pacientes</Button></Link>
+                  <Link to="/availability"><Button variant="ghost">Horarios</Button></Link>
+                </>
+              )}
+
+              {role === "superadmin" && (
+                <>
+                  <Link to="/super-panel"><Button variant="ghost">Panel Root</Button></Link>
+                  <Link to="/system-config"><Button variant="ghost">Config Sistema</Button></Link>
+                </>
+              )}
+
               <Button variant="outline" className="hidden md:inline" onClick={logout}>
                 Cerrar sesión
               </Button>
