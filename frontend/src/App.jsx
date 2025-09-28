@@ -13,6 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 import PatientProfile from "./pages/PatientProfile/PatientProfile";
 import AdminHome from "./pages/AdminHome/AdminHome";
 import SuperAdminHome from "./pages/SuperAdminHome/SuperAdminHome"
+import AdminSchedule from "./pages/AdminSchedule/AdminSchedule";
 
 function App() {
 
@@ -35,6 +36,7 @@ function App() {
         <Route path="appointments" element={<Appointments />} />
         <Route path="calendar/:id" element={<Calendar />} />
         <Route path="profile" element={<PatientProfile/>}/>
+        <Route path="schedule" element={<AdminSchedule/>}/>
       </Route>
     </Routes>
   );
