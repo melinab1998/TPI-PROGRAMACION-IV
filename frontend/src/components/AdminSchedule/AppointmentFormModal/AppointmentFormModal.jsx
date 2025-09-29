@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search } from "lucide-react"
 
-// Datos de ejemplo (en un sistema real vendrían de una API)
 const mockPatients = [
     { id: 1, name: "María López", email: "maria@email.com", dni: "41239736", phone: "1122334455" },
     { id: 2, name: "Juan Pérez", email: "juan@email.com", dni: "38987654", phone: "1166778899" },
@@ -42,10 +41,9 @@ export default function AppointmentFormModal({
     const [patientSearch, setPatientSearch] = useState("")
     const [filteredPatients, setFilteredPatients] = useState(mockPatients)
 
-    // Filtrar pacientes por búsqueda
     useEffect(() => {
         if (patientSearch.trim() === "") {
-            setFilteredPatients(mockPatients.slice(0, 5)) // Mostrar solo los primeros 5
+            setFilteredPatients(mockPatients.slice(0, 5)) 
         } else {
             const filtered = mockPatients.filter(patient =>
                 patient.dni.includes(patientSearch) ||
@@ -55,7 +53,6 @@ export default function AppointmentFormModal({
         }
     }, [patientSearch])
 
-    // Si es edición, cargamos los datos
     useEffect(() => {
         if (appointment) {
             const dateTime = appointment.appointment_date.split('T')
@@ -67,7 +64,6 @@ export default function AppointmentFormModal({
                 consultation_type: appointment.consultation_type || "Consulta"
             })
 
-            // Si hay paciente, cargar la búsqueda
             if (appointment.patient_id) {
                 const patient = mockPatients.find(p => p.id === parseInt(appointment.patient_id))
                 if (patient) {
@@ -75,7 +71,6 @@ export default function AppointmentFormModal({
                 }
             }
         } else {
-            // Reset form for new appointment
             setFormData({
                 appointment_date: "",
                 appointment_time: "",
@@ -132,7 +127,6 @@ export default function AppointmentFormModal({
         onClose()
     }
 
-    // Generar horas cada 30 minutos
     const generateTimeSlots = () => {
         const slots = []
         for (let hour = 8; hour <= 19; hour++) {
@@ -156,7 +150,6 @@ export default function AppointmentFormModal({
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* Fecha y Hora */}
                     <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-2">
                             <Label htmlFor="appointment_date">Fecha</Label>
@@ -187,8 +180,6 @@ export default function AppointmentFormModal({
                             </Select>
                         </div>
                     </div>
-
-                    {/* Dentista */}
                     <div className="space-y-2">
                         <Label htmlFor="dentist_id">Dentista</Label>
                         <Select
@@ -207,13 +198,10 @@ export default function AppointmentFormModal({
                             </SelectContent>
                         </Select>
                     </div>
-
-                    {/* Paciente - Búsqueda por DNI */}
                     <div className="space-y-2">
                         <Label htmlFor="patient_search">Paciente</Label>
 
                         {!formData.patient_id ? (
-                            // Mostrar buscador cuando no hay paciente seleccionado
                             <>
                                 <div className="relative">
                                     <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -225,8 +213,6 @@ export default function AppointmentFormModal({
                                         className="pl-9"
                                     />
                                 </div>
-
-                                {/* Lista de pacientes filtrados */}
                                 {patientSearch && (
                                     <div className="border rounded-md max-h-32 overflow-y-auto">
                                         {filteredPatients.length > 0 ? (
@@ -251,7 +237,6 @@ export default function AppointmentFormModal({
                                 )}
                             </>
                         ) : (
-                            // Mostrar paciente seleccionado y botón para cambiar
                             <div className="space-y-2">
                                 <div className="p-2 border rounded-md bg-muted/20">
                                     <div className="text-sm font-medium">
@@ -274,8 +259,6 @@ export default function AppointmentFormModal({
                                 </Button>
                             </div>
                         )}
-
-                        {/* Botón para nuevo paciente */}
                         {!formData.patient_id && (
                             <Button
                                 type="button"
@@ -288,9 +271,6 @@ export default function AppointmentFormModal({
                             </Button>
                         )}
                     </div>
-
-
-                    {/* Tipo de Consulta */}
                     <div className="space-y-2">
                         <Label htmlFor="consultation_type">Tipo de Turno</Label>
                         <Select

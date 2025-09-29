@@ -16,7 +16,7 @@ export default function AppointmentList({
     onCancel,
 }) {
     return (
-        <Card className="flex flex-col h-[650px]"> {/* Misma altura aumentada */}
+        <Card className="flex flex-col h-[650px]"> 
             <CardHeader className="pb-3 flex-shrink-0">
                 <CardTitle className="text-xl">Turnos del Día</CardTitle>
                 <div className="flex flex-col sm:flex-row gap-2 sm:items-center justify-between">
@@ -31,8 +31,6 @@ export default function AppointmentList({
                 <div className="px-6 pb-3 flex-shrink-0">
                     <Filters filters={filters} setFilters={setFilters} />
                 </div>
-
-                {/* Área scrollable */}
                 <div className="flex-1 overflow-y-auto px-6 pb-4">
                     {filteredAppointments.length > 0 ? (
                         <div className="space-y-3">

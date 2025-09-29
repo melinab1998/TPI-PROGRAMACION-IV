@@ -24,7 +24,6 @@ export default function Calendar({ selectedDate, onDateChange, appointments }) {
 
   return (
     <div className="w-full h-full flex flex-col">
-      {/* Controles de mes */}
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <Button variant="outline" size="sm" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
           <ChevronLeft className="w-4 h-4" /> Anterior
@@ -36,8 +35,6 @@ export default function Calendar({ selectedDate, onDateChange, appointments }) {
           Siguiente <ChevronRight className="w-4 h-4" />
         </Button>
       </div>
-
-      {/* Días de la semana */}
       <div className="grid grid-cols-7 gap-1 mb-2 flex-shrink-0">
         {weekdays.map((day) => (
           <div key={day} className="text-sm text-center text-muted-foreground font-medium py-1">
@@ -45,8 +42,6 @@ export default function Calendar({ selectedDate, onDateChange, appointments }) {
           </div>
         ))}
       </div>
-
-      {/* Días - área que ocupa el espacio restante */}
       <div className="grid grid-cols-7 gap-1 flex-1 min-h-0 auto-rows-fr">
         {daysInMonth.map((day) => {
           const dayKey = format(day, "yyyy-MM-dd")
