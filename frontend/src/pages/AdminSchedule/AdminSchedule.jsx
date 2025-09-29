@@ -5,21 +5,22 @@ import Header from "@/components/AdminSchedule/Header/Header"
 import Calendar from "@/components/AdminSchedule/Calendar/Calendar"
 import DaySummary from "@/components/AdminSchedule/DaySummary/DaySummary"
 import AppointmentList from "@/components/AdminSchedule/AppointmentList/AppointmentList"
+import AppointmentFormModal from "@/components/AdminSchedule/AppointmentFormModal/AppointmentFormModal"
 
 const initialAppointments = [ 
-    { id_turn: 101, appointment_date: "2025-09-30T09:00:00", status: "Activo", consultation_type: "Consulta", patient_name: "María López", patient_email: "maria@email.com", patient_dni: "41239736" }, 
-    { id_turn: 102, appointment_date: "2025-09-30T10:00:00", status: "Activo", consultation_type: "Tratamiento", patient_name: "Juan Pérez", patient_email: "juan@email.com", patient_dni: "41239736" }, 
-    { id_turn: 103, appointment_date: "2025-09-30T11:30:00", status: "Cancelado", consultation_type: "Tratamiento", patient_name: "Ana Gómez", patient_email: "ana@email.com", patient_dni: "41239736" }, 
-    { id_turn: 111, appointment_date: "2025-09-30T10:00:00", status: "Activo", consultation_type: "Tratamiento", patient_name: "Juan Pérez", patient_email: "juan@email.com", patient_dni: "41239736" }, 
-    { id_turn: 104, appointment_date: "2025-10-01T15:00:00", status: "Activo", consultation_type: "Consulta", patient_name: "Pedro Ruiz", patient_email: "pedro@email.com", patient_dni: "41239736" }, 
-    { id_turn: 105, appointment_date: "2025-10-02T14:00:00", status: "Activo", consultation_type: "Consulta", patient_name: "Carlos Mendoza", patient_email: "carlos@email.com", patient_dni: "41239736" }, 
-];
+    { id_turn: 101, appointment_date: "2025-09-30T09:00", status: "Activo", consultation_type: "Consulta", patient_name: "María López", patient_email: "maria@email.com", patient_dni: "41239736", dentist_name: "Dr. Suárez" }, 
+    { id_turn: 102, appointment_date: "2025-09-30T10:00", status: "Activo", consultation_type: "Tratamiento", patient_name: "Juan Pérez", patient_email: "juan@email.com", patient_dni: "41239736", dentist_name: "Dr. Suárez" }
+]
 
 export default function AdminSchedule() {
     const today = new Date()
     const [selectedDate, setSelectedDate] = useState(today)
     const [appointments, setAppointments] = useState(initialAppointments)
     const [filters, setFilters] = useState({ patient: "", status: "Todos" })
+
+    // Modal control
+    const [modalOpen, setModalOpen] = useState(false)
+    const [editingAppointment, setEditingAppointment] = useState(null)
 
     const handleCancel = (id) => {
         if (confirm(`¿Está seguro de cancelar el turno ${id}?`)) {
@@ -29,8 +30,27 @@ export default function AdminSchedule() {
         }
     }
 
-    const handleEdit = (id) => alert(`Editar turno ${id}`)
-    const handleCreate = () => alert("Crear nuevo turno")
+    const handleEdit = (id) => {
+        const appt = appointments.find(a => a.id_turn === id)
+        setEditingAppointment(appt)
+        setModalOpen(true)
+    }
+
+    const handleCreate = () => {
+        setEditingAppointment(null)
+        setModalOpen(true)
+    }
+
+    const handleSave = (data) => {
+        if (data.id_turn) {
+            // update
+            setAppointments(prev => prev.map(a => a.id_turn === data.id_turn ? data : a))
+        } else {
+            // create new
+            const newAppt = { ...data, id_turn: Date.now(), status: "Activo" }
+            setAppointments(prev => [...prev, newAppt])
+        }
+    }
 
     const filteredAppointments = appointments.filter(a => {
         const appointmentDate = parseISO(a.appointment_date)
@@ -49,8 +69,8 @@ export default function AdminSchedule() {
             <Header onCreate={handleCreate} />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Calendario - MISMA ALTURA */}
-                <Card className="h-[650px] flex flex-col"> {/* Aumenté la altura */}
+                {/* Calendario */}
+                <Card className="h-[650px] flex flex-col">
                     <CardHeader className="flex-shrink-0">
                         <CardTitle className="flex items-center gap-2 text-xl">
                             Calendario de Turnos
@@ -73,7 +93,7 @@ export default function AdminSchedule() {
                     </CardContent>
                 </Card>
 
-                {/* Turnos - MISMA ALTURA */}
+                {/* Turnos */}
                 <AppointmentList
                     appointments={appointments}
                     filteredAppointments={filteredAppointments}
@@ -84,6 +104,14 @@ export default function AdminSchedule() {
                     onCancel={handleCancel}
                 />
             </div>
+
+            {/* Modal Crear/Editar */}
+            <AppointmentFormModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onSave={handleSave}
+                appointment={editingAppointment}
+            />
         </div>
     )
 }
