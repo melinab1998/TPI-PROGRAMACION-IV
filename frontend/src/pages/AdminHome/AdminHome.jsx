@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { CalendarDays, Users, Clock, ArrowRight, User, Calendar, X } from "lucide-react"
+import { CalendarDays, Users, Clock, ArrowRight, User, Calendar, X, FileText } from "lucide-react"
+import { Link } from "react-router-dom"
 
 export default function AdminHome() {
   const dentistName = "Dra. García"
@@ -21,7 +22,7 @@ export default function AdminHome() {
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-10 space-y-10 max-w-6xl mx-auto">
       <header className="space-y-2 text-center sm:text-left">
-        <h1 className="text-3xl font-bold text-primary tracking-tight mb-2.5">
+        <h1 className="text-3xl font-bold tracking-tight mb-2.5">
           ¡Bienvenida, {dentistName}!
         </h1>
         <p className="text-base text-muted-foreground">
@@ -99,45 +100,64 @@ export default function AdminHome() {
       </Card>
       <div>
         <h2 className="text-lg sm:text-xl font-semibold mb-3">Accesos rápidos</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          <Card className="shadow-md hover:shadow-lg transition-all border">
-            <CardHeader className="flex flex-col items-center pb-2 px-4 mt-5">
-              <CalendarDays className="w-8 h-8 sm:w-8 sm:h-8 text-primary mb-1" />
-              <CardTitle className="text-sm sm:text-base font-semibold text-center">Agenda</CardTitle>
-            </CardHeader>
-            <CardContent className="flex justify-center pt-0 px-4">
-              <Button variant="default" className="w-full text-xs sm:text-sm" size="default">
-                Ver agenda
-              </Button>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <Card className="shadow-md hover:shadow-lg transition-all border">
+    <CardHeader className="flex flex-col items-center pb-2 px-4 mt-5">
+      <CalendarDays className="w-8 h-8 sm:w-8 sm:h-8 text-primary mb-1" />
+      <CardTitle className="text-sm sm:text-base font-semibold text-center">Agenda</CardTitle>
+    </CardHeader>
+    <CardContent className="flex justify-center pt-0 px-4">
+      <Link to="/schedule" className="w-full">
+        <Button variant="default" className="w-full text-xs sm:text-sm" size="default">
+          Ver agenda
+        </Button>
+      </Link>
+    </CardContent>
+  </Card>
 
-          <Card className="shadow-md hover:shadow-lg transition-all border">
-            <CardHeader className="flex flex-col items-center pb-2 px-4 mt-5">
-              <Users className="w-8 h-8 sm:w-8 sm:h-8 text-primary mb-1" />
-              <CardTitle className="text-sm sm:text-base font-semibold text-center">Pacientes</CardTitle>
-            </CardHeader>
-            <CardContent className="flex justify-center pt-0 px-4">
-              <Button variant="default" className="w-full text-xs sm:text-sm" size="default">
-                Ver pacientes
-              </Button>
-            </CardContent>
-          </Card>
+  <Card className="shadow-md hover:shadow-lg transition-all border">
+    <CardHeader className="flex flex-col items-center pb-2 px-4 mt-5">
+      <Users className="w-8 h-8 sm:w-8 sm:h-8 text-primary mb-1" />
+      <CardTitle className="text-sm sm:text-base font-semibold text-center">Pacientes</CardTitle>
+    </CardHeader>
+    <CardContent className="flex justify-center pt-0 px-4">
+      <Link to="/patients" className="w-full">
+        <Button variant="default" className="w-full text-xs sm:text-sm" size="default">
+          Ver pacientes
+        </Button>
+      </Link>
+    </CardContent>
+  </Card>
 
-          <Card className="shadow-md hover:shadow-lg transition-all border">
-            <CardHeader className="flex flex-col items-center pb-2 px-4 mt-5">
-              <Clock className="w-8 h-8 sm:w-8 sm:h-8 text-primary mb-1" />
-              <CardTitle className="text-sm sm:text-base font-semibold text-center">Horarios</CardTitle>
-            </CardHeader>
-            <CardContent className="flex justify-center pt-0 px-6">
-              <Button variant="default" className="w-full text-xs sm:text-sm" size="default">
-                Gestionar horarios
-              </Button>
-            </CardContent>
-          </Card>
+  <Card className="shadow-md hover:shadow-lg transition-all border">
+    <CardHeader className="flex flex-col items-center pb-2 px-4 mt-5">
+      <FileText className="w-8 h-8 sm:w-8 sm:h-8 text-primary mb-1" />
+      <CardTitle className="text-sm sm:text-base font-semibold text-center">Visitas</CardTitle>
+    </CardHeader>
+    <CardContent className="flex justify-center pt-0 px-4">
+      <Link to="/visit-record" className="w-full">
+        <Button variant="default" className="w-full text-xs sm:text-sm" size="default">
+          Registrar visitas
+        </Button>
+      </Link>
+    </CardContent>
+  </Card>
+
+  <Card className="shadow-md hover:shadow-lg transition-all border">
+    <CardHeader className="flex flex-col items-center pb-2 px-4 mt-5">
+      <Clock className="w-8 h-8 sm:w-8 sm:h-8 text-primary mb-1" />
+      <CardTitle className="text-sm sm:text-base font-semibold text-center">Horarios</CardTitle>
+    </CardHeader>
+    <CardContent className="flex justify-center pt-0 px-6">
+      <Link to="/availability" className="w-full">
+        <Button variant="default" className="w-full text-xs sm:text-sm" size="default">
+          Gestionar horarios
+        </Button>
+      </Link>
+    </CardContent>
+  </Card>
         </div>
       </div>
     </div>
   )
 }
-
