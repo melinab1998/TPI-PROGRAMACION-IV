@@ -48,6 +48,7 @@ export default function NavBar() {
                   <Link to="/schedule"><Button variant="ghost">Agenda</Button></Link>
                   <Link to="/patients"><Button variant="ghost">Pacientes</Button></Link>
                   <Link to="/availability"><Button variant="ghost">Horarios</Button></Link>
+                  <Link to="/visit-record"><Button variant="ghost">Visitas</Button></Link>
                 </>
               )}
 

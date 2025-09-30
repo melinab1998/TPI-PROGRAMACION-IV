@@ -16,6 +16,7 @@ import SuperAdminHome from "./pages/SuperAdminHome/SuperAdminHome"
 import AdminSchedule from "./pages/AdminSchedule/AdminSchedule";
 import PatientsPage from "./pages/PatientsPage/PatientsPage";
 import Availability from "./pages/Availability/Availability";
+import VisitsPage from "./pages/VisitPage/VisitPage";
 
 function App() {
 
@@ -41,6 +42,7 @@ function App() {
         <Route path="schedule" element={<AdminSchedule/>}/>
         <Route path="patients" element={<PatientsPage/>}/>
         <Route path="availability" element={<Availability/>}/>
+        <Route path="visit-record" element={<VisitsPage/>}/>
       </Route>
     </Routes>
   );
