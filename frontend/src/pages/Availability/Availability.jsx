@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { Plus, Trash2, Clock } from "lucide-react"
+import { Plus, Trash2 } from "lucide-react"
 
 const daysOfWeek = [
   { id: 1, name: "Lunes", label: "Lun" },
@@ -17,7 +17,7 @@ const daysOfWeek = [
 ]
 
 const timeSlots = [
-  "06:00", "06:30", "07:00", "07:30", "08:00", "08:30", 
+  "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
   "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
   "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
   "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
@@ -26,46 +26,15 @@ const timeSlots = [
 
 export default function Availability() {
   const [availabilities, setAvailabilities] = useState([
-    {
-      id_availability: 1,
-      day_of_week: 1,
-      start_time: "09:00",
-      end_time: "17:00",
-      enabled: true
-    },
-    {
-      id_availability: 2,
-      day_of_week: 2,
-      start_time: "09:00",
-      end_time: "17:00",
-      enabled: true
-    },
-    {
-      id_availability: 3,
-      day_of_week: 3,
-      start_time: "09:00",
-      end_time: "17:00",
-      enabled: true
-    },
-    {
-      id_availability: 4,
-      day_of_week: 4,
-      start_time: "09:00",
-      end_time: "17:00",
-      enabled: true
-    },
-    {
-      id_availability: 5,
-      day_of_week: 5,
-      start_time: "09:00",
-      end_time: "17:00",
-      enabled: true
-    }
+    { id_availability: 1, day_of_week: 1, start_time: "09:00", end_time: "17:00", enabled: true },
+    { id_availability: 2, day_of_week: 2, start_time: "09:00", end_time: "17:00", enabled: true },
+    { id_availability: 3, day_of_week: 3, start_time: "09:00", end_time: "17:00", enabled: true },
+    { id_availability: 4, day_of_week: 4, start_time: "09:00", end_time: "17:00", enabled: true },
+    { id_availability: 5, day_of_week: 5, start_time: "09:00", end_time: "17:00", enabled: true }
   ])
 
-  const getAvailabilityForDay = (dayId) => {
-    return availabilities.filter(avail => avail.day_of_week === dayId)
-  }
+  const getAvailabilityForDay = (dayId) =>
+    availabilities.filter(avail => avail.day_of_week === dayId)
 
   const handleToggleDay = (dayId, enabled) => {
     if (enabled) {
@@ -83,9 +52,9 @@ export default function Availability() {
   }
 
   const handleTimeChange = (availabilityId, field, value) => {
-    setAvailabilities(prev => 
-      prev.map(avail => 
-        avail.id_availability === availabilityId 
+    setAvailabilities(prev =>
+      prev.map(avail =>
+        avail.id_availability === availabilityId
           ? { ...avail, [field]: value }
           : avail
       )
@@ -113,7 +82,7 @@ export default function Availability() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       <div className="text-center">
         <h1 className="text-3xl font-bold">Configuración de Horarios</h1>
         <p className="text-muted-foreground mt-2">
@@ -124,101 +93,88 @@ export default function Availability() {
         <CardHeader>
           <CardTitle>Horarios de Atención</CardTitle>
           <CardDescription>
-            Configura los horarios en los que estás disponible para atender pacientes
+            Configura los horarios en los que estás disponible
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           {daysOfWeek.map(day => {
             const dayAvailabilities = getAvailabilityForDay(day.id)
             const isDayEnabled = dayAvailabilities.length > 0
 
             return (
-              <div key={day.id} className="flex items-start gap-6 p-4 border rounded-lg">
-                <div className="flex items-center gap-3 min-w-[120px]">
+              <div
+                key={day.id}
+                className="grid grid-cols-1 sm:grid-cols-3 items-center gap-4 p-3 border rounded-lg"
+              >
+                <div className="flex items-center gap-2">
                   <Switch
                     checked={isDayEnabled}
                     onCheckedChange={(checked) => handleToggleDay(day.id, checked)}
                   />
-                  <Label className="font-medium text-base">{day.name}</Label>
+                  <Label className="font-medium">{day.name}</Label>
                 </div>
-                <div className="flex-1 space-y-3">
-                  {!isDayEnabled ? (
-                    <p className="text-sm text-muted-foreground italic">
-                      No hay horarios configurados
-                    </p>
-                  ) : (
-                    dayAvailabilities.map(availability => (
-                      <div key={availability.id_availability} className="flex items-center gap-4 p-3 bg-muted/30 rounded-lg">
-                        <div className="flex items-center gap-2 flex-1">
-                          <Clock className="w-4 h-4 text-muted-foreground" />
-                          <div className="space-y-1 relative">
-                            <Label className="text-xs">
-                              Desde
-                            </Label>
-                            <Select
-                              value={availability.start_time}
-                              onValueChange={(value) => handleTimeChange(availability.id_availability, 'start_time', value)}
-                            >
-                              <SelectTrigger className="w-24">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent position="popper" className="max-h-60">
-                                {timeSlots.map(time => (
-                                  <SelectItem key={time} value={time}>
-                                    {time}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
+                <div className="flex flex-wrap gap-2">
+                  {isDayEnabled ? (
+                    dayAvailabilities.map((availability) => (
+                      <div
+                        key={availability.id_availability}
+                        className="flex items-center gap-2 bg-muted/30 rounded-lg p-2"
+                      >
+                        <Select
+                          value={availability.start_time}
+                          onValueChange={(value) =>
+                            handleTimeChange(availability.id_availability, "start_time", value)
+                          }
+                        >
+                          <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
+                          <SelectContent className="max-h-60">
+                            {timeSlots.map(time => (
+                              <SelectItem key={time} value={time}>{time}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
 
-                          <span className="text-muted-foreground mx-2">-</span>
-                          <div className="space-y-1 relative">
-                            <Label className="text-xs">
-                              Hasta
-                            </Label>
-                            <Select
-                              value={availability.end_time}
-                              onValueChange={(value) => handleTimeChange(availability.id_availability, 'end_time', value)}
-                            >
-                              <SelectTrigger className="w-24">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent position="popper" className="max-h-60">
-                                {timeSlots
-                                  .filter(time => time > availability.start_time)
-                                  .map(time => (
-                                    <SelectItem key={time} value={time}>
-                                      {time}
-                                    </SelectItem>
-                                  ))
-                                }
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
+                        <span>-</span>
+
+                        <Select
+                          value={availability.end_time}
+                          onValueChange={(value) =>
+                            handleTimeChange(availability.id_availability, "end_time", value)
+                          }
+                        >
+                          <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
+                          <SelectContent className="max-h-60">
+                            {timeSlots
+                              .filter(time => time > availability.start_time)
+                              .map(time => (
+                                <SelectItem key={time} value={time}>{time}</SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+
                         {dayAvailabilities.length > 1 && (
                           <Button
-                            variant="outline"
-                            size="sm"
+                            variant="ghost"
+                            size="icon"
                             onClick={() => handleRemoveAvailability(availability.id_availability)}
-                            className="text-destructive hover:text-destructive"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4 text-destructive" />
                           </Button>
                         )}
                       </div>
                     ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">Cerrado</p>
                   )}
+                </div>
+                <div className="flex justify-start sm:justify-end">
                   {isDayEnabled && (
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleAddTimeSlot(day.id)}
-                      className="flex items-center gap-2"
                     >
-                      <Plus className="w-4 h-4" />
-                      Agregar otro horario
+                      <Plus className="w-4 h-4" /> Agregar
                     </Button>
                   )}
                 </div>
@@ -231,29 +187,30 @@ export default function Availability() {
         <CardHeader>
           <CardTitle>Resumen Semanal</CardTitle>
           <CardDescription>
-            Vista previa de tu disponibilidad semanal
+            Vista previa de tu disponibilidad
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
             {daysOfWeek.map(day => {
               const dayAvailabilities = getAvailabilityForDay(day.id)
-              
               return (
                 <div key={day.id} className="text-center p-3 border rounded-lg">
                   <div className="font-medium mb-2">{day.label}</div>
                   {dayAvailabilities.length > 0 ? (
                     <div className="space-y-1">
                       {dayAvailabilities.map((avail, index) => (
-                        <div key={index} className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
+                        <div
+                          key={index}
+                          className="text-xs px-2 py-1 rounded 
+             bg-primary text-primary-foreground"
+                        >
                           {avail.start_time} - {avail.end_time}
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-xs text-muted-foreground italic">
-                      Cerrado
-                    </div>
+                    <div className="text-xs text-muted-foreground italic">Cerrado</div>
                   )}
                 </div>
               )
@@ -261,6 +218,7 @@ export default function Availability() {
           </div>
         </CardContent>
       </Card>
+
       <div className="flex justify-center">
         <Button onClick={handleSave} size="lg" className="px-8">
           Guardar Horarios
