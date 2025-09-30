@@ -1,0 +1,105 @@
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { User, Calendar, MapPin, Phone, Mail, FileText } from "lucide-react"
+import { format, parseISO } from "date-fns"
+import { es } from "date-fns/locale"
+
+export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
+  if (!patient) return null
+
+  const formattedBirthDate = patient.birth_date 
+    ? format(parseISO(patient.birth_date), "dd/MM/yyyy")
+    : "No especificada"
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Detalles del Paciente</DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+              <span className="text-xl font-bold text-primary">
+                {patient.first_name[0]}{patient.last_name[0]}
+              </span>
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold">{patient.first_name} {patient.last_name}</h2>
+              <p className="text-muted-foreground">DNI: {patient.dni}</p>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <h3 className="font-semibold flex items-center gap-2">
+              <User className="w-4 h-4" />
+              Información Personal
+            </h3>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-muted-foreground">Fecha de Nacimiento:</span>
+                <p>{formattedBirthDate}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Email:</span>
+                <p>{patient.email}</p>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <h3 className="font-semibold flex items-center gap-2">
+              <Phone className="w-4 h-4" />
+              Contacto
+            </h3>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-muted-foreground">Teléfono:</span>
+                <p>{patient.phone_number || "No especificado"}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Ciudad:</span>
+                <p>{patient.city || "No especificada"}</p>
+              </div>
+              <div className="col-span-2">
+                <span className="text-muted-foreground">Dirección:</span>
+                <p>{patient.address || "No especificada"}</p>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <h3 className="font-semibold flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Obra Social
+            </h3>
+            <div className="text-sm space-y-2">
+              <div>
+                <span className="text-muted-foreground">Plan:</span>
+                <p>
+                  {patient.health_plan 
+                    ? `${patient.health_plan.health_insurance.name} - ${patient.health_plan.name}`
+                    : "Particular"
+                  }
+                </p>
+              </div>
+              {patient.membership_number && (
+                <div>
+                  <span className="text-muted-foreground">N° de Afiliado:</span>
+                  <p>{patient.membership_number}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Cerrar
+          </Button>
+          <Button onClick={onEdit}>
+            Editar Paciente
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
