@@ -12,11 +12,11 @@ import Calendar from "./pages/Calendar/Calendar";
 import { useAuth } from "@/hooks/useAuth"; 
 import PatientProfile from "./pages/PatientProfile/PatientProfile";
 import AdminHome from "./pages/AdminHome/AdminHome";
-import SuperAdminHome from "./pages/SuperAdminHome/SuperAdminHome"
 import AdminSchedule from "./pages/AdminSchedule/AdminSchedule";
 import PatientsPage from "./pages/PatientsPage/PatientsPage";
 import Availability from "./pages/Availability/Availability";
 import VisitsPage from "./pages/VisitPage/VisitPage";
+import SuperAdmin from "./pages/SuperAdmin/SuperAdmin";
 
 function App() {
 
@@ -25,7 +25,7 @@ function App() {
     if (!isLoggedIn) return <Home />;
     if (role === "user") return <UserHome />;
     if (role === "admin") return <AdminHome />;
-    if (role === "superadmin") return <SuperAdminHome />;
+    if (role === "superadmin") return <SuperAdmin />;
   };
 
   return (

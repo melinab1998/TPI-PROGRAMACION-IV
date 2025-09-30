@@ -32,7 +32,11 @@ export default function NavBar() {
         </div>
 
         <div className="flex gap-4 items-center">
-          <Link to="/"><Button variant="ghost">Inicio</Button></Link>
+          <Link to="/">
+            <Button variant="ghost">
+              {role === "superadmin" ? "Gestión" : "Inicio"}
+            </Button>
+          </Link>
 
           {isLoggedIn ? (
             <>
@@ -54,8 +58,6 @@ export default function NavBar() {
 
               {role === "superadmin" && (
                 <>
-                  <Link to="/super-panel"><Button variant="ghost">Panel Root</Button></Link>
-                  <Link to="/system-config"><Button variant="ghost">Config Sistema</Button></Link>
                 </>
               )}
 
