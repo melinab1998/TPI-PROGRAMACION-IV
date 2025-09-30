@@ -15,6 +15,7 @@ import AdminHome from "./pages/AdminHome/AdminHome";
 import SuperAdminHome from "./pages/SuperAdminHome/SuperAdminHome"
 import AdminSchedule from "./pages/AdminSchedule/AdminSchedule";
 import PatientsPage from "./pages/PatientsPage/PatientsPage";
+import Availability from "./pages/Availability/Availability";
 
 function App() {
 
@@ -39,6 +40,7 @@ function App() {
         <Route path="profile" element={<PatientProfile/>}/>
         <Route path="schedule" element={<AdminSchedule/>}/>
         <Route path="patients" element={<PatientsPage/>}/>
+        <Route path="availability" element={<Availability/>}/>
       </Route>
     </Routes>
   );
