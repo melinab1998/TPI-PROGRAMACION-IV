@@ -6,6 +6,8 @@ import { Search, Plus } from "lucide-react"
 import PatientDetailModal from "@/components/Patients/PatientDetailModal/PatientDetailModal"
 import PatientFormModal from "@/components/Patients/PatientFormModal/PatientFormModal"
 import PatientsList from "@/components/Patients/PatientsList/PatientsList"
+import PatientVisitsModal from "@/components/Patients/PatientVisitsModal/PatientVisitsModal"
+
 
 const mockPatients = [
   {
@@ -549,6 +551,13 @@ export default function PatientsPage() {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
   const [selectedPatient, setSelectedPatient] = useState(null)
   const [editingPatient, setEditingPatient] = useState(null)
+  const [isVisitsModalOpen, setIsVisitsModalOpen] = useState(false)
+  const [selectedPatientForVisits, setSelectedPatientForVisits] = useState(null)
+
+  const handleViewVisits = (patient) => {
+    setSelectedPatientForVisits(patient)
+    setIsVisitsModalOpen(true)
+  }
 
   const filteredPatients = mockPatients.filter(patient =>
     patient.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -617,6 +626,7 @@ export default function PatientsPage() {
             patients={filteredPatients}
             onView={handleViewPatient}
             onEdit={handleEditPatient}
+            onViewVisits={handleViewVisits}
           />
         </CardContent>
       </Card>
@@ -641,6 +651,14 @@ export default function PatientsPage() {
           setIsDetailModalOpen(false)
           handleEditPatient(selectedPatient)
         }}
+      />
+      <PatientVisitsModal
+        open={isVisitsModalOpen}
+        onClose={() => {
+          setIsVisitsModalOpen(false)
+          setSelectedPatientForVisits(null)
+        }}
+        patient={selectedPatientForVisits}
       />
     </div>
   )

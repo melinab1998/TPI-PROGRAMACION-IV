@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Eye, Edit, ChevronLeft, ChevronRight } from "lucide-react"
+import { Eye, Edit, ChevronLeft, ChevronRight, FileText } from "lucide-react"
 
-export default function PatientsList({ patients, onView, onEdit }) {
+export default function PatientsList({ patients, onView, onEdit, onViewVisits }) {
     const [currentPage, setCurrentPage] = useState(1)
-    const patientsPerPage = 5 
+    const patientsPerPage = 5
 
     if (patients.length === 0) {
         return (
@@ -14,7 +14,6 @@ export default function PatientsList({ patients, onView, onEdit }) {
         )
     }
 
-
     const totalPages = Math.ceil(patients.length / patientsPerPage)
     const startIndex = (currentPage - 1) * patientsPerPage
     const currentPatients = patients.slice(startIndex, startIndex + patientsPerPage)
@@ -23,10 +22,7 @@ export default function PatientsList({ patients, onView, onEdit }) {
         <div className="space-y-4">
             <div className="space-y-3">
                 {currentPatients.map((patient) => (
-                    <div
-                        key={patient.id_user}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/20"
-                    >
+                    <div key={patient.id_user} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/20">
                         <div className="flex-1">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
@@ -49,7 +45,6 @@ export default function PatientsList({ patients, onView, onEdit }) {
                                 </div>
                             </div>
                         </div>
-
                         <div className="flex items-center gap-2">
                             <Button
                                 variant="outline"
@@ -59,6 +54,15 @@ export default function PatientsList({ patients, onView, onEdit }) {
                             >
                                 <Eye className="w-4 h-4" />
                                 Ver
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => onViewVisits(patient)}
+                                className="flex items-center gap-2"
+                            >
+                                <FileText className="w-4 h-4" />
+                                Registros
                             </Button>
                             <Button
                                 variant="outline"
@@ -73,6 +77,7 @@ export default function PatientsList({ patients, onView, onEdit }) {
                     </div>
                 ))}
             </div>
+
             {totalPages > 1 && (
                 <div className="flex items-center justify-between pt-4 border-t">
                     <div className="text-sm text-muted-foreground">
@@ -87,11 +92,9 @@ export default function PatientsList({ patients, onView, onEdit }) {
                         >
                             <ChevronLeft className="w-4 h-4" />
                         </Button>
-
                         <span className="text-sm">
                             Página {currentPage} de {totalPages}
                         </span>
-
                         <Button
                             variant="outline"
                             size="sm"
