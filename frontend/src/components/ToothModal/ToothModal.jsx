@@ -23,6 +23,12 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
         center: "Central"
     };
 
+    const customColors = {
+        blue: "#1E3A8A",
+        red: "#B22222",
+        green: "#2E7D32"
+    };
+
     const colors = {
         white: { label: "Sano", description: "Pieza sana" },
         blue: { label: "Restaurado", description: "Tratamiento existente" },
@@ -72,12 +78,11 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
                         {Object.entries(colors).map(([key, colorInfo]) => (
                             <div key={key} className="flex items-center gap-3 p-2 bg-white rounded-lg border border-gray-200">
                                 <div
-                                    className={`w-4 h-4 rounded-full border-2 flex-shrink-0 ${
-                                        key === "white" ? "bg-white border-gray-300" :
-                                        key === "blue" ? "bg-blue-500 border-blue-600" :
-                                        key === "red" ? "bg-red-500 border-red-600" :
-                                        "bg-green-500 border-green-600"
-                                    }`}
+                                    className="w-4 h-4 rounded-full border-2 flex-shrink-0"
+                                    style={{
+                                        backgroundColor: key === "white" ? "#FFFFFF" : customColors[key],
+                                        borderColor: key === "white" ? "#D1D5DB" : customColors[key]
+                                    }}
                                 />
                                 <div className="flex flex-col">
                                     <span className="font-semibold text-gray-800 text-xs">
@@ -100,11 +105,12 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
                             >
                                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
                                     <h3 className="font-semibold text-gray-800 text-base flex items-center gap-2">
-                                        <div className={`w-2 h-2 rounded-full ${
-                                            data.color === "blue" ? "bg-blue-500" :
-                                            data.color === "red" ? "bg-red-500" :
-                                            data.color === "green" ? "bg-green-500" : "bg-gray-300"
-                                        }`} />
+                                        <div
+                                            className="w-2 h-2 rounded-full"
+                                            style={{
+                                                backgroundColor: data.color === "white" ? "#D1D5DB" : customColors[data.color]
+                                            }}
+                                        />
                                         {sectionLabels[section]}
                                     </h3>
                                     <div className="flex gap-1">
@@ -112,16 +118,14 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
                                             <button
                                                 key={c}
                                                 onClick={() => handleColorChange(section, c)}
-                                                className={`w-7 h-7 rounded-full border-2 transition-all duration-150 transform hover:scale-110 ${
-                                                    data.color === c 
-                                                        ? "ring-2 ring-primary ring-offset-1 scale-110" 
+                                                className={`w-7 h-7 rounded-full border-2 transition-all duration-150 transform hover:scale-110 ${data.color === c
+                                                        ? "ring-2 ring-primary ring-offset-1 scale-110"
                                                         : "border-gray-300 hover:border-gray-400"
-                                                } ${
-                                                    c === "white" ? "bg-white" :
-                                                    c === "blue" ? "bg-blue-500" :
-                                                    c === "red" ? "bg-red-500" :
-                                                    "bg-green-500"
-                                                }`}
+                                                    }`}
+                                                style={{
+                                                    backgroundColor: c === "white" ? "#FFFFFF" : customColors[c],
+                                                    borderColor: c === "white" ? "#D1D5DB" : customColors[c]
+                                                }}
                                                 title={colors[c].description}
                                             />
                                         ))}
