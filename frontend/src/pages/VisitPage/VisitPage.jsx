@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Search, Calendar, User, Clock, Plus, FileText } from "lucide-react"
+import Odontogram from "@/components/Odontogram/Odontogram/Odontogram"
 
 const mockTurns = [
     {
@@ -58,7 +59,8 @@ export default function VisitsPage() {
         treatment: "",
         diagnosis: "",
         notes: "",
-        prescription: ""
+        prescription: "",
+        odontogramData: {} // <-- agregamos estado para odontograma
     })
 
     const filteredTurns = turns.filter(turn =>
@@ -79,14 +81,16 @@ export default function VisitsPage() {
                 treatment: existingRecord.treatment,
                 diagnosis: existingRecord.diagnosis,
                 notes: existingRecord.notes,
-                prescription: existingRecord.prescription
+                prescription: existingRecord.prescription,
+                odontogramData: existingRecord.odontogramData || {}
             })
         } else {
             setVisitData({
                 treatment: "",
                 diagnosis: "",
                 notes: "",
-                prescription: ""
+                prescription: "",
+                odontogramData: {}
             })
         }
 
@@ -100,9 +104,15 @@ export default function VisitsPage() {
         }))
     }
 
+    const handleOdontogramChange = (data) => {
+        setVisitData(prev => ({
+            ...prev,
+            odontogramData: data
+        }))
+    }
+
     const handleSubmitVisit = async () => {
         if (!selectedTurn) return
-
         setIsSubmitting(true)
 
         try {
@@ -125,10 +135,10 @@ export default function VisitsPage() {
             } else {
                 setVisitRecords(prev => [...prev, newVisitRecord])
             }
+
             setShowVisitForm(false)
             setSelectedTurn(null)
             alert("Registro de visita guardado exitosamente")
-
         } catch (error) {
             console.error("Error guardando el registro:", error)
             alert("Error al guardar el registro")
@@ -157,6 +167,8 @@ export default function VisitsPage() {
                     <span>Total de turnos: {turns.length}</span>
                 </div>
             </div>
+
+            {/* Filtro */}
             <Card>
                 <CardContent className="p-4">
                     <div className="relative">
@@ -171,194 +183,145 @@ export default function VisitsPage() {
                 </CardContent>
             </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 space-y-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Clock className="w-5 h-5" />
-                                Turnos de Hoy
-                            </CardTitle>
-                            <CardDescription>
-                                Pacientes con turno para hoy
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-0">
-                            {filteredTurns.length === 0 ? (
-                                <div className="p-8 text-center text-muted-foreground">
-                                    <p>No hay turnos programados para hoy</p>
-                                </div>
-                            ) : (
-                                <div className="divide-y">
-                                    {filteredTurns.map((turn) => {
-                                        const visitRecord = getVisitRecordForTurn(turn.id_turn)
-
-                                        return (
-                                            <div
-                                                key={turn.id_turn}
-                                                className="p-4 hover:bg-muted/50 transition-colors"
-                                            >
-                                                <div className="flex items-start justify-between">
-                                                    <div className="space-y-2 flex-1">
-                                                        <div className="flex items-center gap-3">
-                                                            <h3 className="font-semibold text-lg">
-                                                                {turn.patient_name}
-                                                            </h3>
-                                                            {visitRecord && (
-                                                                <Badge variant="default" className="bg-green-100 text-green-800">
-                                                                    <FileText className="w-3 h-3 mr-1" />
-                                                                    Registrado
-                                                                </Badge>
-                                                            )}
-                                                        </div>
-
-                                                        <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-sm text-muted-foreground">
-                                                            <div className="flex items-center gap-2">
-                                                                <User className="w-4 h-4" />
-                                                                <span>DNI: {turn.patient_dni}</span>
-                                                            </div>
-                                                            <div className="flex items-center gap-2">
-                                                                <Clock className="w-4 h-4" />
-                                                                <span>Hora: {turn.scheduled_time}</span>
-                                                            </div>
-                                                        </div>
+            {/* Turnos de Hoy */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Clock className="w-5 h-5" /> Turnos de Hoy
+                    </CardTitle>
+                    <CardDescription>Pacientes con turno para hoy</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                    {filteredTurns.length === 0 ? (
+                        <div className="p-8 text-center text-muted-foreground">
+                            <p>No hay turnos programados para hoy</p>
+                        </div>
+                    ) : (
+                        <div className="divide-y">
+                            {filteredTurns.map((turn) => {
+                                const visitRecord = getVisitRecordForTurn(turn.id_turn)
+                                return (
+                                    <div
+                                        key={turn.id_turn}
+                                        className="p-4 hover:bg-muted/50 transition-colors"
+                                    >
+                                        <div className="flex items-start justify-between">
+                                            <div className="space-y-2 flex-1">
+                                                <div className="flex items-center gap-3">
+                                                    <h3 className="font-semibold text-lg">{turn.patient_name}</h3>
+                                                    {visitRecord && (
+                                                        <Badge variant="default" className="bg-green-100 text-green-800">
+                                                            <FileText className="w-3 h-3 mr-1" /> Registrado
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                                <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-sm text-muted-foreground">
+                                                    <div className="flex items-center gap-2">
+                                                        <User className="w-4 h-4" />
+                                                        <span>DNI: {turn.patient_dni}</span>
                                                     </div>
-
-                                                    <div className="flex flex-col gap-2 ml-4">
-                                                        <Button
-                                                            onClick={() => handleCreateVisitRecord(turn)}
-                                                            variant={visitRecord ? "outline" : "default"}
-                                                            size="sm"
-                                                            className="whitespace-nowrap"
-                                                        >
-                                                            {visitRecord ? (
-                                                                <>
-                                                                    <FileText className="w-4 h-4 mr-2" />
-                                                                    Ver/Editar
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <Plus className="w-4 h-4 mr-2" />
-                                                                    Crear Registro
-                                                                </>
-                                                            )}
-                                                        </Button>
+                                                    <div className="flex items-center gap-2">
+                                                        <Clock className="w-4 h-4" />
+                                                        <span>Hora: {turn.scheduled_time}</span>
                                                     </div>
                                                 </div>
                                             </div>
-                                        )
-                                    })}
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                </div>
-                {showVisitForm && selectedTurn && (
-                    <div className="space-y-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <FileText className="w-5 h-5" />
-                                    {getVisitRecordForTurn(selectedTurn.id_turn) ? "Editar" : "Nuevo"} Registro
-                                </CardTitle>
-                                <CardDescription>
-                                    Para {selectedTurn.patient_name} - {selectedTurn.scheduled_time}
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="treatment">Tratamiento Realizado</Label>
-                                    <Textarea
-                                        id="treatment"
-                                        placeholder="Describa el tratamiento realizado..."
-                                        value={visitData.treatment}
-                                        onChange={(e) => handleInputChange("treatment", e.target.value)}
-                                        rows={3}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="diagnosis">Diagnóstico</Label>
-                                    <Textarea
-                                        id="diagnosis"
-                                        placeholder="Establezca el diagnóstico..."
-                                        value={visitData.diagnosis}
-                                        onChange={(e) => handleInputChange("diagnosis", e.target.value)}
-                                        rows={3}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="notes">Notas Adicionales</Label>
-                                    <Textarea
-                                        id="notes"
-                                        placeholder="Observaciones, recomendaciones, etc..."
-                                        value={visitData.notes}
-                                        onChange={(e) => handleInputChange("notes", e.target.value)}
-                                        rows={3}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="prescription">Prescripción Médica</Label>
-                                    <Textarea
-                                        id="prescription"
-                                        placeholder="Medicamentos, dosis, frecuencia..."
-                                        value={visitData.prescription}
-                                        onChange={(e) => handleInputChange("prescription", e.target.value)}
-                                        rows={3}
-                                    />
-                                </div>
-
-                                <div className="flex gap-2 pt-4">
-                                    <Button
-                                        onClick={handleSubmitVisit}
-                                        disabled={isSubmitting}
-                                        className="flex-1"
-                                    >
-                                        {isSubmitting ? "Guardando..." : "Guardar Registro"}
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => {
-                                            setShowVisitForm(false)
-                                            setSelectedTurn(null)
-                                        }}
-                                        disabled={isSubmitting}
-                                    >
-                                        Cancelar
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-                )}
-                {!showVisitForm && (
-                    <div className="space-y-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Resumen del Día</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="text-center p-3 rounded-lg">
-                                        <div className="text-2xl font-bold">
-                                            {turns.length}
+                                            <div className="flex flex-col gap-2 ml-4">
+                                                <Button
+                                                    onClick={() => handleCreateVisitRecord(turn)}
+                                                    variant={visitRecord ? "outline" : "default"}
+                                                    size="sm"
+                                                    className="whitespace-nowrap"
+                                                >
+                                                    {visitRecord ? (
+                                                        <>
+                                                            <FileText className="w-4 h-4 mr-2" /> Ver/Editar
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Plus className="w-4 h-4 mr-2" /> Crear Registro
+                                                        </>
+                                                    )}
+                                                </Button>
+                                            </div>
                                         </div>
-                                        <div className="text-sm">Total Turnos</div>
                                     </div>
-                                    <div className="text-center p-3 bg-green-50 rounded-lg">
-                                        <div className="text-2xl font-bold">
-                                            {visitRecords.length}
-                                        </div>
-                                        <div className="text-sm">Registros Completados</div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-                )}
-            </div>
+                                )
+                            })}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
+            {/* Formulario de Nuevo/Edición de Registro */}
+            {showVisitForm && selectedTurn && (
+                <Card className="w-full">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <FileText className="w-5 h-5" />
+                            {getVisitRecordForTurn(selectedTurn.id_turn) ? "Editar" : "Nuevo"} Registro
+                        </CardTitle>
+                        <CardDescription>
+                            Para {selectedTurn.patient_name} - {selectedTurn.scheduled_time}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {/* Campos de texto */}
+                        {["treatment", "diagnosis", "notes", "prescription"].map((field) => (
+                            <div className="space-y-2" key={field}>
+                                <Label htmlFor={field}>
+                                    {field === "treatment" && "Tratamiento Realizado"}
+                                    {field === "diagnosis" && "Diagnóstico"}
+                                    {field === "notes" && "Notas Adicionales"}
+                                    {field === "prescription" && "Prescripción Médica"}
+                                </Label>
+                                <Textarea
+                                    id={field}
+                                    placeholder={`Ingrese ${field}...`}
+                                    value={visitData[field]}
+                                    onChange={(e) => handleInputChange(field, e.target.value)}
+                                    rows={3}
+                                />
+                            </div>
+                        ))}
+
+                        {/* Odontograma */}
+                        <div className="space-y-2">
+                            <Label>Odontograma del Paciente</Label>
+                            <Odontogram
+                                initialData={visitData.odontogramData}
+                                onSave={handleOdontogramChange}
+                            />
+                        </div>
+
+                        {/* Botones */}
+                        <div className="flex justify-end gap-2 pt-4">
+    <Button
+        variant="outline"
+        onClick={() => {
+            setShowVisitForm(false)
+            setSelectedTurn(null)
+        }}
+        disabled={isSubmitting}
+        className="px-6 py-2"
+    >
+        Cancelar
+    </Button>
+
+    <Button
+        onClick={handleSubmitVisit}
+        disabled={isSubmitting}
+        className="px-6 py-2"
+    >
+        {isSubmitting ? "Guardando..." : "Guardar Registro"}
+    </Button>
+</div>
+
+
+                    </CardContent>
+                </Card>
+            )}
         </div>
+
     )
 }
