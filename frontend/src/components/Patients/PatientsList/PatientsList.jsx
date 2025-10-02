@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Eye, Edit, ChevronLeft, ChevronRight, FileText, Tooth } from "lucide-react"
+import { Eye, Edit, ChevronLeft, ChevronRight, FileText, Stethoscope } from "lucide-react"
 
 export default function PatientsList({ patients, onView, onEdit, onViewVisits, onViewOdontogram }) {
     const [currentPage, setCurrentPage] = useState(1)
@@ -54,16 +54,6 @@ export default function PatientsList({ patients, onView, onEdit, onViewVisits, o
                             >
                                 <Eye className="w-4 h-4" />
                                 Ver
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onViewOdontogram(patient)}
-                                className="flex items-center gap-2"
-                                title="Ver odontograma (solo lectura)"
-                            >
-                                <Tooth className="w-4 h-4" />
-                                Odontograma
                             </Button>
                             <Button
                                 variant="outline"

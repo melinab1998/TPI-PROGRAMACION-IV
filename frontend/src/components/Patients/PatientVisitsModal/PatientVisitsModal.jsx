@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Calendar, Clock, FileText, Tooth } from "lucide-react"
+import { Calendar, Clock, FileText } from "lucide-react"
 import { format, parseISO } from "date-fns"
 import { es } from "date-fns/locale"
 import PatientOdontogramModal from "../PatientOdontogramModal/PatientOdontogramModal"
@@ -38,13 +38,11 @@ export default function PatientVisitsModal({ open, onClose, patient }) {
                     </DialogHeader>
 
                     <div className="flex justify-end mb-4 gap-2">
-                        <Button 
-                            size="sm" 
+                        <Button
+                            size="sm"
                             onClick={() => setIsOdontogramOpen(true)}
                             variant="outline"
-                            className="flex items-center gap-2"
                         >
-                            <Tooth className="w-4 h-4" />
                             Ver Odontograma
                         </Button>
                     </div>
