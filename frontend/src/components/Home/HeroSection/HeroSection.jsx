@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { ClipboardCheck, Phone, Heart, ShieldCheck, Award } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 export default function HeroSection() {
     return (
@@ -29,14 +30,18 @@ export default function HeroSection() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button size="lg" className="px-8 py-6 text-lg font-semibold">
-                            <ClipboardCheck className="mr-2 h-5 w-5" />
-                            Agendar Turno
-                        </Button>
-                        <Button variant="outline" size="lg" className="px-8 py-6 text-lg">
-                            <Phone className="mr-2 h-5 w-5" />
-                            Llamar ahora
-                        </Button>
+                        <Link to="/login">
+                            <Button size="lg" className="px-8 py-6 text-lg font-semibold">
+                                <ClipboardCheck className="mr-2 h-5 w-5" />
+                                Agendar Turno
+                            </Button>
+                        </Link>
+                        <a href="tel:+543413902086">
+                            <Button variant="outline" size="lg" className="px-8 py-6 text-lg">
+                                <Phone className="mr-2 h-5 w-5" />
+                                Llamar ahora
+                            </Button>
+                        </a>
                     </div>
                 </motion.div>
 

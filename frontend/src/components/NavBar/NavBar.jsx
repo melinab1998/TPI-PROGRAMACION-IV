@@ -13,27 +13,20 @@ export default function NavBar() {
 
   return (
     <nav className="w-full border-b border-[var(--border)] bg-[var(--card)]">
-      <div className="max-w-6xl mx-auto px-4 py-5 flex justify-between items-center">
+      <div className="max-w-6xl mx-auto px-4 py-8 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <img
             src={theme === "dark" ? logoDark : logoLight}
             alt="Logo clínica"
-            className="h-12 w-auto mt-1 mb-1 filter-none"
+            className="h-12 w-auto"
           />
-          <span
-            className="hidden md:inline text-lg font-bold bg-clip-text text-transparent"
-            style={{
-              backgroundImage:
-                "linear-gradient(90deg, var(--primary) 0%, #00baba 50%, var(--primary) 100%)",
-            }}
-          >
-            TURNANDO
+          <span className="text-2xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent tracking-tight">
+            Turnando
           </span>
         </div>
-
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-3 items-center">
           <Link to="/">
-            <Button variant="ghost">
+            <Button variant="ghost" size="sm">
               {role === "superadmin" ? "Gestión" : "Inicio"}
             </Button>
           </Link>
@@ -42,35 +35,28 @@ export default function NavBar() {
             <>
               {role === "user" && (
                 <>
-                  <Link to="/appointments"><Button variant="ghost">Turnos</Button></Link>
-                  <Link to="/profile"><Button variant="ghost">Mi Perfil</Button></Link>
+                  <Link to="/appointments"><Button variant="ghost" size="sm">Turnos</Button></Link>
+                  <Link to="/profile"><Button variant="ghost" size="sm">Mi Perfil</Button></Link>
                 </>
               )}
-
               {role === "admin" && (
                 <>
-                  <Link to="/schedule"><Button variant="ghost">Agenda</Button></Link>
-                  <Link to="/patients"><Button variant="ghost">Pacientes</Button></Link>
-                  <Link to="/visit-record"><Button variant="ghost">Visitas</Button></Link>
-                  <Link to="/availability"><Button variant="ghost">Horarios</Button></Link>
+                  <Link to="/schedule"><Button variant="ghost" size="sm">Agenda</Button></Link>
+                  <Link to="/patients"><Button variant="ghost" size="sm">Pacientes</Button></Link>
+                  <Link to="/visit-record"><Button variant="ghost" size="sm">Visitas</Button></Link>
+                  <Link to="/availability"><Button variant="ghost" size="sm">Horarios</Button></Link>
                 </>
               )}
-
-              {role === "superadmin" && (
-                <>
-                </>
-              )}
-
-              <Button variant="outline" className="hidden md:inline" onClick={logout}>
+              <Button variant="outline" size="sm" onClick={logout}>
                 Cerrar sesión
               </Button>
             </>
           ) : (
             <>
-              <Link to="/services"><Button variant="ghost">Servicios</Button></Link>
-              <Link to="/contact"><Button variant="ghost">Contacto</Button></Link>
+              <Link to="/services"><Button variant="ghost" size="sm">Servicios</Button></Link>
+              <Link to="/contact"><Button variant="ghost" size="sm">Contacto</Button></Link>
               <Link to="/login">
-                <Button variant="outline" className="hidden md:inline">
+                <Button variant="outline" size="sm">
                   Iniciar sesión
                 </Button>
               </Link>

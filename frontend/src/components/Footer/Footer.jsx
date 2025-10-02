@@ -1,5 +1,5 @@
 import React from "react";
-import { Phone, Mail, MapPin, Facebook, Instagram } from "lucide-react"; 
+import { Phone, Mail, MapPin, Facebook, Instagram } from "lucide-react";
 import { FaXTwitter } from 'react-icons/fa6';
 
 export default function Footer() {
@@ -47,16 +47,31 @@ export default function Footer() {
                 <div className="mt-12 pt-8 border-t">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex gap-4">
-                            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                            <a
+                                href="https://www.facebook.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-muted-foreground hover:text-primary transition-colors"
+                            >
                                 <Facebook className="w-5 h-5" />
                                 <span className="sr-only">Facebook</span>
                             </a>
-                            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                            <a
+                                href="https://www.instagram.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-muted-foreground hover:text-primary transition-colors"
+                            >
                                 <Instagram className="w-5 h-5" />
                                 <span className="sr-only">Instagram</span>
                             </a>
-                            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                                <FaXTwitter className="w-5 h-5" />  
+                            <a
+                                href="https://www.x.com"  
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-muted-foreground hover:text-primary transition-colors"
+                            >
+                                <FaXTwitter className="w-5 h-5" />
                                 <span className="sr-only">X</span>
                             </a>
                         </div>
