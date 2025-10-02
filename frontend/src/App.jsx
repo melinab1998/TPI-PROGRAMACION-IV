@@ -17,6 +17,8 @@ import PatientsPage from "./pages/PatientsPage/PatientsPage";
 import Availability from "./pages/Availability/Availability";
 import VisitsPage from "./pages/VisitPage/VisitPage";
 import SuperAdmin from "./pages/SuperAdmin/SuperAdmin";
+import ForgotPassword from "./components/ForgotPassword/ForgotPasswordForm/ForgotPasswordForm";
+import ResetPassword from "./components/ForgotPassword/ResetPasswordForm/ResetPasswordForm";
 
 function App() {
 
@@ -43,6 +45,8 @@ function App() {
         <Route path="patients" element={<PatientsPage/>}/>
         <Route path="availability" element={<Availability/>}/>
         <Route path="visit-record" element={<VisitsPage/>}/>
+        <Route path="forgot-password" element={<ForgotPassword/>}/>
+        <Route path="reset-password" element={<ResetPassword/>}/>
       </Route>
     </Routes>
   );
