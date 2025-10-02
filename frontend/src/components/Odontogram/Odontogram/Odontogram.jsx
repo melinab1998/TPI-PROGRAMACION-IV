@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import Tooth from "../Tooth/Tooth";
 import ToothModal from "../ToothModal/ToothModal";
 
-const Odontogram = () => {
+const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
     const [selectedTooth, setSelectedTooth] = useState(null);
-    const [toothData, setToothData] = useState({});
+    const [toothData, setToothData] = useState(initialData);
 
     const topRowRight = ["18", "17", "16", "15", "14", "13", "12", "11"];
     const topRowLeft = ["21", "22", "23", "24", "25", "26", "27", "28"];
@@ -16,14 +16,26 @@ const Odontogram = () => {
     const bottomChildLeft = ["71", "72", "73", "74", "75"];
 
     const handleToothClick = (toothNumber) => {
+        if (readOnly) {
+            // En modo solo lectura, no hacer nada o mostrar información
+            return;
+        }
         setSelectedTooth(toothNumber);
     };
 
     const handleSaveToothData = (toothNumber, data) => {
-        setToothData((prev) => ({
-            ...prev,
+        const newToothData = {
+            ...toothData,
             [toothNumber]: data,
-        }));
+        };
+        
+        setToothData(newToothData);
+        
+        // Notificar al componente padre si existe onSave
+        if (onSave) {
+            onSave(newToothData);
+        }
+        
         setSelectedTooth(null);
     };
 
@@ -35,16 +47,18 @@ const Odontogram = () => {
         const observations = [];
 
         Object.entries(toothData).forEach(([toothNumber, data]) => {
-            Object.entries(data.sections).forEach(([section, sectionData]) => {
-                if (sectionData.color !== "white" && sectionData.observation) {
-                    observations.push({
-                        toothNumber,
-                        section,
-                        color: sectionData.color,
-                        observation: sectionData.observation,
-                    });
-                }
-            });
+            if (data && data.sections) {
+                Object.entries(data.sections).forEach(([section, sectionData]) => {
+                    if (sectionData.color !== "white" && sectionData.observation) {
+                        observations.push({
+                            toothNumber,
+                            section,
+                            color: sectionData.color,
+                            observation: sectionData.observation,
+                        });
+                    }
+                });
+            }
         });
 
         return observations;
@@ -62,20 +76,18 @@ const Odontogram = () => {
 
     return (
         <div className="p-4 flex flex-col items-center">
-            <h1 className="text-2xl font-extrabold tracking-wide mb-8 mt-12 
-               text-center text-transparent bg-clip-text 
-               bg-gradient-to-r from-primary to-primary/70 
-               drop-shadow-sm">
+            <h1 className="text-2xl font-extrabold tracking-wide mb-8 mt-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70 drop-shadow-sm">
                 ODONTOGRAMA
             </h1>
 
-            <div className="flex mb-4">
+            <div className={`flex mb-4 ${readOnly ? 'opacity-80' : ''}`}>
                 {topRowRight.map((t) => (
                     <Tooth
                         key={t}
                         label={t}
                         data={toothData[t]}
                         onClick={() => handleToothClick(t)}
+                        readOnly={readOnly}
                     />
                 ))}
                 <div className="w-4" />
@@ -85,17 +97,19 @@ const Odontogram = () => {
                         label={t}
                         data={toothData[t]}
                         onClick={() => handleToothClick(t)}
+                        readOnly={readOnly}
                     />
                 ))}
             </div>
 
-            <div className="flex mb-8">
+            <div className={`flex mb-8 ${readOnly ? 'opacity-80' : ''}`}>
                 {bottomRowRight.map((t) => (
                     <Tooth
                         key={t}
                         label={t}
                         data={toothData[t]}
                         onClick={() => handleToothClick(t)}
+                        readOnly={readOnly}
                     />
                 ))}
                 <div className="w-4" />
@@ -105,17 +119,19 @@ const Odontogram = () => {
                         label={t}
                         data={toothData[t]}
                         onClick={() => handleToothClick(t)}
+                        readOnly={readOnly}
                     />
                 ))}
             </div>
 
-            <div className="flex mb-4">
+            <div className={`flex mb-4 ${readOnly ? 'opacity-80' : ''}`}>
                 {topChildRight.map((t) => (
                     <Tooth
                         key={t}
                         label={t}
                         data={toothData[t]}
                         onClick={() => handleToothClick(t)}
+                        readOnly={readOnly}
                     />
                 ))}
                 <div className="w-4" />
@@ -125,17 +141,19 @@ const Odontogram = () => {
                         label={t}
                         data={toothData[t]}
                         onClick={() => handleToothClick(t)}
+                        readOnly={readOnly}
                     />
                 ))}
             </div>
 
-            <div className="flex mb-8">
+            <div className={`flex mb-8 ${readOnly ? 'opacity-80' : ''}`}>
                 {bottomChildRight.map((t) => (
                     <Tooth
                         key={t}
                         label={t}
                         data={toothData[t]}
                         onClick={() => handleToothClick(t)}
+                        readOnly={readOnly}
                     />
                 ))}
                 <div className="w-4" />
@@ -145,41 +163,46 @@ const Odontogram = () => {
                         label={t}
                         data={toothData[t]}
                         onClick={() => handleToothClick(t)}
+                        readOnly={readOnly}
                     />
                 ))}
             </div>
 
-            <div className="flex flex-col gap-4 w-full max-w-3xl">
-                {observations.map((obs, index) => (
-                    <div
-                        key={index}
-                        className="bg-white p-4 rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-shadow w-full h-auto"
-                    >
-                        <div className="flex items-center mb-2">
-                            <div
-                                className="w-4 h-4 rounded-full mr-2 border"
-                                style={{
-                                    backgroundColor:
-                                        obs.color === "blue"
-                                            ? "#1E3A8A"
-                                            : obs.color === "red"
-                                                ? "#B22222"
-                                                : obs.color === "green"
-                                                    ? "#2E7D32"
-                                                    : "white"
-                                }}
-                            />
-                            <span className="font-semibold text-gray-700">
-                                Pieza {obs.toothNumber} - {sectionLabels[obs.section] || obs.section}
-                            </span>
+            {observations.length > 0 && (
+                <div className="flex flex-col gap-4 w-full max-w-3xl">
+                    <h3 className="font-semibold text-lg mb-2">Observaciones:</h3>
+                    {observations.map((obs, index) => (
+                        <div
+                            key={index}
+                            className="bg-white p-4 rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-shadow w-full h-auto"
+                        >
+                            <div className="flex items-center mb-2">
+                                <div
+                                    className="w-4 h-4 rounded-full mr-2 border"
+                                    style={{
+                                        backgroundColor:
+                                            obs.color === "blue"
+                                                ? "#1E3A8A"
+                                                : obs.color === "red"
+                                                    ? "#B22222"
+                                                    : obs.color === "green"
+                                                        ? "#2E7D32"
+                                                        : "white"
+                                    }}
+                                />
+                                <span className="font-semibold text-gray-700">
+                                    Pieza {obs.toothNumber} - {sectionLabels[obs.section] || obs.section}
+                                </span>
+                            </div>
+                            <p className="text-gray-600 break-words whitespace-pre-wrap">
+                                {obs.observation}
+                            </p>
                         </div>
-                        <p className="text-gray-600 break-words whitespace-pre-wrap">
-                            {obs.observation}
-                        </p>
-                    </div>
-                ))}
-            </div>
-            {selectedTooth && (
+                    ))}
+                </div>
+            )}
+
+            {selectedTooth && !readOnly && (
                 <ToothModal
                     toothNumber={selectedTooth}
                     initialData={toothData[selectedTooth]}

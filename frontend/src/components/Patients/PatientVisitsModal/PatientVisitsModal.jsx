@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Calendar, Clock, FileText } from "lucide-react"
+import { Calendar, Clock, FileText, Tooth } from "lucide-react"
 import { format, parseISO } from "date-fns"
 import { es } from "date-fns/locale"
 import PatientOdontogramModal from "../PatientOdontogramModal/PatientOdontogramModal"
@@ -14,16 +14,8 @@ const mockVisitRecords = [
         diagnosis: "Gingivitis leve, cálculo dental moderado",
         notes: "Paciente con buena higiene bucal general, necesita mejorar técnica de cepillado en molares",
         prescription: "Enjuague bucal con clorhexidina 0.12% 2 veces al día por 7 días. Cepillo interdental para limpieza de espacios.",
-        id_turn: 1
-    },
-    {
-        id_visit_record: 2,
-        visit_date: "2024-02-20T11:30:00Z",
-        treatment: "Control y revisión de evolución. Aplicación de sellantes en primeros molares.",
-        diagnosis: "Mejoría significativa de gingivitis. Sellantes preventivos indicados.",
-        notes: "Paciente mostró mejoría en técnica de cepillado. Recomendado control en 6 meses.",
-        prescription: "Continuar con enjuague bucal 1 vez al día por 30 días. Control en 6 meses.",
-        id_turn: 5
+        id_turn: 1,
+        odontogramData: {} // Datos del odontograma de esta visita
     }
 ]
 
@@ -37,7 +29,7 @@ export default function PatientVisitsModal({ open, onClose, patient }) {
     return (
         <>
             <Dialog open={open} onOpenChange={onClose}>
-                <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col">
+                <DialogContent className="sm:max-w-4xl max-h-[85vh] flex flex-col">
                     <DialogHeader className="flex-shrink-0">
                         <DialogTitle className="flex items-center gap-2">
                             <FileText className="w-5 h-5" />
@@ -45,8 +37,14 @@ export default function PatientVisitsModal({ open, onClose, patient }) {
                         </DialogTitle>
                     </DialogHeader>
 
-                    <div className="flex justify-end mb-2">
-                        <Button size="sm" onClick={() => setIsOdontogramOpen(true)}>
+                    <div className="flex justify-end mb-4 gap-2">
+                        <Button 
+                            size="sm" 
+                            onClick={() => setIsOdontogramOpen(true)}
+                            variant="outline"
+                            className="flex items-center gap-2"
+                        >
+                            <Tooth className="w-4 h-4" />
                             Ver Odontograma
                         </Button>
                     </div>
@@ -110,7 +108,7 @@ export default function PatientVisitsModal({ open, onClose, patient }) {
                 </DialogContent>
             </Dialog>
 
-            {/* Modal Odontograma */}
+            {/* Modal Odontograma - SOLO LECTURA */}
             <PatientOdontogramModal
                 open={isOdontogramOpen}
                 onClose={() => setIsOdontogramOpen(false)}

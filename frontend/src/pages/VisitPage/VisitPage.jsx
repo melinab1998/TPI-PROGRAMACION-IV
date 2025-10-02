@@ -287,12 +287,13 @@ export default function VisitsPage() {
 
                         {/* Odontograma */}
                         <div className="space-y-2">
-                            <Label>Odontograma del Paciente</Label>
-                            <Odontogram
-                                initialData={visitData.odontogramData}
-                                onSave={handleOdontogramChange}
-                            />
-                        </div>
+    <Label>Odontograma del Paciente</Label>
+    <Odontogram
+        initialData={visitData.odontogramData}
+        onSave={handleOdontogramChange}
+        readOnly={false} // EXPLÍCITAMENTE EDITABLE
+    />
+</div>
 
                         {/* Botones */}
                         <div className="flex justify-end gap-2 pt-4">

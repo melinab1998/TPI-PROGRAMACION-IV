@@ -7,6 +7,7 @@ import PatientDetailModal from "@/components/Patients/PatientDetailModal/Patient
 import PatientFormModal from "@/components/Patients/PatientFormModal/PatientFormModal"
 import PatientsList from "@/components/Patients/PatientsList/PatientsList"
 import PatientVisitsModal from "@/components/Patients/PatientVisitsModal/PatientVisitsModal"
+import PatientOdontogramModal from "@/components/Patients/PatientOdontogramModal/PatientOdontogramModal"
 
 
 const mockPatients = [
@@ -553,10 +554,17 @@ export default function PatientsPage() {
   const [editingPatient, setEditingPatient] = useState(null)
   const [isVisitsModalOpen, setIsVisitsModalOpen] = useState(false)
   const [selectedPatientForVisits, setSelectedPatientForVisits] = useState(null)
+  const [isOdontogramModalOpen, setIsOdontogramModalOpen] = useState(false)
+  const [selectedPatientForOdontogram, setSelectedPatientForOdontogram] = useState(null)
 
   const handleViewVisits = (patient) => {
     setSelectedPatientForVisits(patient)
     setIsVisitsModalOpen(true)
+  }
+
+  const handleViewOdontogram = (patient) => {
+    setSelectedPatientForOdontogram(patient)
+    setIsOdontogramModalOpen(true)
   }
 
   const filteredPatients = mockPatients.filter(patient =>
@@ -583,8 +591,10 @@ export default function PatientsPage() {
   const handleSavePatient = (patientData) => {
     if (patientData.id_user) {
       console.log("Actualizando paciente:", patientData)
+      // Aquí iría la lógica para actualizar el paciente
     } else {
       console.log("Creando nuevo paciente:", patientData)
+      // Aquí iría la lógica para crear nuevo paciente
     }
     setIsFormModalOpen(false)
     setEditingPatient(null)
@@ -592,6 +602,7 @@ export default function PatientsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold">Gestión de Pacientes</h1>
@@ -604,6 +615,8 @@ export default function PatientsPage() {
           Nuevo Paciente
         </Button>
       </div>
+
+      {/* Barra de búsqueda */}
       <Card>
         <CardContent className="p-6">
           <div className="relative">
@@ -617,6 +630,8 @@ export default function PatientsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Lista de pacientes */}
       <Card>
         <CardHeader>
           <CardTitle>Pacientes ({filteredPatients.length})</CardTitle>
@@ -627,9 +642,12 @@ export default function PatientsPage() {
             onView={handleViewPatient}
             onEdit={handleEditPatient}
             onViewVisits={handleViewVisits}
+            onViewOdontogram={handleViewOdontogram}
           />
         </CardContent>
       </Card>
+
+      {/* Modal de formulario de paciente */}
       <PatientFormModal
         open={isFormModalOpen}
         onClose={() => {
@@ -640,6 +658,8 @@ export default function PatientsPage() {
         patient={editingPatient}
         healthPlans={mockHealthPlans}
       />
+
+      {/* Modal de detalle de paciente */}
       <PatientDetailModal
         open={isDetailModalOpen}
         onClose={() => {
@@ -652,6 +672,8 @@ export default function PatientsPage() {
           handleEditPatient(selectedPatient)
         }}
       />
+
+      {/* Modal de visitas del paciente */}
       <PatientVisitsModal
         open={isVisitsModalOpen}
         onClose={() => {
@@ -659,6 +681,16 @@ export default function PatientsPage() {
           setSelectedPatientForVisits(null)
         }}
         patient={selectedPatientForVisits}
+      />
+
+      {/* Modal de odontograma del paciente (SOLO LECTURA) */}
+      <PatientOdontogramModal
+        open={isOdontogramModalOpen}
+        onClose={() => {
+          setIsOdontogramModalOpen(false)
+          setSelectedPatientForOdontogram(null)
+        }}
+        patient={selectedPatientForOdontogram}
       />
     </div>
   )
