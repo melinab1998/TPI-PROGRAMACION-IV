@@ -33,6 +33,33 @@ const mockDentists = [
         license_number: "MN-54321",
         status: "inactive",
         created_at: "2024-01-20"
+    },
+    {
+        id_user: 4,
+        first_name: "Pedro",
+        last_name: "Gómez",
+        email: "pedro.gomez@clinica.com",
+        license_number: "MN-98765",
+        status: "active",
+        created_at: "2024-03-05"
+    },
+    {
+        id_user: 5,
+        first_name: "Laura",
+        last_name: "Fernández",
+        email: "laura.fernandez@clinica.com",
+        license_number: "MN-13579",
+        status: "active",
+        created_at: "2024-03-10"
+    },
+    {
+        id_user: 6,
+        first_name: "Diego",
+        last_name: "Sánchez",
+        email: "diego.sanchez@clinica.com",
+        license_number: "MN-24680",
+        status: "inactive",
+        created_at: "2024-03-15"
     }
 ]
 
@@ -129,14 +156,15 @@ export default function SuperAdminPage() {
       
       <SearchBar searchTerm={searchTerm} onChange={setSearchTerm} />
       
-      <DentistList
-        dentists={filteredDentists}
-        onEdit={handleEditDentist}
-        onToggleStatus={handleToggleStatus}
-        searchTerm={searchTerm}
-        currentPage={currentPage}
-        itemsPerPage={itemsPerPage}
-      />
+     <DentistList
+  dentists={filteredDentists}
+  onEdit={handleEditDentist}
+  onToggleStatus={handleToggleStatus}
+  searchTerm={searchTerm}
+  currentPage={currentPage}
+  itemsPerPage={itemsPerPage}
+  onPageChange={setCurrentPage} 
+/>
 
       <DentistForm
         isOpen={isFormOpen}

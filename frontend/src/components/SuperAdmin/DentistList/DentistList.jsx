@@ -2,6 +2,7 @@ import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Users } from "lucide-react"
 import DentistItem from "../DentistItem/DentistItem"
+import Pagination from "@/components/Pagination/Pagination"
 
 export default function DentistList({ 
   dentists, 
@@ -9,10 +10,17 @@ export default function DentistList({
   onToggleStatus, 
   searchTerm,
   currentPage,
-  itemsPerPage 
+  itemsPerPage,
+  onPageChange 
 }) {
+  const totalPages = Math.ceil(dentists.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const currentDentists = dentists.slice(startIndex, startIndex + itemsPerPage)
+
+  const currentItemsCount = {
+    start: startIndex + 1,
+    end: Math.min(startIndex + itemsPerPage, dentists.length)
+  }
 
   return (
     <motion.div
@@ -39,17 +47,31 @@ export default function DentistList({
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-border/50">
-              {currentDentists.map((dentist, index) => (
-                <DentistItem
-                  key={dentist.id_user}
-                  dentist={dentist}
-                  index={index}
-                  onEdit={onEdit}
-                  onToggleStatus={onToggleStatus}
+            <>
+              <div className="divide-y divide-border/50">
+                {currentDentists.map((dentist, index) => (
+                  <DentistItem
+                    key={dentist.id_user}
+                    dentist={dentist}
+                    index={index}
+                    onEdit={onEdit}
+                    onToggleStatus={onToggleStatus}
+                  />
+                ))}
+              </div>
+              
+              {/* Paginación */}
+              <div className="p-6">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={onPageChange}
+                  totalItems={dentists.length}
+                  itemsPerPage={itemsPerPage}
+                  currentItemsCount={currentItemsCount}
                 />
-              ))}
-            </div>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

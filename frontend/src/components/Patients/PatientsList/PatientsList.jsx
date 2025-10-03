@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Eye, Edit, ChevronLeft, ChevronRight, FileText, Stethoscope } from "lucide-react"
+import { Eye, Edit, FileText, Stethoscope } from "lucide-react"
+import Pagination from "@/components/Pagination/Pagination"
 
 export default function PatientsList({ patients, onView, onEdit, onViewVisits, onViewOdontogram }) {
     const [currentPage, setCurrentPage] = useState(1)
@@ -17,6 +18,11 @@ export default function PatientsList({ patients, onView, onEdit, onViewVisits, o
     const totalPages = Math.ceil(patients.length / patientsPerPage)
     const startIndex = (currentPage - 1) * patientsPerPage
     const currentPatients = patients.slice(startIndex, startIndex + patientsPerPage)
+
+    const currentItemsCount = {
+        start: startIndex + 1,
+        end: Math.min(startIndex + patientsPerPage, patients.length)
+    }
 
     return (
         <div className="space-y-4">
@@ -78,34 +84,16 @@ export default function PatientsList({ patients, onView, onEdit, onViewVisits, o
                 ))}
             </div>
 
-            {totalPages > 1 && (
-                <div className="flex items-center justify-between pt-4 border-t">
-                    <div className="text-sm text-muted-foreground">
-                        Mostrando {startIndex + 1}-{Math.min(startIndex + patientsPerPage, patients.length)} de {patients.length} pacientes
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                            disabled={currentPage === 1}
-                        >
-                            <ChevronLeft className="w-4 h-4" />
-                        </Button>
-                        <span className="text-sm">
-                            Página {currentPage} de {totalPages}
-                        </span>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                            disabled={currentPage === totalPages}
-                        >
-                            <ChevronRight className="w-4 h-4" />
-                        </Button>
-                    </div>
-                </div>
-            )}
+            {/* Usas el mismo componente Pagination */}
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                totalItems={patients.length}
+                itemsPerPage={patientsPerPage}
+                currentItemsCount={currentItemsCount}
+                itemsName="pacientes" // Puedes hacerlo más flexible agregando esta prop
+            />
         </div>
     )
 }
