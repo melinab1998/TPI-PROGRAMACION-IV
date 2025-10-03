@@ -5,7 +5,9 @@ export default function Header({ onCreate }) {
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold mt-4 mb-2">Agenda de Turnos</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mt-4 mb-2">
+          Agenda de Turnos
+        </h1>
         <p className="text-sm text-muted-foreground">
           Gestiona y visualiza todos los turnos programados
         </p>

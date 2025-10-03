@@ -20,9 +20,9 @@ export default function AdminHome() {
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-10 space-y-10 max-w-6xl mx-auto">
+   <div className="px-4 sm:px-6 lg:px-8 py-10 space-y-10 max-w-6xl mx-auto">
       <header className="space-y-2 text-center sm:text-left">
-        <h1 className="text-3xl font-bold tracking-tight mb-2.5">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-2.5">
           ¡Bienvenida, {dentistName}!
         </h1>
         <p className="text-base text-muted-foreground">
