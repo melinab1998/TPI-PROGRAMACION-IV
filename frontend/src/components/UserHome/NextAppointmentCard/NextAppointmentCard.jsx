@@ -8,29 +8,33 @@ export default function NextAppointmentCard({ appointment }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     if (!appointment) {
-        return (
-            <Card className="group border-2 border-transparent hover:border-primary/20 transition-all duration-300 hover:shadow-lg bg-gradient-to-b from-background to-muted/10 overflow-hidden relative text-center py-8">
-                <CardContent className="space-y-6 p-6">
-                    <div className="bg-muted/50 p-4 rounded-full inline-flex border border-border/30 group-hover:scale-105 transition-transform duration-300">
-                        <Calendar className="h-8 w-8 text-muted-foreground" />
-                    </div>
-                    <div>
-                        <p className="text-muted-foreground text-lg font-medium">No tienes turnos programados</p>
-                        <p className="text-muted-foreground/70 text-sm mt-2">
-                            Reserva tu primera cita con nuestros especialistas
-                        </p>
-                    </div>
-                    <Button asChild size="sm" className="mt-2 gap-2 bg-primary hover:bg-primary/90">
-                        <Link to="/appointments" className="flex items-center">
-                            <span>Sacar mi primer turno</span>
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                    </Button>
-                </CardContent>
-            </Card>
-        );
-    }
-
+    return (
+        <Card className="group border-2 border-transparent hover:border-primary/20 transition-all duration-300 hover:shadow-lg bg-gradient-to-b from-background to-muted/10 overflow-hidden relative text-center py-8">
+            <CardContent className="space-y-6 p-6">
+                <div className="bg-muted/50 p-4 rounded-full inline-flex border border-border/30 group-hover:scale-105 transition-transform duration-300">
+                    <Calendar className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <div>
+                    <p className="text-muted-foreground text-lg font-medium">
+                        No tienes turnos programados
+                    </p>
+                    <p className="text-muted-foreground/70 text-sm mt-2">
+                        Reserva tu primera cita con nuestros especialistas
+                    </p>
+                </div>
+                <Button
+                    asChild
+                    size="lg"
+                    className="mt-2 bg-primary hover:bg-primary/90 text-base px-6 py-5 rounded-lg"
+                >
+                    <Link to="/appointments" className="flex items-center justify-center">
+                        Reservar mi primer turno
+                    </Link>
+                </Button>
+            </CardContent>
+        </Card>
+    );
+}
     return (
         <>
             <Card className="group border-2 border-transparent hover:border-primary/20 transition-all duration-300 hover:shadow-lg bg-gradient-to-b from-background to-muted/10 overflow-hidden relative">

@@ -5,7 +5,7 @@ import QuickActions from "@/components/UserHome/QuickActions/QuickActions";
 import { Sparkles, Calendar } from "lucide-react";
 
 export default function UserHome() {
-    const userData = {
+   const userData = {
         name: "María Gomez",
         nextAppointment: {
             date: "15 de Septiembre, 2024",
