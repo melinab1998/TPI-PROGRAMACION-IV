@@ -7,12 +7,11 @@ import { Sparkles, Calendar } from "lucide-react";
 export default function UserHome() {
     const userData = {
         name: "María Gomez",
-        nextAppointment: null /* {
+        nextAppointment: {
             date: "15 de Septiembre, 2024",
             time: "10:30 AM",
-            dentist: "Dr. Juan Pérez",
-            treatment: "Limpieza dental y revisión"
-        } */
+            dentist: "Dr. Juan Pérez"
+        } 
     };
 
     return (
@@ -37,19 +36,19 @@ export default function UserHome() {
                 </section>
                 
                 {/* Acciones rápidas */}
-                <section className="space-y-8">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded-full">
-                            <Sparkles className="h-5 w-5 text-primary" />
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-semibold text-foreground">Acciones rápidas</h2>
-                            <p className="text-muted-foreground">Accede rápidamente a las funciones principales</p>
-                        </div>
-                    </div>
+            <section className="space-y-8">
+  <div className="flex items-center gap-3">
+    <div className="p-2 bg-primary/10 rounded-full hover:bg-primary/20 transition-all duration-300">
+      <Sparkles className="h-5 w-5 text-primary" />
+    </div>
+    <div>
+      <h2 className="text-2xl font-semibold text-foreground">Acciones rápidas</h2>
+      <p className="text-muted-foreground">Accede rápidamente a las funciones principales</p>
+    </div>
+  </div>
 
-                    <QuickActions />
-                </section>
+  <QuickActions />
+</section>
             </div>
         </div>
     );

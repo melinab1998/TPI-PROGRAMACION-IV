@@ -7,20 +7,23 @@ export default function QuickActions() {
         {
             icon: Calendar,
             title: "Sacar turno",
-            description: "Reserva una nueva cita con nuestros especialistas",
-            link: "/appointments"
+            description: "Reserva una nueva cita",
+            link: "/appointments",
+            buttonLabel: "Reservar ahora"
         },
         {
             icon: History,
             title: "Historial",
-            description: "Revisa tu historial de visitas y tratamientos",
-            link: "/profile"
+            description: "Revisa tu historial de visitas",
+            link: "/profile",
+            buttonLabel: "Ver historial"
         },
         {
             icon: User,
             title: "Mi perfil",
-            description: "Gestiona tu información personal y preferencias",
-            link: "/profile"
+            description: "Gestiona tu información personal",
+            link: "/profile",
+            buttonLabel: "Editar perfil"
         },
     ];
 
@@ -32,3 +35,4 @@ export default function QuickActions() {
         </div>
     );
 }
+

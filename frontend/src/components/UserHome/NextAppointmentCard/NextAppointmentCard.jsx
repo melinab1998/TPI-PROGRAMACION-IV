@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, ArrowRight } from "lucide-react";
+import { Calendar, Clock, User, ArrowRight, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function NextAppointmentCard({ appointment }) {
@@ -9,18 +9,18 @@ export default function NextAppointmentCard({ appointment }) {
 
     if (!appointment) {
         return (
-            <Card className="shadow-lg text-center py-12 border-border/50 bg-gradient-to-br from-background to-muted/30 relative">
-                <CardContent className="space-y-6">
-                    <div className="bg-muted/50 p-5 rounded-full inline-flex border border-border/30">
-                        <Calendar className="h-10 w-10 text-muted-foreground" />
+            <Card className="group border-2 border-transparent hover:border-primary/20 transition-all duration-300 hover:shadow-lg bg-gradient-to-b from-background to-muted/10 overflow-hidden relative text-center py-8">
+                <CardContent className="space-y-6 p-6">
+                    <div className="bg-muted/50 p-4 rounded-full inline-flex border border-border/30 group-hover:scale-105 transition-transform duration-300">
+                        <Calendar className="h-8 w-8 text-muted-foreground" />
                     </div>
                     <div>
-                        <p className="text-muted-foreground text-lg">No tienes turnos programados</p>
-                        <p className="text-muted-foreground/70 text-sm mt-1">
+                        <p className="text-muted-foreground text-lg font-medium">No tienes turnos programados</p>
+                        <p className="text-muted-foreground/70 text-sm mt-2">
                             Reserva tu primera cita con nuestros especialistas
                         </p>
                     </div>
-                    <Button asChild size="lg" className="mt-2 gap-2 bg-primary hover:bg-primary/90">
+                    <Button asChild size="sm" className="mt-2 gap-2 bg-primary hover:bg-primary/90">
                         <Link to="/appointments" className="flex items-center">
                             <span>Sacar mi primer turno</span>
                             <ArrowRight className="ml-2 h-4 w-4" />
@@ -33,33 +33,40 @@ export default function NextAppointmentCard({ appointment }) {
 
     return (
         <>
-            <Card className="shadow-lg hover:shadow-xl transition-all duration-300 border-border/50 overflow-hidden group relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/3 opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
-                <CardContent className="p-8 relative flex flex-col md:flex-row items-center gap-8 z-10">
-                    <div className="bg-gradient-to-br from-primary to-primary/80 p-5 rounded-full shrink-0 shadow-md">
-                        <Calendar className="h-10 w-10 text-white" />
+            <Card className="group border-2 border-transparent hover:border-primary/20 transition-all duration-300 hover:shadow-lg bg-gradient-to-b from-background to-muted/10 overflow-hidden relative">
+                <CardContent className="p-6 flex flex-col md:flex-row items-center gap-6">
+                    {/* Icono */}
+                    <div className="bg-gradient-to-br from-primary to-primary/80 p-4 rounded-full group-hover:scale-105 transition-transform duration-300 shadow-md shrink-0">
+                        <Calendar className="h-7 w-7 text-white" />
                     </div>
 
-                    <div className="flex-1 text-center md:text-left">
-                        <p className="font-bold text-2xl text-foreground">{appointment.date}</p>
-                        <p className="text-muted-foreground mt-2">{appointment.treatment}</p>
+                    {/* Información principal */}
+                    <div className="flex-1 text-center md:text-left space-y-3">
+                        <div>
+                            <p className="font-semibold text-xl text-foreground">{appointment.date}</p>
+                        </div>
 
-                        <div className="flex flex-wrap gap-3 mt-4 justify-center md:justify-start">
-                            <span className="inline-flex items-center px-4 py-2 text-sm rounded-full bg-primary/10 text-primary border border-primary/20 backdrop-blur-sm">
-                                <Clock className="h-4 w-4 mr-2" /> {appointment.time}
+                        <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                            <span className="inline-flex items-center px-3 py-1.5 text-xs rounded-full bg-primary/10 text-primary border border-primary/20">
+                                <Clock className="h-3.5 w-3.5 mr-1.5" />
+                                {appointment.time}
                             </span>
-                            <span className="inline-flex items-center px-4 py-2 text-sm rounded-full bg-primary/10 text-primary border border-primary/20 backdrop-blur-sm">
-                                <User className="h-4 w-4 mr-2" /> {appointment.dentist}
+                            <span className="inline-flex items-center px-3 py-1.5 text-xs rounded-full bg-primary/10 text-primary border border-primary/20">
+                                <User className="h-3.5 w-3.5 mr-1.5" />
+                                {appointment.dentist}
                             </span>
                         </div>
                     </div>
 
-                    <div className="flex flex-col gap-4 p-5 shrink-0">
+                    {/* Acciones */}
+                    <div className="flex flex-col gap-3 shrink-0 w-full md:w-auto">
                         <Button
                             size="sm"
-                            className="min-w-[120px] h-9 gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md transition-all duration-200 group shadow-sm"
+                            variant="outline"
+                            className="h-9 gap-2 text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/50 rounded-md transition-all duration-200 text-sm w-full md:w-28"
                             onClick={() => setIsModalOpen(true)}
                         >
+                            <X className="h-4 w-4" />
                             <span>Cancelar</span>
                         </Button>
                     </div>
@@ -68,22 +75,27 @@ export default function NextAppointmentCard({ appointment }) {
 
             {/* Modal de confirmación */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                    <div className="bg-background p-6 rounded-lg shadow-lg w-80 text-center space-y-4">
-                        <p className="text-lg font-medium text-foreground">
-                            ¿Seguro deseas cancelar el turno?
-                        </p>
-                        <div className="flex justify-between gap-4 mt-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                    <div className="bg-background p-6 rounded-lg shadow-lg w-80 space-y-5 border border-border">
+                        <div className="text-center space-y-2">
+                            <div className="mx-auto w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center">
+                                <X className="h-6 w-6 text-destructive" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-foreground">¿Cancelar turno?</h3>
+                            <p className="text-muted-foreground text-sm">
+                                Esta acción no se puede deshacer
+                            </p>
+                        </div>
+                        
+                        <div className="flex gap-3">
                             <Button
-                                size="sm"
                                 variant="outline"
                                 className="flex-1"
                                 onClick={() => setIsModalOpen(false)}
                             >
-                                No
+                                Conservar
                             </Button>
                             <Button
-                                size="sm"
                                 variant="destructive"
                                 className="flex-1"
                                 onClick={() => {
