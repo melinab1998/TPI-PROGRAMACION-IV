@@ -12,7 +12,7 @@ export default function StatsCards({ total, active }) {
               <Users className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <div className="text-2xl font-bold">{total}</div>
+              <div className="text-2xl font-bold text-primary">{total}</div>
               <div className="text-sm text-muted-foreground">Total Dentistas</div>
             </div>
           </CardContent>
@@ -22,11 +22,11 @@ export default function StatsCards({ total, active }) {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
         <Card className="group border-2 hover:border-primary/20 hover:shadow-lg transition-all bg-gradient-to-b from-background to-muted/10">
           <CardContent className="p-6 flex items-center gap-4">
-            <div className="p-3 bg-green-500/10 rounded-full group-hover:scale-110 transition-transform">
-              <UserCheck className="w-6 h-6 text-green-600" />
+            <div className="p-3 bg-primary/10 rounded-full group-hover:scale-110 transition-transform">
+              <UserCheck className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-green-600">{active}</div>
+              <div className="text-2xl font-bold text-primary">{active}</div>
               <div className="text-sm text-muted-foreground">Activos</div>
             </div>
           </CardContent>

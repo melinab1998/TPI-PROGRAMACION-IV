@@ -62,7 +62,7 @@ export default function DentistItem({ dentist, index, onEdit, onToggleStatus }) 
             className={`flex items-center gap-2 transition-all ${
               dentist.status === "active"
                 ? "text-red-600 hover:bg-red-600 hover:text-white border-red-200"
-                : "text-green-600 hover:bg-green-600 hover:text-white border-green-200"
+                : "text-primary hover:bg-primary hover:text-white border-primary/20"
             }`}
           >
             <Trash2 className="w-4 h-4" />
