@@ -150,40 +150,36 @@ export default function VisitsPage() {
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
             {/* Header */}
-         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-  <div>
-    <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-      Visitas del Día
-    </h1>
-    <p className="text-muted-foreground mt-1">
-      {new Date().toLocaleDateString('es-ES', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })}
-    </p>
-  </div>
-  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-    <Calendar className="w-4 h-4" />
-    <span>Total de turnos: {turns.length}</span>
-  </div>
-</div>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                        Visitas del Día
+                    </h1>
+                    <p className="text-muted-foreground mt-1">
+                        {new Date().toLocaleDateString('es-ES', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        })}
+                    </p>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="w-4 h-4" />
+                    <span>Total de turnos: {turns.length}</span>
+                </div>
+            </div>
 
             {/* Filtro */}
-            <Card>
-                <CardContent className="p-4">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Buscar por nombre o DNI del paciente..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-10"
-                        />
-                    </div>
-                </CardContent>
-            </Card>
+            <div className="relative w-full">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                    placeholder="Buscar por nombre o DNI del paciente..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 w-full"
+                />
+            </div>
 
             {/* Turnos de Hoy */}
             <Card>
@@ -212,7 +208,7 @@ export default function VisitsPage() {
                                                 <div className="flex items-center gap-3">
                                                     <h3 className="font-semibold text-lg">{turn.patient_name}</h3>
                                                     {visitRecord && (
-                                                        <Badge variant="default" className="bg-green-100 text-green-800">
+                                                        <Badge variant="default" className="bg-primary/10 text-primary">
                                                             <FileText className="w-3 h-3 mr-1" /> Registrado
                                                         </Badge>
                                                     )}
@@ -289,36 +285,36 @@ export default function VisitsPage() {
 
                         {/* Odontograma */}
                         <div className="space-y-2">
-    <Label>Odontograma del Paciente</Label>
-    <Odontogram
-        initialData={visitData.odontogramData}
-        onSave={handleOdontogramChange}
-        readOnly={false} // EXPLÍCITAMENTE EDITABLE
-    />
-</div>
+                            <Label>Odontograma del Paciente</Label>
+                            <Odontogram
+                                initialData={visitData.odontogramData}
+                                onSave={handleOdontogramChange}
+                                readOnly={false} // EXPLÍCITAMENTE EDITABLE
+                            />
+                        </div>
 
                         {/* Botones */}
                         <div className="flex justify-end gap-2 pt-4">
-    <Button
-        variant="outline"
-        onClick={() => {
-            setShowVisitForm(false)
-            setSelectedTurn(null)
-        }}
-        disabled={isSubmitting}
-        className="px-6 py-2"
-    >
-        Cancelar
-    </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    setShowVisitForm(false)
+                                    setSelectedTurn(null)
+                                }}
+                                disabled={isSubmitting}
+                                className="px-6 py-2"
+                            >
+                                Cancelar
+                            </Button>
 
-    <Button
-        onClick={handleSubmitVisit}
-        disabled={isSubmitting}
-        className="px-6 py-2"
-    >
-        {isSubmitting ? "Guardando..." : "Guardar Registro"}
-    </Button>
-</div>
+                            <Button
+                                onClick={handleSubmitVisit}
+                                disabled={isSubmitting}
+                                className="px-6 py-2"
+                            >
+                                {isSubmitting ? "Guardando..." : "Guardar Registro"}
+                            </Button>
+                        </div>
 
 
                     </CardContent>

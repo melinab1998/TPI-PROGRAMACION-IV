@@ -619,19 +619,15 @@ export default function PatientsPage() {
 </div>
 
       {/* Barra de búsqueda */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por nombre, apellido o DNI..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-        </CardContent>
-      </Card>
+   <div className="relative w-full">
+  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+  <Input
+    placeholder="Buscar por nombre, apellido o DNI..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="pl-9 w-full"
+  />
+</div>
 
       {/* Lista de pacientes */}
       <Card>
