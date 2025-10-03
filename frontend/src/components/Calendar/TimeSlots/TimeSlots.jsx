@@ -1,5 +1,6 @@
 import React from "react"
 import { format } from "date-fns"
+import { es } from "date-fns/locale"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 
@@ -11,7 +12,7 @@ export default function TimeSlots({ date, doctorAvailability, time, setTime }) {
             <div className="border rounded-lg p-5 h-full bg-card">
                 <div className="mb-5 pb-3 border-b">
                     <p className="text-lg font-semibold text-center">
-                        {format(date, "EEEE, d 'de' MMMM", { locale: undefined })}
+                        {format(date, "EEEE, d 'de' MMMM", { locale: es })}
                     </p>
                 </div>
 

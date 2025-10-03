@@ -5,14 +5,18 @@ import { es } from "date-fns/locale"
 import CalendarWidget from "@/components/Calendar/CalendarWidget/CalendarWidget"
 import TimeSlots from "@/components/Calendar/TimeSlots/TimeSlots"
 import BookingModal from "@/components/Calendar/BookingModal/BookingModal"
+import { motion } from "framer-motion"
 
 const availability = {
     1: {
-        "2025-09-10": ["08:00", "09:00", "10:00", "11:00"],
-        "2025-09-11": ["09:00", "10:00", "11:00", "12:00"],
-        "2025-09-15": ["08:00", "09:30", "11:00", "12:30"],
-        "2025-09-20": ["08:00", "09:00", "10:00", "11:00"],
-        "2025-09-21": ["09:00", "10:00", "11:00", "12:00", "13:00", "15:00", "16:00", "20:00"],
+        "2025-10-07": ["08:00", "09:00", "10:00", "11:00"],
+        "2025-10-08": ["09:00", "10:00", "11:00", "12:00"],
+        "2025-10-14": ["08:00", "09:30", "11:00", "12:30"],
+        "2025-10-18": ["08:00", "09:00", "10:00", "11:00"],
+        "2025-10-21": ["09:00", "10:00", "11:00", "12:00", "13:00", "15:00", "16:00", "20:00"],
+        "2025-10-25": ["10:00", "11:00", "14:00", "15:00", "16:00"],
+        "2025-10-28": ["08:30", "09:30", "10:30", "11:30", "13:00"],
+        "2025-10-30": ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00"],
     },
 }
 
@@ -49,9 +53,19 @@ export default function CalendarPage() {
 
     return (
         <div className="max-w-5xl mx-auto px-4 py-12">
-            <h2 className="text-2xl font-bold mb-8 text-center">
-                Disponibilidad de {doctor.name}
-            </h2>
+            {/* Header mejorado con gradiente y animación */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center mb-12"
+            >
+                <h2 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-4">
+                    Seleccionar Turno
+                </h2>
+                <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                    Elige la fecha y horario para tu cita con {doctor.name}
+                </p>
+            </motion.div>
 
             <div className="rounded-2xl border p-8 shadow-lg bg-card text-card-foreground">
                 <div className="flex max-md:flex-col gap-18">
