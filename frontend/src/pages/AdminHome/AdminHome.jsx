@@ -48,7 +48,6 @@ export default function AdminHome() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-10 space-y-10 max-w-6xl mx-auto">
-      {/* Header */}
       <header className="space-y-2 text-center sm:text-left">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent w-fit">
           ¡Bienvenida, {dentistName}!
@@ -62,8 +61,6 @@ export default function AdminHome() {
           })}
         </p>
       </header>
-
-      {/* Stats Cards - Como estaban antes */}
       <div className="flex justify-center">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-2xl w-full">
           <Card className="shadow-sm"> <CardContent className="flex flex-col items-center justify-center h-full p-6"> <Calendar className="w-8 h-8 text-primary mb-3" /> <div className="text-2xl font-bold text-primary"> {todayStats.total} </div> <div className="text-sm text-muted-foreground">Turnos hoy</div> </CardContent> </Card> <Card className="shadow-sm"> <CardContent className="flex flex-col items-center justify-center h-full p-6"> <Clock className="w-8 h-8 text-amber-500 mb-3" /> <div className="text-2xl font-bold text-amber-600"> {todayStats.pending} </div> <div className="text-sm text-muted-foreground">Pendientes</div> </CardContent> </Card> <Card className="shadow-sm"> <CardContent className="flex flex-col items-center justify-center h-full p-6"> <X className="w-8 h-8 text-red-500 mb-3" /> <div className="text-2xl font-bold text-red-600"> {todayStats.cancelled} </div> <div className="text-sm text-muted-foreground">Cancelados</div> </CardContent> </Card>
@@ -71,7 +68,6 @@ export default function AdminHome() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Próximo Turno - Más alto */}
         <Card className="shadow-lg min-h-[260px] flex flex-col">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-xl font-semibold">
@@ -123,8 +119,6 @@ export default function AdminHome() {
             )}
           </CardContent>
         </Card>
-
-        {/* Accesos Rápidos - Más alto */}
         <Card className="shadow-lg min-h-[260px] flex flex-col">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl font-semibold">

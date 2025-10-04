@@ -207,7 +207,7 @@ export default function Availability() {
                         <div
                           key={index}
                           className="text-xs px-2 py-1 rounded 
-             bg-primary/90 text-primary-foreground"
+                          bg-primary/90 text-primary-foreground"
                         >
                           {avail.start_time} - {avail.end_time}
                         </div>

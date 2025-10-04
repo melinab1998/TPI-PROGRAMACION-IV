@@ -33,7 +33,6 @@ export default function Appointments() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-16">
-      {/* Header con animaciones */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

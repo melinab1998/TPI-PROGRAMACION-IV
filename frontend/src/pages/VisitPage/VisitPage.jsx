@@ -60,7 +60,7 @@ export default function VisitsPage() {
         diagnosis: "",
         notes: "",
         prescription: "",
-        odontogramData: {} // <-- agregamos estado para odontograma
+        odontogramData: {}
     })
 
     const filteredTurns = turns.filter(turn =>
@@ -149,7 +149,6 @@ export default function VisitsPage() {
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-            {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mt-4">
@@ -169,8 +168,6 @@ export default function VisitsPage() {
                     <span>Total de turnos: {turns.length}</span>
                 </div>
             </div>
-
-            {/* Filtro */}
             <div className="relative w-full">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -180,8 +177,6 @@ export default function VisitsPage() {
                     className="pl-10 w-full"
                 />
             </div>
-
-            {/* Turnos de Hoy */}
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -250,8 +245,6 @@ export default function VisitsPage() {
                     )}
                 </CardContent>
             </Card>
-
-            {/* Formulario de Nuevo/Edición de Registro */}
             {showVisitForm && selectedTurn && (
                 <Card className="w-full">
                     <CardHeader>
@@ -264,7 +257,6 @@ export default function VisitsPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        {/* Campos de texto */}
                         {["treatment", "diagnosis", "notes", "prescription"].map((field) => (
                             <div className="space-y-2" key={field}>
                                 <Label htmlFor={field}>
@@ -282,18 +274,14 @@ export default function VisitsPage() {
                                 />
                             </div>
                         ))}
-
-                        {/* Odontograma */}
                         <div className="space-y-2">
                             <Label>Odontograma del Paciente</Label>
                             <Odontogram
                                 initialData={visitData.odontogramData}
                                 onSave={handleOdontogramChange}
-                                readOnly={false} // EXPLÍCITAMENTE EDITABLE
+                                readOnly={false}
                             />
                         </div>
-
-                        {/* Botones */}
                         <div className="flex justify-end gap-2 pt-4">
                             <Button
                                 variant="outline"
@@ -315,8 +303,6 @@ export default function VisitsPage() {
                                 {isSubmitting ? "Guardando..." : "Guardar Registro"}
                             </Button>
                         </div>
-
-
                     </CardContent>
                 </Card>
             )}

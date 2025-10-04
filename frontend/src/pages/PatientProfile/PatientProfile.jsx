@@ -13,14 +13,11 @@ export default function PatientProfile() {
     email: "maria.gonzalez@example.com"
   });
 
-const [appointments] = useState([
+  const [appointments] = useState([
     { id: 1, date: "15/08/2023", time: "10:30", dentist: "Dra. Laura Martínez" },
     { id: 2, date: "22/06/2023", time: "16:00", dentist: "Dr. Carlos Rodríguez" },
     { id: 3, date: "10/04/2023", time: "11:15", dentist: "Dra. Laura Martínez" }
-]);
-
-  //const [appointments] = useState([]);
-  
+  ]);
 
   const handleEmailUpdate = (newEmail) => console.log("Nuevo email:", newEmail);
   const handlePasswordUpdate = (newPassword) => console.log("Nueva contraseña:", newPassword);

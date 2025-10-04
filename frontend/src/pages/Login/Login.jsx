@@ -16,7 +16,7 @@ export default function Login() {
   };
 
   return (
-      <div className="flex items-center justify-center min-h-[90vh]">
+    <div className="flex items-center justify-center min-h-[90vh]">
       <Card className="w-full max-w-md shadow-lg rounded-2xl">
         <CardHeader>
           <CardTitle className="text-center text-2xl font-bold">

@@ -150,24 +150,24 @@ export default function SuperAdminPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 py-4 space-y-4">
-      {/* Header */}
+
       <Header onCreate={handleCreateDentist} />
 
-      {/* Stats */}
-      <StatsCards 
-        total={totalDentists} 
-        active={activeDentists} 
+
+      <StatsCards
+        total={totalDentists}
+        active={activeDentists}
         className="text-sm p-4 gap-3"
       />
 
-      {/* Search */}
-      <SearchBar 
-        searchTerm={searchTerm} 
-        onChange={setSearchTerm} 
+
+      <SearchBar
+        searchTerm={searchTerm}
+        onChange={setSearchTerm}
         className="text-sm p-2"
       />
 
-      {/* Lista de Dentistas */}
+
       <DentistList
         dentists={filteredDentists}
         onEdit={handleEditDentist}
@@ -179,7 +179,7 @@ export default function SuperAdminPage() {
         className="text-sm gap-2"
       />
 
-      {/* Formulario */}
+
       <DentistForm
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
@@ -190,7 +190,7 @@ export default function SuperAdminPage() {
         className="text-sm p-4"
       />
 
-      {/* Confirmación */}
+
       <ConfirmDialog
         isOpen={!!deleteConfirm}
         onClose={() => setDeleteConfirm(null)}

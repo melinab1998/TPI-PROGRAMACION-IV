@@ -591,10 +591,8 @@ export default function PatientsPage() {
   const handleSavePatient = (patientData) => {
     if (patientData.id_user) {
       console.log("Actualizando paciente:", patientData)
-      // Aquí iría la lógica para actualizar el paciente
     } else {
       console.log("Creando nuevo paciente:", patientData)
-      // Aquí iría la lógica para crear nuevo paciente
     }
     setIsFormModalOpen(false)
     setEditingPatient(null)
@@ -602,34 +600,31 @@ export default function PatientsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-  <div>
-    <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mt-4">
-      Gestión de Pacientes
-    </h1>
-    <p className="text-muted-foreground mt-1">
-      Administra la información de tus pacientes
-    </p>
-  </div>
-  <Button onClick={handleCreatePatient} className="flex items-center gap-2">
-    <Plus className="w-4 h-4" />
-    Nuevo Paciente
-  </Button>
-</div>
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mt-4">
+            Gestión de Pacientes
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Administra la información de tus pacientes
+          </p>
+        </div>
+        <Button onClick={handleCreatePatient} className="flex items-center gap-2">
+          <Plus className="w-4 h-4" />
+          Nuevo Paciente
+        </Button>
+      </div>
 
-      {/* Barra de búsqueda */}
-   <div className="relative w-full">
-  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-  <Input
-    placeholder="Buscar por nombre, apellido o DNI..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    className="pl-9 w-full"
-  />
-</div>
+      <div className="relative w-full">
+        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Buscar por nombre, apellido o DNI..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-9 w-full"
+        />
+      </div>
 
-      {/* Lista de pacientes */}
       <Card>
         <CardHeader>
           <CardTitle>Pacientes ({filteredPatients.length})</CardTitle>
@@ -645,7 +640,6 @@ export default function PatientsPage() {
         </CardContent>
       </Card>
 
-      {/* Modal de formulario de paciente */}
       <PatientFormModal
         open={isFormModalOpen}
         onClose={() => {
@@ -657,7 +651,6 @@ export default function PatientsPage() {
         healthPlans={mockHealthPlans}
       />
 
-      {/* Modal de detalle de paciente */}
       <PatientDetailModal
         open={isDetailModalOpen}
         onClose={() => {
@@ -671,7 +664,6 @@ export default function PatientsPage() {
         }}
       />
 
-      {/* Modal de visitas del paciente */}
       <PatientVisitsModal
         open={isVisitsModalOpen}
         onClose={() => {
@@ -681,7 +673,6 @@ export default function PatientsPage() {
         patient={selectedPatientForVisits}
       />
 
-      {/* Modal de odontograma del paciente (SOLO LECTURA) */}
       <PatientOdontogramModal
         open={isOdontogramModalOpen}
         onClose={() => {
