@@ -3,6 +3,12 @@ import Header from "@/components/UserHome/Header/Header";
 import NextAppointmentCard from "@/components/UserHome/NextAppointmentCard/NextAppointmentCard";
 import QuickActions from "@/components/UserHome/QuickActions/QuickActions";
 import { Sparkles, Calendar } from "lucide-react";
+import { motion } from "framer-motion";
+
+const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+};
 
 export default function UserHome() {
     const userData = {
@@ -17,38 +23,58 @@ export default function UserHome() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
             <div className="max-w-6xl mx-auto px-4 py-12 space-y-16 relative z-10">
-                <Header userName={userData.name} />
-
-                <section className="space-y-6">
+                <motion.div initial="hidden" animate="show" variants={fadeInUp}>
+                    <Header userName={userData.name} />
+                </motion.div>
+                <motion.section
+                    className="space-y-6"
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true }}
+                    variants={fadeInUp}
+                >
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded-full">
+                        <motion.div
+                            className="p-2 bg-primary/10 rounded-full"
+                            whileHover={{ scale: 1.1 }}
+                        >
                             <Calendar className="h-5 w-5 text-primary" />
-                        </div>
+                        </motion.div>
                         <div>
                             <h2 className="text-2xl font-semibold text-foreground">Próximo turno</h2>
                             <p className="text-muted-foreground">Aquí verás tu próxima cita programada</p>
                         </div>
                     </div>
 
-                    <NextAppointmentCard appointment={userData.nextAppointment} />
-                </section>
-
-                <section className="space-y-8">
+                    <motion.div initial="hidden" animate="show" variants={fadeInUp}>
+                        <NextAppointmentCard appointment={userData.nextAppointment} />
+                    </motion.div>
+                </motion.section>
+                <motion.section
+                    className="space-y-8"
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true }}
+                    variants={fadeInUp}
+                >
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded-full hover:bg-primary/20 transition-all duration-300">
+                        <motion.div
+                            className="p-2 bg-primary/10 rounded-full"
+                            whileHover={{ scale: 1.1, backgroundColor: "rgba(59,130,246,0.2)" }}
+                        >
                             <Sparkles className="h-5 w-5 text-primary" />
-                        </div>
+                        </motion.div>
                         <div>
                             <h2 className="text-2xl font-semibold text-foreground">Acciones rápidas</h2>
                             <p className="text-muted-foreground">Accede rápidamente a las funciones principales</p>
                         </div>
                     </div>
 
-                    <QuickActions />
-                </section>
+                    <motion.div initial="hidden" animate="show" variants={fadeInUp}>
+                        <QuickActions />
+                    </motion.div>
+                </motion.section>
             </div>
         </div>
     );
 }
-
-
