@@ -5,8 +5,16 @@ import { es } from "date-fns/locale"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Button } from "@/components/ui/button"
+import { toastHelper } from "@/utils/notifications"
 
 export default function BookingModal({ time, date, doctor, formData, setFormData, handleSubmit, setTime }) {
+    
+    const handleConfirmSubmit = (e) => {
+        e.preventDefault()
+        toastHelper.success("Turno confirmado correctamente")
+        handleSubmit(e)
+    }
+
     return (
         <motion.div
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
@@ -36,7 +44,7 @@ export default function BookingModal({ time, date, doctor, formData, setFormData
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleConfirmSubmit} className="space-y-5">
                     <div className="space-y-5">
                         <Label className="text-base">Motivo del turno</Label>
                         <RadioGroup

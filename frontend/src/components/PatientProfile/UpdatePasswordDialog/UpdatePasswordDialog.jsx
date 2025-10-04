@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
+import { toastHelper } from "@/utils/notifications";
 
 export default function UpdatePasswordDialog({ onUpdate }) {
     const [open, setOpen] = useState(false);
@@ -12,8 +13,14 @@ export default function UpdatePasswordDialog({ onUpdate }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        
         onUpdate(newPassword);
+        toastHelper.success("Contraseña actualizada correctamente");
         setOpen(false);
+        
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
     };
 
     const inputs = [

@@ -46,7 +46,6 @@ export default function CalendarPage() {
             time,
             ...formData,
         })
-        alert("Turno reservado con éxito!")
         setTime(null)
         setFormData({ email: "", motivoConsulta: "Consulta" })
     }
