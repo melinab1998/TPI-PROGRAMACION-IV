@@ -82,17 +82,17 @@ export default function Availability() {
   }
 
   return (
-<div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-    <div>
-      <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mt-4">
-        Configuración de Horarios
-      </h1>
-      <p className="text-muted-foreground mt-1">
-        Establece tus horarios de atención semanales
-      </p>
-    </div>
-  </div>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mt-4">
+            Configuración de Horarios
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Establece tus horarios de atención semanales
+          </p>
+        </div>
+      </div>
       <Card>
         <CardHeader>
           <CardTitle>Horarios de Atención</CardTitle>
@@ -207,7 +207,7 @@ export default function Availability() {
                         <div
                           key={index}
                           className="text-xs px-2 py-1 rounded 
-             bg-primary text-primary-foreground"
+             bg-primary/90 text-primary-foreground"
                         >
                           {avail.start_time} - {avail.end_time}
                         </div>
@@ -224,7 +224,11 @@ export default function Availability() {
       </Card>
 
       <div className="flex justify-center">
-        <Button onClick={handleSave} size="lg" className="px-8">
+        <Button
+          onClick={handleSave}
+          size="lg"
+          className="px-8 bg-primary/90 hover:bg-primary"
+        >
           Guardar Horarios
         </Button>
       </div>
