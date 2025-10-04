@@ -7,60 +7,60 @@ import DentistForm from "@/components/SuperAdmin/DentistForm/DentistForm"
 import ConfirmDialog from "@/components/SuperAdmin/ConfirmDialog/ConfirmDialog"
 
 const mockDentists = [
-    {
-        id_user: 1,
-        first_name: "María",
-        last_name: "López",
-        email: "maria.lopez@clinica.com",
-        license_number: "MN-12345",
-        status: "active",
-        created_at: "2024-01-15"
-    },
-    {
-        id_user: 2,
-        first_name: "Carlos",
-        last_name: "Rodríguez",
-        email: "carlos.rodriguez@clinica.com",
-        license_number: "MN-67890",
-        status: "active",
-        created_at: "2024-02-10"
-    },
-    {
-        id_user: 3,
-        first_name: "Ana",
-        last_name: "Martínez",
-        email: "ana.martinez@clinica.com",
-        license_number: "MN-54321",
-        status: "inactive",
-        created_at: "2024-01-20"
-    },
-    {
-        id_user: 4,
-        first_name: "Pedro",
-        last_name: "Gómez",
-        email: "pedro.gomez@clinica.com",
-        license_number: "MN-98765",
-        status: "active",
-        created_at: "2024-03-05"
-    },
-    {
-        id_user: 5,
-        first_name: "Laura",
-        last_name: "Fernández",
-        email: "laura.fernandez@clinica.com",
-        license_number: "MN-13579",
-        status: "active",
-        created_at: "2024-03-10"
-    },
-    {
-        id_user: 6,
-        first_name: "Diego",
-        last_name: "Sánchez",
-        email: "diego.sanchez@clinica.com",
-        license_number: "MN-24680",
-        status: "inactive",
-        created_at: "2024-03-15"
-    }
+  {
+    id_user: 1,
+    first_name: "María",
+    last_name: "López",
+    email: "maria.lopez@clinica.com",
+    license_number: "MN-12345",
+    status: "active",
+    created_at: "2024-01-15"
+  },
+  {
+    id_user: 2,
+    first_name: "Carlos",
+    last_name: "Rodríguez",
+    email: "carlos.rodriguez@clinica.com",
+    license_number: "MN-67890",
+    status: "active",
+    created_at: "2024-02-10"
+  },
+  {
+    id_user: 3,
+    first_name: "Ana",
+    last_name: "Martínez",
+    email: "ana.martinez@clinica.com",
+    license_number: "MN-54321",
+    status: "inactive",
+    created_at: "2024-01-20"
+  },
+  {
+    id_user: 4,
+    first_name: "Pedro",
+    last_name: "Gómez",
+    email: "pedro.gomez@clinica.com",
+    license_number: "MN-98765",
+    status: "active",
+    created_at: "2024-03-05"
+  },
+  {
+    id_user: 5,
+    first_name: "Laura",
+    last_name: "Fernández",
+    email: "laura.fernandez@clinica.com",
+    license_number: "MN-13579",
+    status: "active",
+    created_at: "2024-03-10"
+  },
+  {
+    id_user: 6,
+    first_name: "Diego",
+    last_name: "Sánchez",
+    email: "diego.sanchez@clinica.com",
+    license_number: "MN-24680",
+    status: "inactive",
+    created_at: "2024-03-15"
+  }
 ]
 
 export default function SuperAdminPage() {
@@ -151,20 +151,20 @@ export default function SuperAdminPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <Header onCreate={handleCreateDentist} />
-      
+
       <StatsCards total={totalDentists} active={activeDentists} />
-      
+
       <SearchBar searchTerm={searchTerm} onChange={setSearchTerm} />
-      
-     <DentistList
-  dentists={filteredDentists}
-  onEdit={handleEditDentist}
-  onToggleStatus={handleToggleStatus}
-  searchTerm={searchTerm}
-  currentPage={currentPage}
-  itemsPerPage={itemsPerPage}
-  onPageChange={setCurrentPage} 
-/>
+
+      <DentistList
+        dentists={filteredDentists}
+        onEdit={handleEditDentist}
+        onToggleStatus={handleToggleStatus}
+        searchTerm={searchTerm}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+      />
 
       <DentistForm
         isOpen={isFormOpen}

@@ -50,7 +50,7 @@ export default function AdminHome() {
     <div className="px-4 sm:px-6 lg:px-8 py-10 space-y-10 max-w-6xl mx-auto">
       {/* Header */}
       <header className="space-y-2 text-center sm:text-left">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-2.5">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent w-fit">
           ¡Bienvenida, {dentistName}!
         </h1>
         <p className="text-base text-muted-foreground">
@@ -72,82 +72,82 @@ export default function AdminHome() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Próximo Turno - Más alto */}
-<Card className="shadow-lg min-h-[260px] flex flex-col">
-  <CardHeader className="pb-4">
-    <CardTitle className="flex items-center gap-2 text-xl font-semibold">
-      <ArrowRight className="w-6 h-6 text-primary" />
-      Próximo turno
-    </CardTitle>
-  </CardHeader>
-  <CardContent className="flex-1 space-y-6 flex flex-col justify-between">
-    {nextAppointment ? (
-      <>
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <User className="w-5 h-5 text-muted-foreground" />
-            <div>
-              <p className="font-semibold text-base">{nextAppointment.paciente}</p>
-              <p className="text-sm text-muted-foreground capitalize">{nextAppointment.tipo}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <CalendarDays className="w-5 h-5 text-muted-foreground" />
-            <div>
-              <p className="font-semibold text-base">{nextAppointment.hora}</p>
-              <p className="text-sm text-muted-foreground">{nextAppointment.fecha}</p>
-            </div>
-          </div>
-        </div>
-        <div className="pt-4 border-t">
-          <Link to="/schedule">
-            <Button variant="outline" className="w-full flex items-center gap-2">
-              <CalendarDays className="w-4 h-4" />
-              Ver Agenda Completa
-            </Button>
-          </Link>
-        </div>
-      </>
-    ) : (
-      <div className="flex flex-col flex-1 items-center justify-center text-center">
-        <CalendarDays className="w-12 h-12 text-muted-foreground mb-3 opacity-50" />
-        <p className="text-muted-foreground text-base mb-4">
-          No tienes turnos programados
-        </p>
-        <Link to="/schedule">
-          <Button className="flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            Crear Primer Turno
-          </Button>
-        </Link>
-      </div>
-    )}
-  </CardContent>
-</Card>
+        <Card className="shadow-lg min-h-[260px] flex flex-col">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-xl font-semibold">
+              <ArrowRight className="w-6 h-6 text-primary" />
+              Próximo turno
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex-1 space-y-6 flex flex-col justify-between">
+            {nextAppointment ? (
+              <>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <User className="w-5 h-5 text-muted-foreground" />
+                    <div>
+                      <p className="font-semibold text-base">{nextAppointment.paciente}</p>
+                      <p className="text-sm text-muted-foreground capitalize">{nextAppointment.tipo}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CalendarDays className="w-5 h-5 text-muted-foreground" />
+                    <div>
+                      <p className="font-semibold text-base">{nextAppointment.hora}</p>
+                      <p className="text-sm text-muted-foreground">{nextAppointment.fecha}</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="pt-4 border-t">
+                  <Link to="/schedule">
+                    <Button variant="outline" className="w-full flex items-center gap-2">
+                      <CalendarDays className="w-4 h-4" />
+                      Ver Agenda Completa
+                    </Button>
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col flex-1 items-center justify-center text-center">
+                <CalendarDays className="w-12 h-12 text-muted-foreground mb-3 opacity-50" />
+                <p className="text-muted-foreground text-base mb-4">
+                  No tienes turnos programados
+                </p>
+                <Link to="/schedule">
+                  <Button className="flex items-center gap-2">
+                    <Plus className="w-4 h-4" />
+                    Crear Primer Turno
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-{/* Accesos Rápidos - Más alto */}
-<Card className="shadow-lg min-h-[260px] flex flex-col">
-  <CardHeader>
-    <CardTitle className="flex items-center gap-2 text-xl font-semibold">
-      <Rocket className="w-6 h-6 text-primary" />
-      Accesos Rápidos
-    </CardTitle>
-  </CardHeader>
-  <CardContent className="flex-1 flex items-center">
-    <div className="grid grid-cols-2 gap-4 w-full">
-      {quickActions.map((action, index) => (
-        <Link key={index} to={action.href} className="block">
-          <div className="p-4 text-center bg-muted/20 hover:bg-muted/40 rounded-lg transition-all duration-300 cursor-pointer border border-transparent hover:border-primary/20">
-            <div className="p-2 bg-primary/10 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-              <action.icon className="w-6 h-6 text-primary" />
+        {/* Accesos Rápidos - Más alto */}
+        <Card className="shadow-lg min-h-[260px] flex flex-col">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl font-semibold">
+              <Rocket className="w-6 h-6 text-primary" />
+              Accesos Rápidos
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex-1 flex items-center">
+            <div className="grid grid-cols-2 gap-4 w-full">
+              {quickActions.map((action, index) => (
+                <Link key={index} to={action.href} className="block">
+                  <div className="p-4 text-center bg-muted/20 hover:bg-muted/40 rounded-lg transition-all duration-300 cursor-pointer border border-transparent hover:border-primary/20">
+                    <div className="p-2 bg-primary/10 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+                      <action.icon className="w-6 h-6 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-sm mb-1">{action.title}</h3>
+                    <p className="text-xs text-muted-foreground">{action.description}</p>
+                  </div>
+                </Link>
+              ))}
             </div>
-            <h3 className="font-semibold text-sm mb-1">{action.title}</h3>
-            <p className="text-xs text-muted-foreground">{action.description}</p>
-          </div>
-        </Link>
-      ))}
-    </div>
-  </CardContent>
-</Card>
+          </CardContent>
+        </Card>
 
       </div>
     </div>
