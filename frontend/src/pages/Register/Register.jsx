@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, User, Mail, CreditCard, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { toastHelper } from "@/utils/notifications";
 
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
@@ -14,6 +15,12 @@ export default function Register() {
     const fieldVariants = {
         hidden: { opacity: 0, y: 20 },
         visible: { opacity: 1, y: 0 }
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        toastHelper.success("¡Registro exitoso!");
+        e.target.reset();
     };
 
     return (
@@ -33,7 +40,7 @@ export default function Register() {
                 </CardHeader>
 
                 <CardContent>
-                    <form className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <form className="grid grid-cols-1 md:grid-cols-2 gap-5" onSubmit={handleSubmit}>
                         <motion.div
                             className="space-y-4"
                             initial="hidden"
@@ -49,6 +56,7 @@ export default function Register() {
                                         type="text"
                                         placeholder="Juan"
                                         className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
+                                        required
                                     />
                                 </div>
                             </motion.div>
@@ -62,6 +70,7 @@ export default function Register() {
                                         type="text"
                                         placeholder="Pérez"
                                         className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
+                                        required
                                     />
                                 </div>
                             </motion.div>
@@ -75,6 +84,7 @@ export default function Register() {
                                         type="text"
                                         placeholder="12345678"
                                         className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
+                                        required
                                     />
                                 </div>
                             </motion.div>
@@ -95,6 +105,7 @@ export default function Register() {
                                         type="email"
                                         placeholder="ejemplo@email.com"
                                         className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
+                                        required
                                     />
                                 </div>
                             </motion.div>
@@ -108,6 +119,7 @@ export default function Register() {
                                         type={showPassword ? "text" : "password"}
                                         placeholder="********"
                                         className="pl-10 pr-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
+                                        required
                                     />
                                     <Button
                                         type="button"
@@ -131,6 +143,7 @@ export default function Register() {
                                         type={showConfirmPassword ? "text" : "password"}
                                         placeholder="********"
                                         className="pl-10 pr-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
+                                        required
                                     />
                                     <Button
                                         type="button"

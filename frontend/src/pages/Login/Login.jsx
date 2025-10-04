@@ -16,7 +16,6 @@ export default function Login() {
     navigate("/");
   };
 
-  // Variants para animaciones en cascada
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {

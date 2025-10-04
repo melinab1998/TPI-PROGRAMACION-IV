@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion"; 
 import ServiceCard from "@/components/Services/ServiceCard/ServiceCard";
 import ServiceModal from "@/components/Services/ServiceModal/ServiceModal";
 import { GiToothbrush } from "react-icons/gi";
@@ -32,10 +32,23 @@ export default function ServicesPage() {
   return (
     <section className="max-w-7xl mx-auto px-4 py-16 sm:py-20">
       <div className="text-center mb-16">
-        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Nuestros Servicios</h2>
-        <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+        <motion.h2
+          className="text-3xl font-bold tracking-tight sm:text-4xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          Nuestros Servicios
+        </motion.h2>
+
+        <motion.p
+          className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+        >
           Descubre nuestra amplia gama de tratamientos odontológicos especializados.
-        </p>
+        </motion.p>
       </div>
 
       {Object.entries(servicesByCategory).map(([category, categoryServices]) => (
