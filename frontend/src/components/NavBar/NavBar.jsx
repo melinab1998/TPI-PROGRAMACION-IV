@@ -26,7 +26,7 @@ export default function NavBar() {
         </div>
         <div className="flex gap-3 items-center">
           <Link to="/">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="default" className="text-sm font-medium">
               {role === "superadmin" ? "Gestión" : "Inicio"}
             </Button>
           </Link>
@@ -35,28 +35,60 @@ export default function NavBar() {
             <>
               {role === "user" && (
                 <>
-                  <Link to="/appointments"><Button variant="ghost" size="sm">Turnos</Button></Link>
-                  <Link to="/profile"><Button variant="ghost" size="sm">Mi Perfil</Button></Link>
+                  <Link to="/appointments">
+                    <Button variant="ghost" size="default" className="text-sm font-medium">
+                      Turnos
+                    </Button>
+                  </Link>
+                  <Link to="/profile">
+                    <Button variant="ghost" size="default" className="text-sm font-medium">
+                      Mi Perfil
+                    </Button>
+                  </Link>
                 </>
               )}
               {role === "admin" && (
                 <>
-                  <Link to="/schedule"><Button variant="ghost" size="sm">Agenda</Button></Link>
-                  <Link to="/patients"><Button variant="ghost" size="sm">Pacientes</Button></Link>
-                  <Link to="/visit-record"><Button variant="ghost" size="sm">Visitas</Button></Link>
-                  <Link to="/availability"><Button variant="ghost" size="sm">Horarios</Button></Link>
+                  <Link to="/schedule">
+                    <Button variant="ghost" size="default" className="text-sm font-medium">
+                      Agenda
+                    </Button>
+                  </Link>
+                  <Link to="/patients">
+                    <Button variant="ghost" size="default" className="text-sm font-medium">
+                      Pacientes
+                    </Button>
+                  </Link>
+                  <Link to="/visit-record">
+                    <Button variant="ghost" size="default" className="text-sm font-medium">
+                      Visitas
+                    </Button>
+                  </Link>
+                  <Link to="/availability">
+                    <Button variant="ghost" size="default" className="text-sm font-medium">
+                      Horarios
+                    </Button>
+                  </Link>
                 </>
               )}
-              <Button variant="outline" size="sm" onClick={logout}>
+              <Button variant="outline" size="default" onClick={logout} className="text-sm font-medium">
                 Cerrar sesión
               </Button>
             </>
           ) : (
             <>
-              <Link to="/services"><Button variant="ghost" size="sm">Servicios</Button></Link>
-              <Link to="/contact"><Button variant="ghost" size="sm">Contacto</Button></Link>
+              <Link to="/services">
+                <Button variant="ghost" size="default" className="text-sm font-medium">
+                  Servicios
+                </Button>
+              </Link>
+              <Link to="/contact">
+                <Button variant="ghost" size="default" className="text-sm font-medium">
+                  Contacto
+                </Button>
+              </Link>
               <Link to="/login">
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="default" className="text-sm font-medium">
                   Iniciar sesión
                 </Button>
               </Link>

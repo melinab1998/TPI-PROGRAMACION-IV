@@ -84,7 +84,6 @@ export default function AdminSchedule() {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-            {/* Header animado */}
             <motion.div
                 variants={fadeSlideDown}
                 initial="hidden"
@@ -94,7 +93,6 @@ export default function AdminSchedule() {
             </motion.div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Calendario animado */}
                 <motion.div variants={fadeSlideUp} initial="hidden" animate="visible">
                     <Card className="h-[650px] flex flex-col">
                         <CardHeader className="flex-shrink-0">
@@ -120,7 +118,6 @@ export default function AdminSchedule() {
                     </Card>
                 </motion.div>
 
-                {/* Lista de turnos animada */}
                 <motion.div
                     variants={fadeSlideUp}
                     initial="hidden"
