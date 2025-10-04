@@ -14,4 +14,22 @@ public class HealthInsurance
     {
         Name = name;
     }
+    
+    
+    public static void ValidateName(string name)
+     {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("El nombre de la obra social  no puede estar vacío.");   
+    }
+
+
+    public void AddPlan(HealthPlan plan)
+    {
+        if (plan == null)
+            throw new ArgumentException("El plan no puede ser nulo.");
+
+        plan.SetHealthInsurance(this);
+        Plans.Add(plan);
+
+    }
 }
