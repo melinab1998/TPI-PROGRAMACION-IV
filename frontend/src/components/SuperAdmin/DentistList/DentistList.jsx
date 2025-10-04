@@ -30,16 +30,16 @@ export default function DentistList({
     >
       <Card className="border-2 border-border/50 shadow-lg">
         <CardHeader className="pb-4">
-          <CardTitle className="text-2xl font-bold">Dentistas ({dentists.length})</CardTitle>
-          <CardDescription className="text-lg">
+          <CardTitle className="text-xl font-bold">Dentistas ({dentists.length})</CardTitle>
+          <CardDescription className="text-base">
             Lista de todos los dentistas del sistema
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           {currentDentists.length === 0 ? (
             <div className="p-12 text-center text-muted-foreground space-y-4">
-              <Users className="w-16 h-16 mx-auto opacity-50" />
-              <p className="text-xl font-medium">
+              <Users className="w-14 h-14 mx-auto opacity-50" />
+              <p className="text-lg font-medium">
                 {searchTerm ? "No se encontraron dentistas" : "No hay dentistas registrados"}
               </p>
               <p className="text-sm">
