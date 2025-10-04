@@ -603,7 +603,7 @@ export default function PatientsPage() {
   const fadeSlideUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       <motion.div variants={fadeSlideDown} initial="hidden" animate="visible">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>

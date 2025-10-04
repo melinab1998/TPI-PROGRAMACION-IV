@@ -59,7 +59,7 @@ export default function Availability() {
   const fadeScale = { hidden: { opacity: 0, scale: 0.95 }, visible: { opacity: 1, scale: 1, transition: { duration: 0.4 } } }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       <motion.div variants={fadeSlideUp} initial="hidden" animate="visible">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
