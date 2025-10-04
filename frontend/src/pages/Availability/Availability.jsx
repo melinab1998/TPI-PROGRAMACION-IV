@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Plus, Trash2 } from "lucide-react"
+import { motion } from "framer-motion"
 
 const daysOfWeek = [
   { id: 1, name: "Lunes", label: "Lun" },
@@ -17,11 +18,9 @@ const daysOfWeek = [
 ]
 
 const timeSlots = [
-  "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
-  "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-  "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
-  "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
-  "18:00", "18:30", "19:00", "19:30", "20:00", "20:30"
+  "06:00","06:30","07:00","07:30","08:00","08:30","09:00","09:30","10:00","10:30",
+  "11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30",
+  "16:00","16:30","17:00","17:30","18:00","18:30","19:00","19:30","20:00","20:30"
 ]
 
 export default function Availability() {
@@ -33,18 +32,11 @@ export default function Availability() {
     { id_availability: 5, day_of_week: 5, start_time: "09:00", end_time: "17:00", enabled: true }
   ])
 
-  const getAvailabilityForDay = (dayId) =>
-    availabilities.filter(avail => avail.day_of_week === dayId)
+  const getAvailabilityForDay = (dayId) => availabilities.filter(avail => avail.day_of_week === dayId)
 
   const handleToggleDay = (dayId, enabled) => {
     if (enabled) {
-      const newAvailability = {
-        id_availability: Date.now(),
-        day_of_week: dayId,
-        start_time: "09:00",
-        end_time: "17:00",
-        enabled: true
-      }
+      const newAvailability = { id_availability: Date.now(), day_of_week: dayId, start_time: "09:00", end_time: "17:00", enabled: true }
       setAvailabilities(prev => [...prev, newAvailability])
     } else {
       setAvailabilities(prev => prev.filter(avail => avail.day_of_week !== dayId))
@@ -52,186 +44,125 @@ export default function Availability() {
   }
 
   const handleTimeChange = (availabilityId, field, value) => {
-    setAvailabilities(prev =>
-      prev.map(avail =>
-        avail.id_availability === availabilityId
-          ? { ...avail, [field]: value }
-          : avail
-      )
-    )
+    setAvailabilities(prev => prev.map(avail => avail.id_availability === availabilityId ? { ...avail, [field]: value } : avail))
   }
 
   const handleAddTimeSlot = (dayId) => {
-    const newAvailability = {
-      id_availability: Date.now(),
-      day_of_week: dayId,
-      start_time: "14:00",
-      end_time: "18:00",
-      enabled: true
-    }
+    const newAvailability = { id_availability: Date.now(), day_of_week: dayId, start_time: "14:00", end_time: "18:00", enabled: true }
     setAvailabilities(prev => [...prev, newAvailability])
   }
 
-  const handleRemoveAvailability = (availabilityId) => {
-    setAvailabilities(prev => prev.filter(avail => avail.id_availability !== availabilityId))
-  }
+  const handleRemoveAvailability = (availabilityId) => setAvailabilities(prev => prev.filter(avail => avail.id_availability !== availabilityId))
+  const handleSave = () => { console.log("Guardando horarios:", availabilities); alert("Horarios guardados correctamente") }
 
-  const handleSave = () => {
-    console.log("Guardando horarios:", availabilities)
-    alert("Horarios guardados correctamente")
-  }
+  const fadeSlideUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
+  const fadeScale = { hidden: { opacity: 0, scale: 0.95 }, visible: { opacity: 1, scale: 1, transition: { duration: 0.4 } } }
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mt-4">
-            Configuración de Horarios
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Establece tus horarios de atención semanales
-          </p>
+      <motion.div variants={fadeSlideUp} initial="hidden" animate="visible">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mt-4">
+              Configuración de Horarios
+            </h1>
+            <p className="text-muted-foreground mt-1">Establece tus horarios de atención semanales</p>
+          </div>
         </div>
-      </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Horarios de Atención</CardTitle>
-          <CardDescription>
-            Configura los horarios en los que estás disponible
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {daysOfWeek.map(day => {
-            const dayAvailabilities = getAvailabilityForDay(day.id)
-            const isDayEnabled = dayAvailabilities.length > 0
+      </motion.div>
 
-            return (
-              <div
-                key={day.id}
-                className="grid grid-cols-1 sm:grid-cols-3 items-center gap-4 p-3 border rounded-lg"
-              >
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={isDayEnabled}
-                    onCheckedChange={(checked) => handleToggleDay(day.id, checked)}
-                  />
-                  <Label className="font-medium">{day.name}</Label>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {isDayEnabled ? (
-                    dayAvailabilities.map((availability) => (
-                      <div
-                        key={availability.id_availability}
+      <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Horarios de Atención</CardTitle>
+            <CardDescription>Configura los horarios en los que estás disponible</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {daysOfWeek.map((day, idx) => {
+              const dayAvailabilities = getAvailabilityForDay(day.id)
+              const isDayEnabled = dayAvailabilities.length > 0
+
+              return (
+                <motion.div key={day.id} variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: idx * 0.05 }}
+                  className="grid grid-cols-1 sm:grid-cols-3 items-center gap-4 p-3 border rounded-lg"
+                >
+                  <div className="flex items-center gap-2">
+                    <Switch checked={isDayEnabled} onCheckedChange={(checked) => handleToggleDay(day.id, checked)} />
+                    <Label className="font-medium">{day.name}</Label>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {isDayEnabled ? dayAvailabilities.map((avail, i) => (
+                      <motion.div key={avail.id_availability} variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: i * 0.05 }}
                         className="flex items-center gap-2 bg-muted/30 rounded-lg p-2"
                       >
-                        <Select
-                          value={availability.start_time}
-                          onValueChange={(value) =>
-                            handleTimeChange(availability.id_availability, "start_time", value)
-                          }
-                        >
+                        <Select value={avail.start_time} onValueChange={(value) => handleTimeChange(avail.id_availability, "start_time", value)}>
                           <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
-                          <SelectContent className="max-h-60">
-                            {timeSlots.map(time => (
-                              <SelectItem key={time} value={time}>{time}</SelectItem>
-                            ))}
-                          </SelectContent>
+                          <SelectContent className="max-h-60">{timeSlots.map(time => <SelectItem key={time} value={time}>{time}</SelectItem>)}</SelectContent>
                         </Select>
-
                         <span>-</span>
-
-                        <Select
-                          value={availability.end_time}
-                          onValueChange={(value) =>
-                            handleTimeChange(availability.id_availability, "end_time", value)
-                          }
-                        >
+                        <Select value={avail.end_time} onValueChange={(value) => handleTimeChange(avail.id_availability, "end_time", value)}>
                           <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
-                          <SelectContent className="max-h-60">
-                            {timeSlots
-                              .filter(time => time > availability.start_time)
-                              .map(time => (
-                                <SelectItem key={time} value={time}>{time}</SelectItem>
-                              ))}
-                          </SelectContent>
+                          <SelectContent className="max-h-60">{timeSlots.filter(time => time > avail.start_time).map(time => <SelectItem key={time} value={time}>{time}</SelectItem>)}</SelectContent>
                         </Select>
-
                         {dayAvailabilities.length > 1 && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleRemoveAvailability(availability.id_availability)}
-                          >
+                          <Button variant="ghost" size="icon" onClick={() => handleRemoveAvailability(avail.id_availability)}>
                             <Trash2 className="w-4 h-4 text-destructive" />
                           </Button>
                         )}
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-muted-foreground italic">Cerrado</p>
-                  )}
-                </div>
-                <div className="flex justify-start sm:justify-end">
-                  {isDayEnabled && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleAddTimeSlot(day.id)}
-                    >
-                      <Plus className="w-4 h-4" /> Agregar
-                    </Button>
-                  )}
-                </div>
-              </div>
-            )
-          })}
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Resumen Semanal</CardTitle>
-          <CardDescription>
-            Vista previa de tu disponibilidad
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
-            {daysOfWeek.map(day => {
-              const dayAvailabilities = getAvailabilityForDay(day.id)
-              return (
-                <div key={day.id} className="text-center p-3 border rounded-lg">
-                  <div className="font-medium mb-2">{day.label}</div>
-                  {dayAvailabilities.length > 0 ? (
-                    <div className="space-y-1">
-                      {dayAvailabilities.map((avail, index) => (
-                        <div
-                          key={index}
-                          className="text-xs px-2 py-1 rounded 
-                          bg-primary/90 text-primary-foreground"
-                        >
-                          {avail.start_time} - {avail.end_time}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-xs text-muted-foreground italic">Cerrado</div>
-                  )}
-                </div>
+                      </motion.div>
+                    )) : (
+                      <p className="text-sm text-muted-foreground italic">Cerrado</p>
+                    )}
+                  </div>
+                  <div className="flex justify-start sm:justify-end">
+                    {isDayEnabled && (
+                      <Button variant="outline" size="sm" onClick={() => handleAddTimeSlot(day.id)}>
+                        <Plus className="w-4 h-4" /> Agregar
+                      </Button>
+                    )}
+                  </div>
+                </motion.div>
               )
             })}
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </motion.div>
 
-      <div className="flex justify-center">
-        <Button
-          onClick={handleSave}
-          size="lg"
-          className="px-8 bg-primary/90 hover:bg-primary"
-        >
-          Guardar Horarios
-        </Button>
-      </div>
+      <motion.div variants={fadeScale} initial="hidden" animate="visible" transition={{ delay: 0.2 }}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Resumen Semanal</CardTitle>
+            <CardDescription>Vista previa de tu disponibilidad</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
+              {daysOfWeek.map(day => {
+                const dayAvailabilities = getAvailabilityForDay(day.id)
+                return (
+                  <motion.div key={day.id} variants={fadeSlideUp} initial="hidden" animate="visible" className="text-center p-3 border rounded-lg">
+                    <div className="font-medium mb-2">{day.label}</div>
+                    {dayAvailabilities.length > 0 ? (
+                      <div className="space-y-1">
+                        {dayAvailabilities.map((avail, i) => (
+                          <motion.div key={i} variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: i * 0.05 }} className="text-xs px-2 py-1 rounded bg-primary/90 text-primary-foreground">
+                            {avail.start_time} - {avail.end_time}
+                          </motion.div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-muted-foreground italic">Cerrado</div>
+                    )}
+                  </motion.div>
+                )
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.3 }} className="flex justify-center">
+        <Button onClick={handleSave} size="lg" className="px-8 bg-primary/90 hover:bg-primary">Guardar Horarios</Button>
+      </motion.div>
     </div>
   )
 }

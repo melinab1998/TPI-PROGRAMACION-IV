@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Plus } from "lucide-react"
+import { motion } from "framer-motion"
 import PatientDetailModal from "@/components/Patients/PatientDetailModal/PatientDetailModal"
 import PatientFormModal from "@/components/Patients/PatientFormModal/PatientFormModal"
 import PatientsList from "@/components/Patients/PatientsList/PatientsList"
@@ -598,54 +599,58 @@ export default function PatientsPage() {
     setEditingPatient(null)
   }
 
+  const fadeSlideDown = { hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }
+  const fadeSlideUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mt-4">
-            Gestión de Pacientes
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Administra la información de tus pacientes
-          </p>
+      <motion.div variants={fadeSlideDown} initial="hidden" animate="visible">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mt-4">
+              Gestión de Pacientes
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Administra la información de tus pacientes
+            </p>
+          </div>
+          <Button onClick={handleCreatePatient} className="flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Nuevo Paciente
+          </Button>
         </div>
-        <Button onClick={handleCreatePatient} className="flex items-center gap-2">
-          <Plus className="w-4 h-4" />
-          Nuevo Paciente
-        </Button>
-      </div>
-
-      <div className="relative w-full">
-        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Buscar por nombre, apellido o DNI..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-9 w-full"
-        />
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Pacientes ({filteredPatients.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PatientsList
-            patients={filteredPatients}
-            onView={handleViewPatient}
-            onEdit={handleEditPatient}
-            onViewVisits={handleViewVisits}
-            onViewOdontogram={handleViewOdontogram}
+      </motion.div>
+      <motion.div variants={fadeSlideDown} initial="hidden" animate="visible" transition={{ delay: 0.1 }}>
+        <div className="relative w-full">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por nombre, apellido o DNI..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9 w-full"
           />
-        </CardContent>
-      </Card>
+        </div>
+      </motion.div>
+      <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Pacientes ({filteredPatients.length})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <PatientsList
+              patients={filteredPatients}
+              onView={handleViewPatient}
+              onEdit={handleEditPatient}
+              onViewVisits={handleViewVisits}
+              onViewOdontogram={handleViewOdontogram}
+            />
+          </CardContent>
+        </Card>
+      </motion.div>
 
       <PatientFormModal
         open={isFormModalOpen}
-        onClose={() => {
-          setIsFormModalOpen(false)
-          setEditingPatient(null)
-        }}
+        onClose={() => { setIsFormModalOpen(false); setEditingPatient(null) }}
         onSave={handleSavePatient}
         patient={editingPatient}
         healthPlans={mockHealthPlans}
@@ -653,34 +658,23 @@ export default function PatientsPage() {
 
       <PatientDetailModal
         open={isDetailModalOpen}
-        onClose={() => {
-          setIsDetailModalOpen(false)
-          setSelectedPatient(null)
-        }}
+        onClose={() => { setIsDetailModalOpen(false); setSelectedPatient(null) }}
         patient={selectedPatient}
-        onEdit={() => {
-          setIsDetailModalOpen(false)
-          handleEditPatient(selectedPatient)
-        }}
+        onEdit={() => { setIsDetailModalOpen(false); handleEditPatient(selectedPatient) }}
       />
 
       <PatientVisitsModal
         open={isVisitsModalOpen}
-        onClose={() => {
-          setIsVisitsModalOpen(false)
-          setSelectedPatientForVisits(null)
-        }}
+        onClose={() => { setIsVisitsModalOpen(false); setSelectedPatientForVisits(null) }}
         patient={selectedPatientForVisits}
       />
 
       <PatientOdontogramModal
         open={isOdontogramModalOpen}
-        onClose={() => {
-          setIsOdontogramModalOpen(false)
-          setSelectedPatientForOdontogram(null)
-        }}
+        onClose={() => { setIsOdontogramModalOpen(false); setSelectedPatientForOdontogram(null) }}
         patient={selectedPatientForOdontogram}
       />
+
     </div>
   )
 }

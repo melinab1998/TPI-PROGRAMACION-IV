@@ -7,6 +7,7 @@ import DaySummary from "@/components/AdminSchedule/DaySummary/DaySummary"
 import AppointmentList from "@/components/AdminSchedule/AppointmentList/AppointmentList"
 import AppointmentFormModal from "@/components/AdminSchedule/AppointmentFormModal/AppointmentFormModal"
 import CancelAppointmentModal from "@/components/AdminSchedule/CancelAppointmentModal/CancelAppointmentModal"
+import { motion } from "framer-motion"
 
 const initialAppointments = [
     { id_turn: 101, appointment_date: "2025-09-30T09:00", status: "Activo", consultation_type: "Consulta", patient_name: "María López", patient_email: "maria@email.com", patient_dni: "41239736", dentist_name: "Dr. Suárez" },
@@ -71,43 +72,73 @@ export default function AdminSchedule() {
         isSameDay(parseISO(a.appointment_date), selectedDate)
     )
 
+    const fadeSlideUp = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+    }
+
+    const fadeSlideDown = {
+        hidden: { opacity: 0, y: -20 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+    }
+
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-            <Header onCreate={handleCreate} />
+            {/* Header animado */}
+            <motion.div
+                variants={fadeSlideDown}
+                initial="hidden"
+                animate="visible"
+            >
+                <Header onCreate={handleCreate} />
+            </motion.div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="h-[650px] flex flex-col">
-                    <CardHeader className="flex-shrink-0">
-                        <CardTitle className="flex items-center gap-2 text-xl">
-                            Calendario de Turnos
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-1 min-h-0 p-6 flex flex-col">
-                        <div className="flex-1 min-h-0">
-                            <Calendar
-                                selectedDate={selectedDate}
-                                onDateChange={setSelectedDate}
-                                appointments={appointments}
-                            />
-                        </div>
-                        <div className="flex-shrink-0 pt-4 mt-4 border-t">
-                            <DaySummary
-                                selectedDate={selectedDate}
-                                count={appointmentsForSelectedDay.length}
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
-                <AppointmentList
-                    appointments={appointments}
-                    filteredAppointments={filteredAppointments}
-                    appointmentsForSelectedDay={appointmentsForSelectedDay}
-                    filters={filters}
-                    setFilters={setFilters}
-                    onEdit={handleEdit}
-                    onCancel={handleCancelClick}
-                />
+                {/* Calendario animado */}
+                <motion.div variants={fadeSlideUp} initial="hidden" animate="visible">
+                    <Card className="h-[650px] flex flex-col">
+                        <CardHeader className="flex-shrink-0">
+                            <CardTitle className="flex items-center gap-2 text-xl">
+                                Calendario de Turnos
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex-1 min-h-0 p-6 flex flex-col">
+                            <div className="flex-1 min-h-0">
+                                <Calendar
+                                    selectedDate={selectedDate}
+                                    onDateChange={setSelectedDate}
+                                    appointments={appointments}
+                                />
+                            </div>
+                            <div className="flex-shrink-0 pt-4 mt-4 border-t">
+                                <DaySummary
+                                    selectedDate={selectedDate}
+                                    count={appointmentsForSelectedDay.length}
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+
+                {/* Lista de turnos animada */}
+                <motion.div
+                    variants={fadeSlideUp}
+                    initial="hidden"
+                    animate="visible"
+                    transition={{ delay: 0.1 }}
+                >
+                    <AppointmentList
+                        appointments={appointments}
+                        filteredAppointments={filteredAppointments}
+                        appointmentsForSelectedDay={appointmentsForSelectedDay}
+                        filters={filters}
+                        setFilters={setFilters}
+                        onEdit={handleEdit}
+                        onCancel={handleCancelClick}
+                    />
+                </motion.div>
             </div>
+
             <AppointmentFormModal
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
@@ -126,3 +157,4 @@ export default function AdminSchedule() {
         </div>
     )
 }
+
