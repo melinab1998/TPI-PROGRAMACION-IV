@@ -9,6 +9,8 @@ import PatientFormModal from "@/components/Patients/PatientFormModal/PatientForm
 import PatientsList from "@/components/Patients/PatientsList/PatientsList"
 import PatientVisitsModal from "@/components/Patients/PatientVisitsModal/PatientVisitsModal"
 import PatientOdontogramModal from "@/components/Patients/PatientOdontogramModal/PatientOdontogramModal"
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 
 const mockPatients = [
@@ -601,6 +603,16 @@ export default function PatientsPage() {
 
   const fadeSlideDown = { hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }
   const fadeSlideUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.openNewPatientModal) {
+      setIsFormModalOpen(true);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">

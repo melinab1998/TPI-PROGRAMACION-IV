@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { AlertTriangle, Calendar, User, Clock } from "lucide-react"
 import { format, parseISO } from "date-fns"
 import { es } from "date-fns/locale"
+import { successToast } from "@/utils/notifications"
 
 export default function CancelAppointmentModal({
     open,
@@ -19,6 +20,7 @@ export default function CancelAppointmentModal({
     const handleConfirm = () => {
         onConfirm(appointment.id_turn)
         onClose()
+        successToast("Turno cancelado exitosamente")
     }
 
     return (

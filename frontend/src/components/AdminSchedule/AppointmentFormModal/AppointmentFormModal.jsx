@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search } from "lucide-react"
+import { useNavigate } from "react-router-dom";
+import { successToast } from "@/utils/notifications"
 
 const mockPatients = [
     { id: 1, name: "María López", email: "maria@email.com", dni: "41239736", phone: "1122334455" },
@@ -40,6 +42,13 @@ export default function AppointmentFormModal({
 
     const [patientSearch, setPatientSearch] = useState("")
     const [filteredPatients, setFilteredPatients] = useState(mockPatients)
+
+    const navigate = useNavigate();
+
+    const handleNewPatient = () => {
+    onClose();
+    navigate("/patients", { state: { openNewPatientModal: true } });
+    };
 
     useEffect(() => {
         if (patientSearch.trim() === "") {
@@ -90,7 +99,7 @@ export default function AppointmentFormModal({
         handleFormChange('patient_id', patientId)
         const patient = mockPatients.find(p => p.id === parseInt(patientId))
         if (patient) {
-            setPatientSearch(patient.dni) // Mostrar DNI en el buscador
+            setPatientSearch(patient.dni)
         }
     }
 
@@ -124,6 +133,14 @@ export default function AppointmentFormModal({
         }
 
         onSave(appointmentData)
+        
+        // Mostrar toast de éxito
+        if (editMode) {
+            successToast("Turno actualizado exitosamente")
+        } else {
+            successToast("Turno creado exitosamente")
+        }
+        
         onClose()
     }
 
@@ -265,7 +282,7 @@ export default function AppointmentFormModal({
                                 variant="outline"
                                 size="sm"
                                 className="w-full text-xs"
-                                onClick={() => alert('Funcionalidad de nuevo paciente próximamente')}
+                                onClick={handleNewPatient}
                             >
                                 + Nuevo Paciente
                             </Button>
