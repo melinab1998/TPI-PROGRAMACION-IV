@@ -149,13 +149,25 @@ export default function SuperAdminPage() {
   const totalDentists = dentists.length
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 py-4 space-y-4">
+      {/* Header */}
       <Header onCreate={handleCreateDentist} />
 
-      <StatsCards total={totalDentists} active={activeDentists} />
+      {/* Stats */}
+      <StatsCards 
+        total={totalDentists} 
+        active={activeDentists} 
+        className="text-sm p-4 gap-3"
+      />
 
-      <SearchBar searchTerm={searchTerm} onChange={setSearchTerm} />
+      {/* Search */}
+      <SearchBar 
+        searchTerm={searchTerm} 
+        onChange={setSearchTerm} 
+        className="text-sm p-2"
+      />
 
+      {/* Lista de Dentistas */}
       <DentistList
         dentists={filteredDentists}
         onEdit={handleEditDentist}
@@ -164,8 +176,10 @@ export default function SuperAdminPage() {
         currentPage={currentPage}
         itemsPerPage={itemsPerPage}
         onPageChange={setCurrentPage}
+        className="text-sm gap-2"
       />
 
+      {/* Formulario */}
       <DentistForm
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
@@ -173,13 +187,16 @@ export default function SuperAdminPage() {
         formData={formData}
         onChange={handleInputChange}
         isEditing={!!editingDentist}
+        className="text-sm p-4"
       />
 
+      {/* Confirmación */}
       <ConfirmDialog
         isOpen={!!deleteConfirm}
         onClose={() => setDeleteConfirm(null)}
         onConfirm={handleConfirmToggle}
         dentist={deleteConfirm}
+        className="text-sm"
       />
     </div>
   )
