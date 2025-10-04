@@ -5,13 +5,13 @@ import { es } from "date-fns/locale"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Button } from "@/components/ui/button"
-import { toastHelper } from "@/utils/notifications"
+import { successToast } from "@/utils/notifications";
 
 export default function BookingModal({ time, date, doctor, formData, setFormData, handleSubmit, setTime }) {
     
     const handleConfirmSubmit = (e) => {
         e.preventDefault()
-        toastHelper.success("Turno confirmado correctamente")
+        successToast("Turno confirmado correctamente")
         handleSubmit(e)
     }
 

@@ -1,29 +1,21 @@
-import { toast } from "sonner"
+import { toast } from "react-toastify";
 
-export const toastHelper = {
-    success: (message = "Operación exitosa") => {
-        toast.success(message, {
-            description: "La acción se completó correctamente",
-            duration: 4000,
-        })
-    },
+const defaultNotificationConfig = {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+};
 
-    error: (message = "Error") => {
-        toast.error(message, {
-            description: "Ocurrió un error inesperado",
-            duration: 6000,
-        })
-    },
+export const successToast = (mensaje, config = {}) =>
+    toast.success(mensaje, { ...defaultNotificationConfig, ...config });
 
-    loading: (message = "Procesando...") => {
-        return toast.loading(message)
-    },
+export const errorToast = (mensaje, config = {}) =>
+    toast.error(mensaje, { ...defaultNotificationConfig, ...config });
 
-    dismiss: (toastId) => {
-        toast.dismiss(toastId)
-    },
-
-    promise: (promise, options) => {
-        return toast.promise(promise, options)
-    }
-}
+export const infoToast = (mensaje, config = {}) =>
+    toast.info(mensaje, { ...defaultNotificationConfig, ...config });

@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageSquare, Send } from "lucide-react";
 import { motion } from "framer-motion";
-import { toastHelper } from "@/utils/notifications";
+import { successToast } from "@/utils/notifications";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -20,7 +20,7 @@ const itemVariants = {
 export default function ContactForm() {
     const handleSubmit = (e) => {
         e.preventDefault();
-        toastHelper.success("Mensaje enviado correctamente");
+        successToast("Mensaje enviado correctamente");
         e.target.reset();
     };
 

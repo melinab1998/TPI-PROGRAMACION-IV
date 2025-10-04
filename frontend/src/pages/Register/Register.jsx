@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, User, Mail, CreditCard, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { toastHelper } from "@/utils/notifications";
+import { successToast } from "@/utils/notifications";
 
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
@@ -19,7 +19,7 @@ export default function Register() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        toastHelper.success("¡Registro exitoso!");
+        successToast("¡Registro exitoso!");
         e.target.reset();
     };
 

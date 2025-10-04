@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
-import { toastHelper } from "@/utils/notifications";
+import { successToast } from "@/utils/notifications";
 
 export default function UpdateEmailDialog({ currentEmail, onUpdate }) {
     const [open, setOpen] = useState(false);
@@ -12,7 +12,7 @@ export default function UpdateEmailDialog({ currentEmail, onUpdate }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         onUpdate(email);
-        toastHelper.success("Correo electrónico actualizado correctamente");
+        successToast("Correo electrónico actualizado correctamente");
         setOpen(false);
     };
 

@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, User, ArrowRight, X } from "lucide-react";
 import { Link } from "react-router-dom";
-import { toastHelper } from "@/utils/notifications";
+import { successToast } from "@/utils/notifications";
 
 export default function NextAppointmentCard({ appointment }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,7 +42,7 @@ export default function NextAppointmentCard({ appointment }) {
         console.log("Turno cancelado:", appointment);
         
         // Mostrar toast de éxito
-        toastHelper.success("Turno cancelado correctamente");
+        successToast("Turno cancelado correctamente");
         
         // Cerrar el modal
         setIsModalOpen(false);

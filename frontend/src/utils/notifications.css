@@ -1,0 +1,23 @@
+:root {
+    --toastify-color-success: #008B8B;
+    --toastify-color-error: oklch(0.6368 0.2078 25.3313);
+    --toastify-color-info: oklch(0.5854 0.2041 277.1173);
+}
+
+.Toastify__toast--success {
+    background: white !important;
+    color: #333 !important;
+}
+
+.Toastify__progress-bar--success {
+    background: var(--toastify-color-success) !important;
+}
+
+
+.Toastify__toast-icon--success svg {
+    fill: var(--toastify-color-success) !important;
+}
+
+.Toastify__toast-body {
+    color: #333 !important;
+}

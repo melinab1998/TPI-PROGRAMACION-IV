@@ -19,11 +19,14 @@ import VisitsPage from "./pages/VisitPage/VisitPage";
 import SuperAdmin from "./pages/SuperAdmin/SuperAdmin";
 import ForgotPassword from "./components/ForgotPassword/ForgotPasswordForm/ForgotPasswordForm";
 import ResetPassword from "./components/ForgotPassword/ResetPasswordForm/ResetPasswordForm";
-import { Toaster } from "./components/ui/sonner";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; 
+import "./utils/notifications.css"
+
 
 function App() {
   const { isLoggedIn, role } = useAuth();
-  
+
   const getHome = () => {
     if (!isLoggedIn) return <Home />;
     if (role === "user") return <UserHome />;
@@ -51,12 +54,16 @@ function App() {
           <Route path="reset-password" element={<ResetPassword />} />
         </Route>
       </Routes>
-      <Toaster 
+      <ToastContainer
         position="top-right"
-        duration={4000}
-        expand={true}
-        closeButton
-        richColors
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
       />
     </>
   );
