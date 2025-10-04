@@ -36,7 +36,7 @@ export default function ServicesSection() {
     const handleClick = () => {
         navigate("/services");
         window.scrollTo({ top: 0, behavior: "smooth" });
-      };
+    };
 
     return (
         <section className="max-w-7xl mx-auto px-4 py-16 sm:py-20">

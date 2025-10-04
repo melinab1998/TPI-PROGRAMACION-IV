@@ -17,7 +17,6 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
 
     const handleToothClick = (toothNumber) => {
         if (readOnly) {
-            // En modo solo lectura, no hacer nada o mostrar información
             return;
         }
         setSelectedTooth(toothNumber);
@@ -28,14 +27,13 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
             ...toothData,
             [toothNumber]: data,
         };
-        
+
         setToothData(newToothData);
-        
-        // Notificar al componente padre si existe onSave
+
         if (onSave) {
             onSave(newToothData);
         }
-        
+
         setSelectedTooth(null);
     };
 

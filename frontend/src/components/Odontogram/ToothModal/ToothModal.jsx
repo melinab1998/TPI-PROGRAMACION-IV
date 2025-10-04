@@ -119,8 +119,8 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
                                                 key={c}
                                                 onClick={() => handleColorChange(section, c)}
                                                 className={`w-7 h-7 rounded-full border-2 transition-all duration-150 transform hover:scale-110 ${data.color === c
-                                                        ? "ring-2 ring-primary ring-offset-1 scale-110"
-                                                        : "border-gray-300 hover:border-gray-400"
+                                                    ? "ring-2 ring-primary ring-offset-1 scale-110"
+                                                    : "border-gray-300 hover:border-gray-400"
                                                     }`}
                                                 style={{
                                                     backgroundColor: c === "white" ? "#FFFFFF" : customColors[c],

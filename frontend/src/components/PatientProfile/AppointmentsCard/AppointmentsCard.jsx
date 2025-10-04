@@ -17,29 +17,26 @@ export default function AppointmentsCard({ appointments }) {
                         <ScrollArea className={hasManyAppointments ? "h-full px-6" : ""}>
                             <div className={hasManyAppointments ? "space-y-4 py-4" : "space-y-4"}>
                                 {displayAppointments.map((appointment) => (
-                                    <div 
-                                        key={appointment.id} 
+                                    <div
+                                        key={appointment.id}
                                         className="flex items-start gap-4 border rounded-lg p-4 hover:bg-muted/30 transition-colors border-border group"
                                     >
-                                        {/* Icono del doctor */}
                                         <div className="flex-shrink-0 p-2 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
-                                            <svg 
-                                                xmlns="http://www.w3.org/2000/svg" 
-                                                viewBox="0 0 24 24" 
-                                                fill="none" 
-                                                stroke="currentColor" 
-                                                strokeWidth="1.5" 
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="1.5"
                                                 className="w-5 h-5 text-primary"
                                             >
-                                                <path 
-                                                    strokeLinecap="round" 
-                                                    strokeLinejoin="round" 
-                                                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" 
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
                                                 />
                                             </svg>
                                         </div>
-                                        
-                                        {/* Información principal */}
                                         <div className="flex-1 min-w-0">
                                             <h3 className="font-semibold text-foreground text-lg mb-1">
                                                 {appointment.dentist}

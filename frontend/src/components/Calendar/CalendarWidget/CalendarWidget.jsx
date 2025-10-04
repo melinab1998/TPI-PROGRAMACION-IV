@@ -15,14 +15,14 @@ export default function CalendarWidget({ date, setDate, doctorAvailability, toda
                 }}
                 locale={es}
                 className={`
-          p-4 text-lg rounded-2xl
-          [&_.rdp-day]:h-16 [&_.rdp-day]:w-16
-          [&_.rdp-day_selected]:text-primary-foreground [&_.rdp-day_selected]:bg-primary
-          [&_.rdp-day_selected]:rounded-full [&_.rdp-day]:rounded-full
-          [&_.rdp-caption]:mb-4 [&_.rdp-caption_label]:text-lg
-          [&_.rdp-nav_button]:rounded-full [&_.rdp-nav_button]:h-6 [&_.rdp-nav_button]:w-6
-          [&_.rdp-nav_button]:hover:bg-accent [&_.rdp-nav_button]:transition
-        `}
+                p-4 text-lg rounded-2xl
+                [&_.rdp-day]:h-16 [&_.rdp-day]:w-16
+                [&_.rdp-day_selected]:text-primary-foreground [&_.rdp-day_selected]:bg-primary
+                [&_.rdp-day_selected]:rounded-full [&_.rdp-day]:rounded-full
+                [&_.rdp-caption]:mb-4 [&_.rdp-caption_label]:text-lg
+                [&_.rdp-nav_button]:rounded-full [&_.rdp-nav_button]:h-6 [&_.rdp-nav_button]:w-6
+                [&_.rdp-nav_button]:hover:bg-accent [&_.rdp-nav_button]:transition
+                `}
                 modifiers={{
                     available: Object.keys(doctorAvailability).map((dateStr) => parseISO(dateStr)),
                     today: today,

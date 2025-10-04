@@ -16,7 +16,7 @@ export default function AppointmentList({
     onCancel,
 }) {
     return (
-        <Card className="flex flex-col h-[650px]"> 
+        <Card className="flex flex-col h-[650px]">
             <CardHeader className="pb-3 flex-shrink-0">
                 <CardTitle className="text-xl">Turnos del Día</CardTitle>
                 <div className="flex flex-col sm:flex-row gap-2 sm:items-center justify-between">

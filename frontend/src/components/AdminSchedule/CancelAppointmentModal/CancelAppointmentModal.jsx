@@ -4,11 +4,11 @@ import { AlertTriangle, Calendar, User, Clock } from "lucide-react"
 import { format, parseISO } from "date-fns"
 import { es } from "date-fns/locale"
 
-export default function CancelAppointmentModal({ 
-    open, 
-    onClose, 
-    onConfirm, 
-    appointment 
+export default function CancelAppointmentModal({
+    open,
+    onClose,
+    onConfirm,
+    appointment
 }) {
     if (!appointment) return null
 
@@ -86,17 +86,17 @@ export default function CancelAppointmentModal({
                 </div>
 
                 <DialogFooter className="gap-2 sm:gap-0">
-                    <Button 
-                        type="button" 
-                        variant="outline" 
+                    <Button
+                        type="button"
+                        variant="outline"
                         onClick={onClose}
                         className="flex-1"
                     >
                         Mantener Turno
                     </Button>
-                    <Button 
-                        type="button" 
-                        variant="destructive" 
+                    <Button
+                        type="button"
+                        variant="destructive"
                         onClick={handleConfirm}
                         className="flex-1"
                     >

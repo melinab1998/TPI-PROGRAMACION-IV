@@ -59,8 +59,6 @@ export default function DentistList({
                   />
                 ))}
               </div>
-              
-              {/* Paginación */}
               <div className="p-6">
                 <Pagination
                   currentPage={currentPage}

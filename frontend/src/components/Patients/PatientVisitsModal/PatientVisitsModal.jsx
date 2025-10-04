@@ -15,7 +15,7 @@ const mockVisitRecords = [
         notes: "Paciente con buena higiene bucal general, necesita mejorar técnica de cepillado en molares",
         prescription: "Enjuague bucal con clorhexidina 0.12% 2 veces al día por 7 días. Cepillo interdental para limpieza de espacios.",
         id_turn: 1,
-        odontogramData: {} // Datos del odontograma de esta visita
+        odontogramData: {}
     }
 ]
 
@@ -105,8 +105,6 @@ export default function PatientVisitsModal({ open, onClose, patient }) {
                     </div>
                 </DialogContent>
             </Dialog>
-
-            {/* Modal Odontograma - SOLO LECTURA */}
             <PatientOdontogramModal
                 open={isOdontogramOpen}
                 onClose={() => setIsOdontogramOpen(false)}

@@ -55,18 +55,15 @@ export default function Calendar({ selectedDate, onDateChange, appointments }) {
               <Button
                 variant={isSelected ? "default" : isToday ? "outline" : "ghost"}
                 size="lg"
-                className={`h-10 w-10 rounded-full flex-col relative p-0 text-sm ${
-                  !isCurrentMonth ? "opacity-40" : ""
-                } ${
-                  isSelected ? "bg-primary/80 hover:bg-primary/90" : ""
-                }`}
+                className={`h-10 w-10 rounded-full flex-col relative p-0 text-sm ${!isCurrentMonth ? "opacity-40" : ""
+                  } ${isSelected ? "bg-primary/80 hover:bg-primary/90" : ""
+                  }`}
                 onClick={() => onDateChange(day)}
               >
                 <span>{format(day, "d")}</span>
                 {appointmentCount > 0 && (
-                  <span className={`absolute -top-1 -right-1 w-4 h-4 rounded-full text-[10px] flex items-center justify-center ${
-                    isSelected ? "bg-background text-foreground border border-primary/30" : "bg-primary text-primary-foreground"
-                  }`}>
+                  <span className={`absolute -top-1 -right-1 w-4 h-4 rounded-full text-[10px] flex items-center justify-center ${isSelected ? "bg-background text-foreground border border-primary/30" : "bg-primary text-primary-foreground"
+                    }`}>
                     {appointmentCount}
                   </span>
                 )}

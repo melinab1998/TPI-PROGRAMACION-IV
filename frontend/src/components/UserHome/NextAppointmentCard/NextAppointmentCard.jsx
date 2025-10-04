@@ -39,12 +39,9 @@ export default function NextAppointmentCard({ appointment }) {
         <>
             <Card className="group border-2 border-transparent hover:border-primary/20 transition-all duration-300 hover:shadow-lg bg-gradient-to-b from-background to-muted/10 overflow-hidden relative">
                 <CardContent className="p-6 flex flex-col md:flex-row items-center gap-6">
-                    {/* Icono */}
                     <div className="bg-gradient-to-br from-primary to-primary/80 p-4 rounded-full group-hover:scale-105 transition-transform duration-300 shadow-md shrink-0">
                         <Calendar className="h-7 w-7 text-white" />
                     </div>
-
-                    {/* Información principal */}
                     <div className="flex-1 text-center md:text-left space-y-3">
                         <div>
                             <p className="font-semibold text-xl text-foreground">{appointment.date}</p>
@@ -61,8 +58,6 @@ export default function NextAppointmentCard({ appointment }) {
                             </span>
                         </div>
                     </div>
-
-                    {/* Acciones */}
                     <div className="flex flex-col gap-3 shrink-0 w-full md:w-auto">
                         <Button
                             size="sm"
@@ -76,8 +71,6 @@ export default function NextAppointmentCard({ appointment }) {
                     </div>
                 </CardContent>
             </Card>
-
-            {/* Modal de confirmación */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
                     <div className="bg-background p-6 rounded-lg shadow-lg w-80 space-y-5 border border-border">
@@ -103,7 +96,6 @@ export default function NextAppointmentCard({ appointment }) {
                                 variant="destructive"
                                 className="flex-1"
                                 onClick={() => {
-                                    // Lógica de cancelación
                                     console.log("Turno cancelado");
                                     setIsModalOpen(false);
                                 }}

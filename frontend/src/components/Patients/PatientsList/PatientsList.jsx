@@ -83,8 +83,6 @@ export default function PatientsList({ patients, onView, onEdit, onViewVisits, o
                     </div>
                 ))}
             </div>
-
-            {/* Usas el mismo componente Pagination */}
             <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -92,7 +90,7 @@ export default function PatientsList({ patients, onView, onEdit, onViewVisits, o
                 totalItems={patients.length}
                 itemsPerPage={patientsPerPage}
                 currentItemsCount={currentItemsCount}
-                itemsName="pacientes" // Puedes hacerlo más flexible agregando esta prop
+                itemsName="pacientes" 
             />
         </div>
     )

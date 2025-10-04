@@ -66,7 +66,7 @@ export default function Footer() {
                                 <span className="sr-only">Instagram</span>
                             </a>
                             <a
-                                href="https://www.x.com"  
+                                href="https://www.x.com"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-muted-foreground hover:text-primary transition-colors"

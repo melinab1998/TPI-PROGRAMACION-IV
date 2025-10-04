@@ -43,7 +43,7 @@ export default function AppointmentFormModal({
 
     useEffect(() => {
         if (patientSearch.trim() === "") {
-            setFilteredPatients(mockPatients.slice(0, 5)) 
+            setFilteredPatients(mockPatients.slice(0, 5))
         } else {
             const filtered = mockPatients.filter(patient =>
                 patient.dni.includes(patientSearch) ||

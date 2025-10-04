@@ -35,7 +35,7 @@ export default function ForgotPassword() {
                                 required
                             />
                         </div>
-                        
+
                         <Button type="submit" className="w-full">
                             Enviar
                         </Button>
