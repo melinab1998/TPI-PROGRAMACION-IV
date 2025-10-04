@@ -18,4 +18,5 @@ public class Dentist : User
         if (string.IsNullOrWhiteSpace(licenseNumber))
             throw new ArgumentException("La matrícula es obligatoria.");
     }
+ }
     
