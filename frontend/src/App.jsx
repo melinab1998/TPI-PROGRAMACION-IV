@@ -1,22 +1,22 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout/Layout";
-import Home from "./pages/Home/Home";
-import UserHome from "./pages/UserHome/UserHome";
-import Login from "./pages/Login/Login";
-import ServicesPage from "./pages/Services/Services";
-import Register from "./pages/Register/Register";
-import Contact from "./pages/Contact/Contact";
-import Appointments from "./pages/Appointments/Appointments";
-import Calendar from "./pages/Calendar/Calendar";
+import GuestHome from "./pages/guest/GuestHome/GuestHome";
+import UserHome from "./pages/user/UserHome/UserHome";
+import Login from "./pages/guest/Login/Login";
+import ServicesPage from "./pages/guest/Services/Services";
+import Register from "./pages/guest/Register/Register";
+import Contact from "./pages/guest/Contact/Contact";
+import Appointments from "./pages/user/Appointments/Appointments";
+import Calendar from "./pages/user/Calendar/Calendar";
 import { useAuth } from "@/hooks/useAuth";
-import PatientProfile from "./pages/PatientProfile/PatientProfile";
-import AdminHome from "./pages/AdminHome/AdminHome";
-import AdminSchedule from "./pages/AdminSchedule/AdminSchedule";
-import PatientsPage from "./pages/PatientsPage/PatientsPage";
-import Availability from "./pages/Availability/Availability";
-import VisitsPage from "./pages/VisitPage/VisitPage";
-import SuperAdmin from "./pages/SuperAdmin/SuperAdmin";
+import PatientProfile from "./pages/user/PatientProfile/PatientProfile";
+import AdminHome from "./pages/admin/AdminHome/AdminHome";
+import AdminSchedule from "./pages/admin/Schedule/Schedule";
+import PatientsPage from "./pages/admin/Patients/Patients";
+import Availability from "./pages/admin/Availability/Availability";
+import VisitsPage from "./pages/admin/Visits/Visits";
+import SuperAdmin from "./pages/super/SuperAdminHome/SuperAdminHome";
 import ForgotPassword from "./components/ForgotPassword/ForgotPasswordForm/ForgotPasswordForm";
 import ResetPassword from "./components/ForgotPassword/ResetPasswordForm/ResetPasswordForm";
 import { ToastContainer } from "react-toastify";
@@ -28,7 +28,7 @@ function App() {
   const { isLoggedIn, role } = useAuth();
 
   const getHome = () => {
-    if (!isLoggedIn) return <Home />;
+    if (!isLoggedIn) return <GuestHome />;
     if (role === "user") return <UserHome />;
     if (role === "admin") return <AdminHome />;
     if (role === "superadmin") return <SuperAdmin />;
