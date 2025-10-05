@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
+import { useForm } from "react-hook-form";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const { register, handleSubmit, formState: { errors } } = useForm();
+
+  const onSubmit = (data) => {
     login();
     navigate("/");
   };
@@ -53,39 +55,42 @@ export default function Login() {
           <CardContent>
             <motion.form
               className="space-y-4"
-              onSubmit={handleSubmit}
+              onSubmit={handleSubmit(onSubmit)}
               variants={containerVariants}
               initial="hidden"
               animate="show"
             >
+              {/* Email */}
               <motion.div variants={itemVariants}>
-                <Label htmlFor="email" className="mb-4">
+                <Label htmlFor="email" className="mb-2">
                   Correo electrónico
                 </Label>
                 <Input
                   id="email"
-                  name="email"
                   type="email"
                   placeholder="Ingrese el email..."
-                  required
                   className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
+                  {...register("email", { required: "El email es obligatorio" })}
                 />
+                {errors.email && <p className="text-red-500 text-sm mt-1.5">{errors.email.message}</p>}
               </motion.div>
 
+              {/* Password */}
               <motion.div variants={itemVariants}>
-                <Label htmlFor="password" className="mb-4">
+                <Label htmlFor="password" className="mb-2">
                   Contraseña
                 </Label>
                 <Input
                   id="password"
-                  name="password"
                   type="password"
                   placeholder="Ingrese la contraseña..."
-                  required
                   className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
+                  {...register("password", { required: "La contraseña es obligatoria" })}
                 />
+                {errors.password && <p className="text-red-500 text-sm mt-1.5">{errors.password.message}</p>}
               </motion.div>
 
+              {/* Recordar contraseña y olvido */}
               <motion.div
                 variants={itemVariants}
                 className="flex justify-between items-center py-2"
@@ -108,6 +113,7 @@ export default function Login() {
                 </Link>
               </motion.div>
 
+              {/* Botón ingresar */}
               <motion.div variants={itemVariants}>
                 <Button
                   type="submit"
@@ -121,6 +127,7 @@ export default function Login() {
               </motion.div>
             </motion.form>
 
+            {/* Registro */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
