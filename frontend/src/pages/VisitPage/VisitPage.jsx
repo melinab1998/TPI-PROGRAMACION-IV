@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useForm } from "react-hook-form"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -29,7 +30,24 @@ export default function VisitsPage() {
     const [showVisitForm, setShowVisitForm] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
 
-    const [visitData, setVisitData] = useState({ treatment: "", diagnosis: "", notes: "", prescription: "", odontogramData: {} })
+    // React Hook Form
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setValue,
+        watch,
+        reset,
+        trigger
+    } = useForm({
+        defaultValues: {
+            treatment: "",
+            diagnosis: "",
+            notes: "",
+            prescription: "",
+            odontogramData: {}
+        }
+    })
 
     const filteredTurns = turns.filter(turn =>
         turn.patient_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -41,21 +59,33 @@ export default function VisitsPage() {
     const handleCreateVisitRecord = (turn) => {
         setSelectedTurn(turn)
         const existingRecord = getVisitRecordForTurn(turn.id_turn)
-        setVisitData(existingRecord ? {
-            treatment: existingRecord.treatment,
-            diagnosis: existingRecord.diagnosis,
-            notes: existingRecord.notes,
-            prescription: existingRecord.prescription,
+        
+        const formData = existingRecord ? {
+            treatment: existingRecord.treatment || "",
+            diagnosis: existingRecord.diagnosis || "",
+            notes: existingRecord.notes || "",
+            prescription: existingRecord.prescription || "",
             odontogramData: existingRecord.odontogramData || {}
-        } : { treatment: "", diagnosis: "", notes: "", prescription: "", odontogramData: {} })
+        } : { 
+            treatment: "", 
+            diagnosis: "", 
+            notes: "", 
+            prescription: "", 
+            odontogramData: {} 
+        }
+
+        // Resetear el formulario con los datos
+        reset(formData)
         setShowVisitForm(true)
     }
 
-    const handleInputChange = (field, value) => setVisitData(prev => ({ ...prev, [field]: value }))
-    const handleOdontogramChange = (data) => setVisitData(prev => ({ ...prev, odontogramData: data }))
+    const handleOdontogramChange = (data) => {
+        setValue("odontogramData", data)
+    }
 
-    const handleSubmitVisit = async () => {
+    const onSubmit = async (data) => {
         if (!selectedTurn) return
+        
         setIsSubmitting(true)
         try {
             await new Promise(resolve => setTimeout(resolve, 1000))
@@ -63,7 +93,7 @@ export default function VisitsPage() {
             const newVisitRecord = {
                 id_visit_record: existingRecord ? existingRecord.id_visit_record : Date.now(),
                 visit_date: new Date().toISOString(),
-                ...visitData,
+                ...data,
                 id_turn: selectedTurn.id_turn
             }
 
@@ -195,28 +225,125 @@ export default function VisitsPage() {
                             </CardTitle>
                             <CardDescription>Para {selectedTurn.patient_name} - {selectedTurn.scheduled_time}</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            {["treatment", "diagnosis", "notes", "prescription"].map((field) => (
-                                <div className="space-y-2" key={field}>
-                                    <Label htmlFor={field}>
-                                        {field === "treatment" && "Tratamiento Realizado"}
-                                        {field === "diagnosis" && "Diagnóstico"}
-                                        {field === "notes" && "Notas Adicionales"}
-                                        {field === "prescription" && "Prescripción Médica"}
+                        <CardContent>
+                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                                {/* Tratamiento Realizado - Obligatorio */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="treatment" className="text-sm font-medium">
+                                        Tratamiento Realizado *
                                     </Label>
-                                    <Textarea id={field} placeholder={`Ingrese ${field}...`} value={visitData[field]} onChange={(e) => handleInputChange(field, e.target.value)} rows={3} />
+                                    <Textarea 
+                                        id="treatment"
+                                        placeholder="Ingrese el tratamiento realizado..."
+                                        {...register("treatment", { 
+                                            required: "El tratamiento realizado es obligatorio",
+                                            minLength: {
+                                                value: 3,
+                                                message: "El tratamiento debe tener al menos 3 caracteres"
+                                            }
+                                        })}
+                                        className={errors.treatment ? "border-red-500" : ""}
+                                        rows={3} 
+                                    />
+                                    {errors.treatment && (
+                                        <p className="text-red-500 text-xs">{errors.treatment.message}</p>
+                                    )}
                                 </div>
-                            ))}
-                            <div className="space-y-2">
-                                <Label>Odontograma del Paciente</Label>
-                                <Odontogram initialData={visitData.odontogramData} onSave={handleOdontogramChange} readOnly={false} />
-                            </div>
-                            <div className="flex justify-end gap-2 pt-4">
-                                <Button variant="outline" onClick={() => { setShowVisitForm(false); setSelectedTurn(null) }} disabled={isSubmitting} className="px-6 py-2">Cancelar</Button>
-                                <Button onClick={handleSubmitVisit} disabled={isSubmitting} className="px-6 py-2">
-                                    {isSubmitting ? "Guardando..." : "Guardar Registro"}
-                                </Button>
-                            </div>
+
+                                {/* Diagnóstico - Obligatorio */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="diagnosis" className="text-sm font-medium">
+                                        Diagnóstico *
+                                    </Label>
+                                    <Textarea 
+                                        id="diagnosis"
+                                        placeholder="Ingrese el diagnóstico..."
+                                        {...register("diagnosis", { 
+                                            required: "El diagnóstico es obligatorio",
+                                            minLength: {
+                                                value: 3,
+                                                message: "El diagnóstico debe tener al menos 3 caracteres"
+                                            }
+                                        })}
+                                        className={errors.diagnosis ? "border-red-500" : ""}
+                                        rows={3} 
+                                    />
+                                    {errors.diagnosis && (
+                                        <p className="text-red-500 text-xs">{errors.diagnosis.message}</p>
+                                    )}
+                                </div>
+
+                                {/* Notas Adicionales - Opcional */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="notes" className="text-sm font-medium">
+                                        Notas Adicionales
+                                        <span className="text-muted-foreground font-normal ml-1">(opcional)</span>
+                                    </Label>
+                                    <Textarea 
+                                        id="notes"
+                                        placeholder="Ingrese notas adicionales..."
+                                        {...register("notes")}
+                                        rows={3} 
+                                    />
+                                </div>
+
+                                {/* Prescripción Médica - Opcional */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="prescription" className="text-sm font-medium">
+                                        Prescripción Médica
+                                        <span className="text-muted-foreground font-normal ml-1">(opcional)</span>
+                                    </Label>
+                                    <Textarea 
+                                        id="prescription"
+                                        placeholder="Ingrese la prescripción médica..."
+                                        {...register("prescription")}
+                                        rows={3} 
+                                    />
+                                </div>
+
+                                {/* Odontograma - Opcional */}
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium">
+                                        Odontograma del Paciente
+                                        <span className="text-muted-foreground font-normal ml-1">(opcional)</span>
+                                    </Label>
+                                    <Odontogram 
+                                        initialData={watch("odontogramData")} 
+                                        onSave={handleOdontogramChange} 
+                                        readOnly={false} 
+                                    />
+                                    <input
+                                        type="hidden"
+                                        {...register("odontogramData")}
+                                    />
+                                </div>
+
+                                <div className="text-xs text-muted-foreground pt-2">
+                                    * Campos obligatorios
+                                </div>
+
+                                <div className="flex justify-end gap-2 pt-4">
+                                    <Button 
+                                        type="button"
+                                        variant="outline" 
+                                        onClick={() => { 
+                                            setShowVisitForm(false); 
+                                            setSelectedTurn(null); 
+                                        }} 
+                                        disabled={isSubmitting} 
+                                        className="px-6 py-2"
+                                    >
+                                        Cancelar
+                                    </Button>
+                                    <Button 
+                                        type="submit"
+                                        disabled={isSubmitting} 
+                                        className="px-6 py-2"
+                                    >
+                                        {isSubmitting ? "Guardando..." : "Guardar Registro"}
+                                    </Button>
+                                </div>
+                            </form>
                         </CardContent>
                     </Card>
                 </motion.div>

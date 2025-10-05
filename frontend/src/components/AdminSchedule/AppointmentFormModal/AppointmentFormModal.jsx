@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useForm } from "react-hook-form"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -32,22 +33,62 @@ export default function AppointmentFormModal({
 }) {
     const editMode = !!appointment
 
-    const [formData, setFormData] = useState({
-        appointment_date: "",
-        appointment_time: "",
-        patient_id: "",
-        dentist_id: "",
-        consultation_type: "Consulta"
+    const { 
+        register, 
+        handleSubmit, 
+        formState: { errors, isSubmitted }, 
+        setValue, 
+        watch, 
+        reset,
+        trigger,
+        setError,
+        clearErrors
+    } = useForm({
+        defaultValues: {
+            appointment_date: "",
+            appointment_time: "",
+            patient_id: "",
+            dentist_id: "",
+            consultation_type: "Consulta"
+        }
     })
 
     const [patientSearch, setPatientSearch] = useState("")
     const [filteredPatients, setFilteredPatients] = useState(mockPatients)
+    const [patientFieldTouched, setPatientFieldTouched] = useState(false)
 
     const navigate = useNavigate();
 
+    // Observar cambios en los campos
+    const watchPatientId = watch("patient_id")
+    const watchAppointmentDate = watch("appointment_date")
+
+    // Validación personalizada para fecha
+    const validateDate = (date) => {
+        if (!date) return "La fecha es requerida"
+        
+        const selectedDate = new Date(date)
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        
+        if (selectedDate < today) {
+            return "No se pueden agendar turnos en fechas pasadas"
+        }
+        
+        return true
+    }
+
+    // Validación personalizada para paciente
+    const validatePatient = (patientId) => {
+        if (!patientId) {
+            return "Seleccione un paciente"
+        }
+        return true
+    }
+
     const handleNewPatient = () => {
-    onClose();
-    navigate("/patients", { state: { openNewPatientModal: true } });
+        onClose();
+        navigate("/patients", { state: { openNewPatientModal: true } });
     };
 
     useEffect(() => {
@@ -65,7 +106,7 @@ export default function AppointmentFormModal({
     useEffect(() => {
         if (appointment) {
             const dateTime = appointment.appointment_date.split('T')
-            setFormData({
+            reset({
                 appointment_date: dateTime[0] || "",
                 appointment_time: dateTime[1]?.substring(0, 5) || "",
                 patient_id: appointment.patient_id || "",
@@ -80,7 +121,7 @@ export default function AppointmentFormModal({
                 }
             }
         } else {
-            setFormData({
+            reset({
                 appointment_date: "",
                 appointment_time: "",
                 patient_id: "",
@@ -88,60 +129,76 @@ export default function AppointmentFormModal({
                 consultation_type: "Consulta"
             })
             setPatientSearch("")
+            setPatientFieldTouched(false)
         }
-    }, [appointment, open])
-
-    const handleFormChange = (field, value) => {
-        setFormData(prev => ({ ...prev, [field]: value }))
-    }
+    }, [appointment, open, reset])
 
     const handlePatientSelect = (patientId) => {
-        handleFormChange('patient_id', patientId)
+        setValue("patient_id", patientId, { shouldValidate: true })
         const patient = mockPatients.find(p => p.id === parseInt(patientId))
         if (patient) {
             setPatientSearch(patient.dni)
         }
+        setPatientFieldTouched(true)
+        clearErrors("patient_id")
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
+    const handlePatientSearchBlur = () => {
+        setPatientFieldTouched(true)
+        trigger("patient_id")
+    }
 
-        if (!formData.patient_id) {
-            alert("Por favor, seleccione un paciente")
-            return
+    const onSubmit = (data) => {
+        // Forzar validación del paciente si no se ha tocado
+        if (!patientFieldTouched) {
+            setPatientFieldTouched(true)
         }
 
-        const appointmentDateTime = `${formData.appointment_date}T${formData.appointment_time}:00`
+        // Validar todos los campos incluyendo paciente
+        trigger().then(isValid => {
+            if (!isValid) {
+                // Si hay errores, mostrar mensaje general
+                if (!data.patient_id) {
+                    setError("patient_id", { 
+                        type: "manual", 
+                        message: "Seleccione un paciente" 
+                    })
+                }
+                return
+            }
 
-        const selectedPatient = mockPatients.find(p => p.id === parseInt(formData.patient_id))
-        const selectedDentist = mockDentists.find(d => d.id === parseInt(formData.dentist_id))
+            // Si todo está válido, proceder con el envío
+            const appointmentDateTime = `${data.appointment_date}T${data.appointment_time}:00`
 
-        const appointmentData = {
-            ...formData,
-            patient_name: selectedPatient?.name || "",
-            patient_email: selectedPatient?.email || "",
-            patient_dni: selectedPatient?.dni || "",
-            patient_phone: selectedPatient?.phone || "",
-            appointment_date: appointmentDateTime,
-            dentist_name: selectedDentist?.name || "",
-            dentist_id: formData.dentist_id
-        }
+            const selectedPatient = mockPatients.find(p => p.id === parseInt(data.patient_id))
+            const selectedDentist = mockDentists.find(d => d.id === parseInt(data.dentist_id))
 
-        if (appointment) {
-            appointmentData.id_turn = appointment.id_turn
-            appointmentData.status = appointment.status
-        }
+            const appointmentData = {
+                ...data,
+                patient_name: selectedPatient?.name || "",
+                patient_email: selectedPatient?.email || "",
+                patient_dni: selectedPatient?.dni || "",
+                patient_phone: selectedPatient?.phone || "",
+                appointment_date: appointmentDateTime,
+                dentist_name: selectedDentist?.name || "",
+                dentist_id: data.dentist_id
+            }
 
-        onSave(appointmentData)
-        
-        // Mostrar toast de éxito
-        if (editMode) {
-            successToast("Turno actualizado exitosamente")
-        } else {
-            successToast("Turno creado exitosamente")
-        }
-        
-        onClose()
+            if (appointment) {
+                appointmentData.id_turn = appointment.id_turn
+                appointmentData.status = appointment.status
+            }
+
+            onSave(appointmentData)
+            
+            if (editMode) {
+                successToast("Turno actualizado exitosamente")
+            } else {
+                successToast("Turno creado exitosamente")
+            }
+            
+            onClose()
+        })
     }
 
     const generateTimeSlots = () => {
@@ -157,6 +214,9 @@ export default function AppointmentFormModal({
 
     const timeSlots = generateTimeSlots()
 
+    // Determinar si mostrar error del paciente
+    const showPatientError = errors.patient_id && (patientFieldTouched || isSubmitted)
+
     return (
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-md">
@@ -166,25 +226,30 @@ export default function AppointmentFormModal({
                     </DialogTitle>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-2">
                             <Label htmlFor="appointment_date">Fecha</Label>
                             <Input
                                 id="appointment_date"
                                 type="date"
-                                value={formData.appointment_date}
-                                onChange={(e) => handleFormChange('appointment_date', e.target.value)}
-                                required
+                                {...register("appointment_date", { 
+                                    required: "La fecha es requerida",
+                                    validate: validateDate
+                                })}
+                                className={errors.appointment_date ? "border-red-500" : ""}
                             />
+                            {errors.appointment_date && (
+                                <p className="text-red-500 text-xs">{errors.appointment_date.message}</p>
+                            )}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="appointment_time">Hora</Label>
                             <Select
-                                value={formData.appointment_time}
-                                onValueChange={(value) => handleFormChange('appointment_time', value)}
+                                onValueChange={(value) => setValue("appointment_time", value, { shouldValidate: true })}
+                                defaultValue={watch("appointment_time")}
                             >
-                                <SelectTrigger>
+                                <SelectTrigger className={errors.appointment_time ? "border-red-500" : ""}>
                                     <SelectValue placeholder="HH:MM" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-60">
@@ -195,15 +260,23 @@ export default function AppointmentFormModal({
                                     ))}
                                 </SelectContent>
                             </Select>
+                            <input
+                                type="hidden"
+                                {...register("appointment_time", { required: "La hora es requerida" })}
+                            />
+                            {errors.appointment_time && (
+                                <p className="text-red-500 text-xs">{errors.appointment_time.message}</p>
+                            )}
                         </div>
                     </div>
+                    
                     <div className="space-y-2">
                         <Label htmlFor="dentist_id">Dentista</Label>
                         <Select
-                            value={formData.dentist_id}
-                            onValueChange={(value) => handleFormChange('dentist_id', value)}
+                            onValueChange={(value) => setValue("dentist_id", value, { shouldValidate: true })}
+                            defaultValue={watch("dentist_id")}
                         >
-                            <SelectTrigger>
+                            <SelectTrigger className={errors.dentist_id ? "border-red-500" : ""}>
                                 <SelectValue placeholder="Seleccione dentista" />
                             </SelectTrigger>
                             <SelectContent>
@@ -214,11 +287,19 @@ export default function AppointmentFormModal({
                                 ))}
                             </SelectContent>
                         </Select>
+                        <input
+                            type="hidden"
+                            {...register("dentist_id", { required: "Seleccione un dentista" })}
+                        />
+                        {errors.dentist_id && (
+                            <p className="text-red-500 text-xs">{errors.dentist_id.message}</p>
+                        )}
                     </div>
+                    
                     <div className="space-y-2">
-                        <Label htmlFor="patient_search">Paciente</Label>
+                        <Label htmlFor="patient_search">Paciente *</Label>
 
-                        {!formData.patient_id ? (
+                        {!watchPatientId ? (
                             <>
                                 <div className="relative">
                                     <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -227,9 +308,13 @@ export default function AppointmentFormModal({
                                         placeholder="Buscar por DNI o nombre..."
                                         value={patientSearch}
                                         onChange={(e) => setPatientSearch(e.target.value)}
-                                        className="pl-9"
+                                        className={`pl-9 ${showPatientError ? "border-red-500" : ""}`}
+                                        onBlur={handlePatientSearchBlur}
                                     />
                                 </div>
+                                {showPatientError && (
+                                    <p className="text-red-500 text-xs">{errors.patient_id.message}</p>
+                                )}
                                 {patientSearch && (
                                     <div className="border rounded-md max-h-32 overflow-y-auto">
                                         {filteredPatients.length > 0 ? (
@@ -257,10 +342,10 @@ export default function AppointmentFormModal({
                             <div className="space-y-2">
                                 <div className="p-2 border rounded-md bg-muted/20">
                                     <div className="text-sm font-medium">
-                                        {mockPatients.find(p => p.id === parseInt(formData.patient_id))?.name}
+                                        {mockPatients.find(p => p.id === parseInt(watchPatientId))?.name}
                                     </div>
                                     <div className="text-xs text-muted-foreground">
-                                        DNI: {mockPatients.find(p => p.id === parseInt(formData.patient_id))?.dni}
+                                        DNI: {mockPatients.find(p => p.id === parseInt(watchPatientId))?.dni}
                                     </div>
                                 </div>
                                 <Button
@@ -268,15 +353,23 @@ export default function AppointmentFormModal({
                                     variant="outline"
                                     size="sm"
                                     onClick={() => {
-                                        handleFormChange('patient_id', '')
-                                        setPatientSearch('')
+                                        setValue("patient_id", "", { shouldValidate: true })
+                                        setPatientSearch("")
+                                        setPatientFieldTouched(true)
                                     }}
                                 >
                                     Cambiar paciente
                                 </Button>
                             </div>
                         )}
-                        {!formData.patient_id && (
+                        <input
+                            type="hidden"
+                            {...register("patient_id", { 
+                                required: "Seleccione un paciente",
+                                validate: validatePatient
+                            })}
+                        />
+                        {!watchPatientId && (
                             <Button
                                 type="button"
                                 variant="outline"
@@ -288,13 +381,14 @@ export default function AppointmentFormModal({
                             </Button>
                         )}
                     </div>
+                    
                     <div className="space-y-2">
                         <Label htmlFor="consultation_type">Tipo de Turno</Label>
                         <Select
-                            value={formData.consultation_type}
-                            onValueChange={(value) => handleFormChange('consultation_type', value)}
+                            onValueChange={(value) => setValue("consultation_type", value, { shouldValidate: true })}
+                            defaultValue={watch("consultation_type")}
                         >
-                            <SelectTrigger>
+                            <SelectTrigger className={errors.consultation_type ? "border-red-500" : ""}>
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -302,6 +396,13 @@ export default function AppointmentFormModal({
                                 <SelectItem value="Tratamiento">Tratamiento</SelectItem>
                             </SelectContent>
                         </Select>
+                        <input
+                            type="hidden"
+                            {...register("consultation_type", { required: "Seleccione el tipo de turno" })}
+                        />
+                        {errors.consultation_type && (
+                            <p className="text-red-500 text-xs">{errors.consultation_type.message}</p>
+                        )}
                     </div>
 
                     <DialogFooter className="gap-2 sm:gap-0">
