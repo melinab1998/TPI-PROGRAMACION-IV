@@ -1,88 +1,119 @@
+import { useForm } from "react-hook-form"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { successToast } from "@/utils/notifications"
 
-export default function DentistForm({ 
-  isOpen, 
-  onClose, 
-  onSubmit, 
-  formData, 
-  onChange, 
-  isEditing 
+export default function DentistForm({
+  isOpen,
+  onClose,
+  onSubmit,
+  formData,
+  isEditing
 }) {
 
-  const handleSubmit = (e) => {
-  e.preventDefault();
-  onSubmit(); 
-  successToast(`Dentista ${isEditing ? "editado" : "creado"} exitosamente`);
-  onClose();
-  };
+  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    defaultValues: formData || {
+      first_name: "",
+      last_name: "",
+      email: "",
+      license_number: ""
+    }
+  })
 
-  const handleInputChange = (field, value) => {
-    onChange(field, value)
+  const submitHandler = (data) => {
+    onSubmit(data)
+    successToast(`Dentista ${isEditing ? "editado" : "creado"} exitosamente`)
+    reset()
+    onClose()
   }
-
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-bottom-2 data-[state=open]:slide-in-from-bottom-2">
+      <DialogContent className="sm:max-w-md data-[state=open]:animate-in data-[state=closed]:animate-out">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
             {isEditing ? "Editar Dentista" : "Nuevo Dentista"}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
+
+        <form onSubmit={handleSubmit(submitHandler)} noValidate>
           <div className="space-y-6 py-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <Label htmlFor="first_name" className="text-base">Nombre</Label>
                 <Input
                   id="first_name"
-                  value={formData.first_name}
-                  onChange={(e) => handleInputChange("first_name", e.target.value)}
-                  placeholder="Ingrese el nombre"
                   className="h-11"
-                  required
+                  placeholder="Ingrese el nombre"
+                  {...register("first_name", {
+                    required: "El nombre es obligatorio",
+                    minLength: { value: 2, message: "Debe tener al menos 2 caracteres" }
+                  })}
                 />
+                {errors.first_name && (
+                  <p className="text-sm text-red-500">{errors.first_name.message}</p>
+                )}
               </div>
-              <div className="space-y-3">
+
+              <div className="space-y-2">
                 <Label htmlFor="last_name" className="text-base">Apellido</Label>
                 <Input
                   id="last_name"
-                  value={formData.last_name}
-                  onChange={(e) => handleInputChange("last_name", e.target.value)}
-                  placeholder="Ingrese el apellido"
                   className="h-11"
-                  required
+                  placeholder="Ingrese el apellido"
+                  {...register("last_name", {
+                    required: "El apellido es obligatorio",
+                    minLength: { value: 2, message: "Debe tener al menos 2 caracteres" }
+                  })}
                 />
+                {errors.last_name && (
+                  <p className="text-sm text-red-500">{errors.last_name.message}</p>
+                )}
               </div>
             </div>
-            <div className="space-y-3">
+
+            <div className="space-y-2">
               <Label htmlFor="email" className="text-base">Email</Label>
               <Input
                 id="email"
                 type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-                placeholder="Ingrese el email"
                 className="h-11"
-                required
+                placeholder="Ingrese el email"
+                {...register("email", {
+                  required: "El email es obligatorio",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "El formato del email no es válido"
+                  }
+                })}
               />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
+              )}
             </div>
-            <div className="space-y-3">
+
+            <div className="space-y-2">
               <Label htmlFor="license_number" className="text-base">Matrícula</Label>
               <Input
                 id="license_number"
-                value={formData.license_number}
-                onChange={(e) => handleInputChange("license_number", e.target.value)}
-                placeholder="Ej: MN-12345"
                 className="h-11"
-                required
+                placeholder="Ej: MN-12345"
+                {...register("license_number", {
+                  required: "La matrícula es obligatoria",
+                  pattern: {
+                    value: /^MN-\d{3,6}$/,
+                    message: "Formato inválido. Ej: MN-12345"
+                  }
+                })}
               />
+              {errors.license_number && (
+                <p className="text-sm text-red-500">{errors.license_number.message}</p>
+              )}
             </div>
           </div>
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
