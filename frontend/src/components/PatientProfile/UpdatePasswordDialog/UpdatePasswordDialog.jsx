@@ -4,29 +4,32 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { successToast } from "@/utils/notifications";
+import { useForm } from "react-hook-form";
 
 export default function UpdatePasswordDialog({ onUpdate }) {
     const [open, setOpen] = useState(false);
-    const [currentPassword, setCurrentPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        
-        onUpdate(newPassword);
+    const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
+    const newPassword = watch("newPassword");
+
+    const onSubmit = (data) => {
+        onUpdate(data.newPassword);
         successToast("Contraseña actualizada correctamente");
         setOpen(false);
-        
-        setCurrentPassword("");
-        setNewPassword("");
-        setConfirmPassword("");
+        reset();
     };
 
     const inputs = [
-        { label: "Contraseña Actual", value: currentPassword, setter: setCurrentPassword },
-        { label: "Nueva Contraseña", value: newPassword, setter: setNewPassword },
-        { label: "Confirmar Nueva Contraseña", value: confirmPassword, setter: setConfirmPassword }
+        { label: "Contraseña Actual", name: "currentPassword", type: "password", validation: { required: "La contraseña actual es obligatoria" } },
+        { label: "Nueva Contraseña", name: "newPassword", type: "password", validation: { 
+            required: "La nueva contraseña es obligatoria",
+            minLength: { value: 8, message: "Debe tener al menos 8 caracteres" },
+            validate: value => /[A-Z]/.test(value) || "Debe contener al menos una mayúscula"
+        }},
+        { label: "Confirmar Nueva Contraseña", name: "confirmPassword", type: "password", validation: {
+            required: "Debes confirmar la nueva contraseña",
+            validate: value => value === newPassword || "Las contraseñas no coinciden"
+        }}
     ];
 
     return (
@@ -44,17 +47,18 @@ export default function UpdatePasswordDialog({ onUpdate }) {
                     <DialogTitle>Actualizar contraseña</DialogTitle>
                     <DialogDescription>Ingresa tu nueva contraseña.</DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
                     {inputs.map((input, idx) => (
                         <div key={idx} className="space-y-2">
                             <Label>{input.label}</Label>
                             <Input
-                                type="password"
-                                value={input.value}
-                                onChange={(e) => input.setter(e.target.value)}
-                                required
+                                type={input.type}
+                                {...register(input.name, input.validation)}
                                 className="border-border focus-visible:ring-primary"
                             />
+                            {errors[input.name] && (
+                                <p className="text-red-500 text-sm mt-1">{errors[input.name].message}</p>
+                            )}
                         </div>
                     ))}
                     <div className="flex justify-end gap-2 pt-2">
@@ -66,3 +70,4 @@ export default function UpdatePasswordDialog({ onUpdate }) {
         </Dialog>
     );
 }
+
