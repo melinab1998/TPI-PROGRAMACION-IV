@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { Plus, Trash2 } from "lucide-react"
 import { motion } from "framer-motion"
+import { successToast } from "@/utils/notifications";
+
 
 const daysOfWeek = [
   { id: 1, name: "Lunes", label: "Lun" },
@@ -18,9 +20,9 @@ const daysOfWeek = [
 ]
 
 const timeSlots = [
-  "06:00","06:30","07:00","07:30","08:00","08:30","09:00","09:30","10:00","10:30",
-  "11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30",
-  "16:00","16:30","17:00","17:30","18:00","18:30","19:00","19:30","20:00","20:30"
+  "06:00", "06:30", "07:00", "07:30", "08:00", "08:30", "09:00", "09:30", "10:00", "10:30",
+  "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
+  "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30"
 ]
 
 export default function Availability() {
@@ -53,10 +55,12 @@ export default function Availability() {
   }
 
   const handleRemoveAvailability = (availabilityId) => setAvailabilities(prev => prev.filter(avail => avail.id_availability !== availabilityId))
-  const handleSave = () => { console.log("Guardando horarios:", availabilities); alert("Horarios guardados correctamente") }
-
+  const handleSave = () => {
+    successToast("Horarios guardados exitosamente");
+  };
   const fadeSlideUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
   const fadeScale = { hidden: { opacity: 0, scale: 0.95 }, visible: { opacity: 1, scale: 1, transition: { duration: 0.4 } } }
+
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">

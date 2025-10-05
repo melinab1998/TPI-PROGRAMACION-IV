@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Search, Calendar, User, Clock, Plus, FileText } from "lucide-react"
 import Odontogram from "@/components/Odontogram/Odontogram/Odontogram"
 import { motion } from "framer-motion"
+import { successToast, errorToast } from "@/utils/notifications"
 
 const mockTurns = [
     { id_turn: 1, patient_name: "María González", patient_dni: "12345678A", scheduled_time: "09:00" },
@@ -59,14 +60,30 @@ export default function VisitsPage() {
         try {
             await new Promise(resolve => setTimeout(resolve, 1000))
             const existingRecord = getVisitRecordForTurn(selectedTurn.id_turn)
-            const newVisitRecord = { id_visit_record: existingRecord ? existingRecord.id_visit_record : Date.now(), visit_date: new Date().toISOString(), ...visitData, id_turn: selectedTurn.id_turn }
-            setVisitRecords(prev => existingRecord ? prev.map(r => r.id_turn === selectedTurn.id_turn ? newVisitRecord : r) : [...prev, newVisitRecord])
+            const newVisitRecord = {
+                id_visit_record: existingRecord ? existingRecord.id_visit_record : Date.now(),
+                visit_date: new Date().toISOString(),
+                ...visitData,
+                id_turn: selectedTurn.id_turn
+            }
+
+            setVisitRecords(prev =>
+                existingRecord
+                    ? prev.map(r => r.id_turn === selectedTurn.id_turn ? newVisitRecord : r)
+                    : [...prev, newVisitRecord]
+            )
+
+            if (existingRecord) {
+                successToast("Registro de visita actualizado exitosamente.")
+            } else {
+                successToast("Registro de visita creado exitosamente.")
+            }
+
             setShowVisitForm(false)
             setSelectedTurn(null)
-            alert("Registro de visita guardado exitosamente")
         } catch (error) {
             console.error(error)
-            alert("Error al guardar el registro")
+            errorToast("Error al guardar el registro de visita.")
         } finally {
             setIsSubmitting(false)
         }
@@ -94,12 +111,19 @@ export default function VisitsPage() {
                     </div>
                 </div>
             </motion.div>
+
             <motion.div variants={fadeSlideDown} initial="hidden" animate="visible" transition={{ delay: 0.1 }}>
                 <div className="relative w-full">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Buscar por nombre o DNI del paciente..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 w-full" />
+                    <Input
+                        placeholder="Buscar por nombre o DNI del paciente..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 w-full"
+                    />
                 </div>
             </motion.div>
+
             <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }}>
                 <Card>
                     <CardHeader>
@@ -135,8 +159,21 @@ export default function VisitsPage() {
                                                     </div>
                                                 </div>
                                                 <div className="flex flex-col gap-2 ml-4">
-                                                    <Button onClick={() => handleCreateVisitRecord(turn)} variant={visitRecord ? "outline" : "default"} size="sm" className="whitespace-nowrap">
-                                                        {visitRecord ? (<><FileText className="w-4 h-4 mr-2" /> Ver/Editar</>) : (<><Plus className="w-4 h-4 mr-2" /> Crear Registro</>)}
+                                                    <Button
+                                                        onClick={() => handleCreateVisitRecord(turn)}
+                                                        variant={visitRecord ? "outline" : "default"}
+                                                        size="sm"
+                                                        className="whitespace-nowrap"
+                                                    >
+                                                        {visitRecord ? (
+                                                            <>
+                                                                <FileText className="w-4 h-4 mr-2" /> Ver/Editar
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Plus className="w-4 h-4 mr-2" /> Crear Registro
+                                                            </>
+                                                        )}
                                                     </Button>
                                                 </div>
                                             </div>
@@ -148,6 +185,7 @@ export default function VisitsPage() {
                     </CardContent>
                 </Card>
             </motion.div>
+
             {showVisitForm && selectedTurn && (
                 <motion.div variants={fadeScale} initial="hidden" animate="visible">
                     <Card className="w-full">
@@ -175,7 +213,9 @@ export default function VisitsPage() {
                             </div>
                             <div className="flex justify-end gap-2 pt-4">
                                 <Button variant="outline" onClick={() => { setShowVisitForm(false); setSelectedTurn(null) }} disabled={isSubmitting} className="px-6 py-2">Cancelar</Button>
-                                <Button onClick={handleSubmitVisit} disabled={isSubmitting} className="px-6 py-2">{isSubmitting ? "Guardando..." : "Guardar Registro"}</Button>
+                                <Button onClick={handleSubmitVisit} disabled={isSubmitting} className="px-6 py-2">
+                                    {isSubmitting ? "Guardando..." : "Guardar Registro"}
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>

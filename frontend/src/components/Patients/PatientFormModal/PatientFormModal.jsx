@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { successToast } from "@/utils/notifications"
 
 export default function PatientFormModal({ open, onClose, onSave, patient, healthPlans }) {
     const isEditing = !!patient
@@ -61,7 +62,16 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
             ...formData,
             id_user: patient?.id_user
         }
+
         onSave(patientData)
+
+        if (isEditing) {
+            successToast("Paciente actualizado exitosamente")
+        } else {
+            successToast("Paciente creado exitosamente")
+        }
+
+        onClose()
     }
 
     return (
@@ -115,6 +125,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                             />
                         </div>
                     </div>
+
                     <div className="space-y-2">
                         <Label htmlFor="email">Email *</Label>
                         <Input
@@ -153,6 +164,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                             onChange={(e) => handleChange('address', e.target.value)}
                         />
                     </div>
+
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="id_health_plan">Plan de Salud</Label>
