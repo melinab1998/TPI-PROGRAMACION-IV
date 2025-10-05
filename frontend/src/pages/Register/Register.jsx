@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,15 +13,19 @@ export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
+
+    const password = watch("password");
+
     const fieldVariants = {
         hidden: { opacity: 0, y: 20 },
         visible: { opacity: 1, y: 0 }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const onSubmit = (data) => {
+        console.log(data);
         successToast("¡Registro exitoso!");
-        e.target.reset();
+        reset();
     };
 
     return (
@@ -40,7 +45,7 @@ export default function Register() {
                 </CardHeader>
 
                 <CardContent>
-                    <form className="grid grid-cols-1 md:grid-cols-2 gap-5" onSubmit={handleSubmit}>
+                    <form className="grid grid-cols-1 md:grid-cols-2 gap-5" onSubmit={handleSubmit(onSubmit)}>
                         <motion.div
                             className="space-y-4"
                             initial="hidden"
@@ -52,41 +57,45 @@ export default function Register() {
                                 <div className="relative">
                                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
+                                        {...register("nombre", { required: "El nombre es obligatorio" })}
                                         id="nombre"
                                         type="text"
                                         placeholder="Juan"
                                         className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
-                                        required
                                     />
                                 </div>
+                                {errors.nombre && <p className="text-red-500 text-sm">{errors.nombre.message}</p>}
                             </motion.div>
-
                             <motion.div variants={fieldVariants} className="space-y-2">
                                 <Label htmlFor="apellido" className="text-sm font-medium">Apellido</Label>
                                 <div className="relative">
                                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
+                                        {...register("apellido", { required: "El apellido es obligatorio" })}
                                         id="apellido"
                                         type="text"
                                         placeholder="Pérez"
                                         className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
-                                        required
                                     />
                                 </div>
+                                {errors.apellido && <p className="text-red-500 text-sm">{errors.apellido.message}</p>}
                             </motion.div>
-
                             <motion.div variants={fieldVariants} className="space-y-2">
                                 <Label htmlFor="dni" className="text-sm font-medium">DNI</Label>
                                 <div className="relative">
                                     <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
+                                        {...register("dni", {
+                                            required: "El DNI es obligatorio",
+                                            pattern: { value: /^\d{7,8}$/, message: "DNI inválido" }
+                                        })}
                                         id="dni"
                                         type="text"
                                         placeholder="12345678"
                                         className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
-                                        required
                                     />
                                 </div>
+                                {errors.dni && <p className="text-red-500 text-sm">{errors.dni.message}</p>}
                             </motion.div>
                         </motion.div>
 
@@ -101,25 +110,32 @@ export default function Register() {
                                 <div className="relative">
                                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
+                                        {...register("email", {
+                                            required: "El email es obligatorio",
+                                            pattern: { value: /^\S+@\S+$/i, message: "Email inválido" }
+                                        })}
                                         id="email"
                                         type="email"
                                         placeholder="ejemplo@email.com"
                                         className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
-                                        required
                                     />
                                 </div>
+                                {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
                             </motion.div>
-
                             <motion.div variants={fieldVariants} className="space-y-2">
                                 <Label htmlFor="password" className="text-sm font-medium">Contraseña</Label>
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
+                                        {...register("password", {
+                                            required: "La contraseña es obligatoria",
+                                            minLength: { value: 8, message: "Debe tener al menos 8 caracteres" },
+                                            validate: value => /[A-Z]/.test(value) || "Debe contener una mayúscula"
+                                        })}
                                         id="password"
                                         type={showPassword ? "text" : "password"}
                                         placeholder="********"
                                         className="pl-10 pr-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
-                                        required
                                     />
                                     <Button
                                         type="button"
@@ -129,21 +145,23 @@ export default function Register() {
                                         onClick={() => setShowPassword(!showPassword)}
                                     >
                                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                        <span className="sr-only">{showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}</span>
                                     </Button>
                                 </div>
+                                {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
                             </motion.div>
-
                             <motion.div variants={fieldVariants} className="space-y-2">
                                 <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirmar contraseña</Label>
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
+                                        {...register("confirmPassword", {
+                                            required: "Confirma tu contraseña",
+                                            validate: value => value === password || "Las contraseñas no coinciden"
+                                        })}
                                         id="confirmPassword"
                                         type={showConfirmPassword ? "text" : "password"}
                                         placeholder="********"
                                         className="pl-10 pr-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
-                                        required
                                     />
                                     <Button
                                         type="button"
@@ -153,9 +171,9 @@ export default function Register() {
                                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                     >
                                         {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                        <span className="sr-only">{showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}</span>
                                     </Button>
                                 </div>
+                                {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>}
                             </motion.div>
                         </motion.div>
 
