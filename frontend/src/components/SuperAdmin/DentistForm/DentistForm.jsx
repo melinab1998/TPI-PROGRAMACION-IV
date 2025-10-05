@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { successToast } from "@/utils/notifications"
 
 export default function DentistForm({ 
   isOpen, 
@@ -11,14 +12,18 @@ export default function DentistForm({
   onChange, 
   isEditing 
 }) {
+
   const handleSubmit = (e) => {
-    e.preventDefault()
-    onSubmit()
-  }
+  e.preventDefault();
+  onSubmit(); 
+  successToast(`Dentista ${isEditing ? "editado" : "creado"} exitosamente`);
+  onClose();
+  };
 
   const handleInputChange = (field, value) => {
     onChange(field, value)
   }
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

@@ -1,20 +1,27 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { successToast } from "@/utils/notifications"
 
-export default function ConfirmDialog({ 
-  isOpen, 
-  onClose, 
-  onConfirm, 
-  dentist 
+export default function ConfirmDialog({
+  isOpen,
+  onClose,
+  onConfirm,
+  dentist
 }) {
   if (!dentist) return null
 
   const isActivating = dentist.status === "inactive"
   const title = isActivating ? "Activar Dentista" : "Desactivar Dentista"
   const actionText = isActivating ? "Activar" : "Desactivar"
-  const description = isActivating 
+  const description = isActivating
     ? "El dentista podrá acceder al sistema nuevamente."
     : "El dentista no podrá acceder al sistema hasta que sea activado nuevamente."
+
+  const handleConfirm = () => {
+    onConfirm();
+    successToast(`Dentista ${isActivating ? "activado" : "desactivado"} exitosamente`);
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -39,7 +46,7 @@ export default function ConfirmDialog({
           </Button>
           <Button
             variant={isActivating ? "default" : "destructive"}
-            onClick={onConfirm}
+            onClick={handleConfirm}
             className="min-w-24"
           >
             {actionText}
