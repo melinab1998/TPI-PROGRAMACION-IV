@@ -1,6 +1,6 @@
-import { motion } from "framer-motion"
-import { Input } from "@/components/ui/input"
-import { Search } from "lucide-react"
+import { motion } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 export default function SearchBar({ searchTerm, onChange }) {
   return (
@@ -8,17 +8,18 @@ export default function SearchBar({ searchTerm, onChange }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
-      className="px-1"
+      className="px-1 w-full"
     >
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
+      <div className="relative w-full">
+        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Buscar por nombre, email o matrícula..."
+          placeholder="Buscar por nombre, apellido o DNI..."
           value={searchTerm}
           onChange={(e) => onChange(e.target.value)}
-          className="pl-12 h-14 text-lg rounded-full border-2 border-border/60 focus:border-primary shadow-lg bg-background/80 backdrop-blur-sm"
+          className="pl-9 w-full"
         />
       </div>
     </motion.div>
-  )
+  );
 }
+
