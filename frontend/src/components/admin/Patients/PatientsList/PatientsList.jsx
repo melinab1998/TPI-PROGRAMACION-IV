@@ -1,11 +1,17 @@
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Eye, Edit, FileText, Stethoscope } from "lucide-react"
-import Pagination from "@/components/Pagination/Pagination"
+import { Eye, Edit, FileText } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import usePagination from "@/hooks/usePagination"
 
-export default function PatientsList({ patients, onView, onEdit, onViewVisits, onViewOdontogram }) {
-    const [currentPage, setCurrentPage] = useState(1)
-    const patientsPerPage = 5
+export default function PatientsList({ patients, onView, onEdit, onViewVisits }) {
+    const itemsPerPage = 5
+    const {
+        currentPage,
+        totalPages,
+        currentItemsRange,
+        nextPage,
+        prevPage
+    } = usePagination({ totalItems: patients.length, itemsPerPage })
 
     if (patients.length === 0) {
         return (
@@ -15,14 +21,7 @@ export default function PatientsList({ patients, onView, onEdit, onViewVisits, o
         )
     }
 
-    const totalPages = Math.ceil(patients.length / patientsPerPage)
-    const startIndex = (currentPage - 1) * patientsPerPage
-    const currentPatients = patients.slice(startIndex, startIndex + patientsPerPage)
-
-    const currentItemsCount = {
-        start: startIndex + 1,
-        end: Math.min(startIndex + patientsPerPage, patients.length)
-    }
+    const currentPatients = patients.slice(currentItemsRange.start - 1, currentItemsRange.end)
 
     return (
         <div className="space-y-4">
@@ -37,61 +36,44 @@ export default function PatientsList({ patients, onView, onEdit, onViewVisits, o
                                     </span>
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold">
-                                        {patient.first_name} {patient.last_name}
-                                    </h3>
+                                    <h3 className="font-semibold">{patient.first_name} {patient.last_name}</h3>
                                     <p className="text-sm text-muted-foreground">
                                         DNI: {patient.dni} • {patient.email} • {patient.phone_number}
                                     </p>
-                                    {patient.health_plan && (
-                                        <p className="text-xs text-muted-foreground">
-                                            {patient.health_plan.health_insurance.name} - {patient.health_plan.name}
-                                        </p>
-                                    )}
                                 </div>
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onView(patient)}
-                                className="flex items-center gap-2"
-                            >
-                                <Eye className="w-4 h-4" />
-                                Ver
+                            <Button variant="outline" size="sm" onClick={() => onView(patient)}>
+                                <Eye className="w-4 h-4" /> Ver
                             </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onViewVisits(patient)}
-                                className="flex items-center gap-2"
-                            >
-                                <FileText className="w-4 h-4" />
-                                Registros
+                            <Button variant="outline" size="sm" onClick={() => onViewVisits(patient)}>
+                                <FileText className="w-4 h-4" /> Registros
                             </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onEdit(patient)}
-                                className="flex items-center gap-2"
-                            >
-                                <Edit className="w-4 h-4" />
-                                Editar
+                            <Button variant="outline" size="sm" onClick={() => onEdit(patient)}>
+                                <Edit className="w-4 h-4" /> Editar
                             </Button>
                         </div>
                     </div>
                 ))}
             </div>
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-                totalItems={patients.length}
-                itemsPerPage={patientsPerPage}
-                currentItemsCount={currentItemsCount}
-                itemsName="pacientes" 
-            />
+
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between pt-4 border-t">
+                    <div className="text-sm text-muted-foreground">
+                        Mostrando {currentItemsRange.start}-{currentItemsRange.end} de {patients.length} pacientes
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" onClick={prevPage} disabled={currentPage === 1}>
+                            <ChevronLeft className="w-4 h-4" />
+                        </Button>
+                        <span className="text-sm">Página {currentPage} de {totalPages}</span>
+                        <Button variant="outline" size="sm" onClick={nextPage} disabled={currentPage === totalPages}>
+                            <ChevronRight className="w-4 h-4" />
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

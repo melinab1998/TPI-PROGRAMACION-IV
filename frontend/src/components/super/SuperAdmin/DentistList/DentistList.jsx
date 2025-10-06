@@ -1,26 +1,21 @@
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Users } from "lucide-react"
+import { Users, ChevronLeft, ChevronRight } from "lucide-react"
 import DentistItem from "../DentistItem/DentistItem"
-import Pagination from "@/components/Pagination/Pagination"
+import usePagination from "@/hooks/usePagination"
+import { Button } from "@/components/ui/button"
 
-export default function DentistList({ 
-  dentists, 
-  onEdit, 
-  onToggleStatus, 
-  searchTerm,
-  currentPage,
-  itemsPerPage,
-  onPageChange 
-}) {
-  const totalPages = Math.ceil(dentists.length / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const currentDentists = dentists.slice(startIndex, startIndex + itemsPerPage)
+export default function DentistList({ dentists, onEdit, onToggleStatus, searchTerm }) {
+  const itemsPerPage = 5
+  const {
+    currentPage,
+    totalPages,
+    currentItemsRange,
+    nextPage,
+    prevPage
+  } = usePagination({ totalItems: dentists.length, itemsPerPage })
 
-  const currentItemsCount = {
-    start: startIndex + 1,
-    end: Math.min(startIndex + itemsPerPage, dentists.length)
-  }
+  const currentDentists = dentists.slice(currentItemsRange.start - 1, currentItemsRange.end)
 
   return (
     <motion.div
@@ -59,16 +54,22 @@ export default function DentistList({
                   />
                 ))}
               </div>
-              <div className="p-6">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={onPageChange}
-                  totalItems={dentists.length}
-                  itemsPerPage={itemsPerPage}
-                  currentItemsCount={currentItemsCount}
-                />
-              </div>
+              {totalPages > 1 && (
+                <div className="p-6 flex items-center justify-between border-t">
+                  <div className="text-sm text-muted-foreground">
+                    Mostrando {currentItemsRange.start}-{currentItemsRange.end} de {dentists.length} dentistas
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={prevPage} disabled={currentPage === 1}>
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    <span className="text-sm">Página {currentPage} de {totalPages}</span>
+                    <Button variant="outline" size="sm" onClick={nextPage} disabled={currentPage === totalPages}>
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </CardContent>
