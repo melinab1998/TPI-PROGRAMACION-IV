@@ -1,13 +1,14 @@
 import { useState } from "react"
 import { parseISO, isSameDay } from "date-fns"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import Header from "@/components/admin/Schedule/Header/Header"
 import Calendar from "@/components/admin/Schedule/Calendar/Calendar"
 import DaySummary from "@/components/admin/Schedule/DaySummary/DaySummary"
 import AppointmentList from "@/components/admin/Schedule/AppointmentList/AppointmentList"
 import AppointmentFormModal from "@/components/admin/Schedule/AppointmentFormModal/AppointmentFormModal"
 import CancelAppointmentModal from "@/components/admin/Schedule/CancelAppointmentModal/CancelAppointmentModal"
 import { motion } from "framer-motion"
+import { Plus } from "lucide-react"
+import Header from "@/components/common/Header/Header"
 
 const initialAppointments = [
     { id_turn: 101, appointment_date: "2025-09-30T09:00", status: "Activo", consultation_type: "Consulta", patient_name: "María López", patient_email: "maria@email.com", patient_dni: "41239736", dentist_name: "Dr. Suárez" },
@@ -89,7 +90,13 @@ export default function AdminSchedule() {
                 initial="hidden"
                 animate="visible"
             >
-                <Header onCreate={handleCreate} />
+                <Header
+                    title="Agenda de Turnos"
+                    subtitle="Gestiona todos los turnos de tus pacientes"
+                    onCreate={handleCreate}
+                    actionLabel="Nuevo Turno"
+                    actionIcon={Plus}
+                />
             </motion.div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

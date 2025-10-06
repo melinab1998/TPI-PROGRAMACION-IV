@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import Header from "@/components/admin/Availability/Header/Header";
 import DayRow from "@/components/admin/Availability/DayRow/DayRow";
 import WeeklySummary from "@/components/admin/Availability/WeeklySummary/WeeklySummary";
 import { successToast, errorToast } from "@/utils/notifications";
+import Header from "@/components/common/Header/Header";
 
 // Datos
 const daysOfWeek = [
@@ -106,8 +106,8 @@ export default function Availability() {
     if (daySlots.length > 0) {
       const lastEndMinutes = timeToMinutes(daySlots[daySlots.length - 1].end_time);
       if (lastEndMinutes + 30 < timeToMinutes("20:30")) {
-        const h = Math.floor((lastEndMinutes + 30)/60).toString().padStart(2,'0');
-        const m = ((lastEndMinutes + 30)%60).toString().padStart(2,'0');
+        const h = Math.floor((lastEndMinutes + 30) / 60).toString().padStart(2, '0');
+        const m = ((lastEndMinutes + 30) % 60).toString().padStart(2, '0');
         newStart = `${h}:${m}`;
       }
     }
@@ -137,7 +137,10 @@ export default function Availability() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      <Header />
+      <Header
+        title="Configuración de Horarios"
+        subtitle="Establece tus horarios de atención semanales"
+      />
 
       <motion.div>
         <Card>

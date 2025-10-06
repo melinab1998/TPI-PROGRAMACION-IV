@@ -12,6 +12,7 @@ import PatientOdontogramModal from "@/components/admin/Patients/PatientOdontogra
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import SearchBar from "@/components/common/SearchBar/SearchBar"
+import Header from "@/components/common/Header/Header"
 
 const mockPatients = [
   {
@@ -617,20 +618,13 @@ export default function PatientsPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       <motion.div variants={fadeSlideDown} initial="hidden" animate="visible">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mt-4">
-              Gestión de Pacientes
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Administra la información de tus pacientes
-            </p>
-          </div>
-          <Button onClick={handleCreatePatient} className="flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            Nuevo Paciente
-          </Button>
-        </div>
+        <Header
+          title="Gestión de Pacientes"
+          subtitle="Administra la información de tus pacientes"
+          onCreate={handleCreatePatient}
+          actionLabel="Nuevo Paciente"
+          actionIcon={Plus}
+        />
       </motion.div>
       <motion.div variants={fadeSlideDown} initial="hidden" animate="visible" transition={{ delay: 0.1 }}>
         <div className="relative w-full">

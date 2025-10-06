@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react"
-import Header from "@/components/super/SuperAdmin/Header/Header"
+import Header from "@/components/common/Header/Header"
 import SearchBar from "@/components/common/SearchBar/SearchBar"
 import StatsCards from "@/components/super/SuperAdmin/StatsCards/StatsCards"
 import DentistList from "@/components/super/SuperAdmin/DentistList/DentistList"
 import DentistForm from "@/components/super/SuperAdmin/DentistForm/DentistForm"
 import ConfirmDialog from "@/components/super/SuperAdmin/ConfirmDialog/ConfirmDialog"
+import { Plus } from "lucide-react"
 
 const mockDentists = [
   {
@@ -151,7 +152,13 @@ export default function SuperAdminPage() {
   return (
     <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 py-4 space-y-4">
 
-      <Header onCreate={handleCreateDentist} />
+      <Header
+        title="Super Administrador"
+        subtitle="Gestión integral de dentistas del sistema"
+        onCreate={handleCreateDentist}
+        actionLabel="Nuevo Dentista"
+        actionIcon={Plus}
+      />
 
 
       <StatsCards

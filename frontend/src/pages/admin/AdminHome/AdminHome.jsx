@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { CalendarDays, Users, Clock, User, FileText, ArrowRight, X, Rocket, Plus } from "lucide-react"
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
+import Header from "@/components/common/Header/Header"
 
 export default function AdminHome() {
   const dentistName = "Dra. García"
@@ -39,26 +40,21 @@ export default function AdminHome() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-10 space-y-10 max-w-6xl mx-auto">
-      <header className="space-y-2 text-center sm:text-left">
-        <motion.h1
-          className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent w-fit"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          ¡Bienvenida, {dentistName}!
-        </motion.h1>
-        <motion.p
-          className="text-base text-muted-foreground"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-        >
-          {new Date().toLocaleDateString("es-ES", {
-            weekday: "long", day: "numeric", month: "long", year: "numeric"
+      <motion.div
+        variants={{ hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}
+        initial="hidden"
+        animate="visible"
+      >
+        <Header
+          title={`¡Bienvenida, ${dentistName}!`}
+          subtitle={new Date().toLocaleDateString("es-ES", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
           })}
-        </motion.p>
-      </header>
+        />
+      </motion.div>
 
       <div className="flex justify-center">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-2xl w-full">
