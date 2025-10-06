@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 export default function HeroSection() {
     return (
-        <section className="relative w-full overflow-hidden py-35">
+        <section className="relative w-full overflow-hidden py-25 md:py-35">
             <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-background/80 z-0" />
 
             <div className="max-w-7xl mx-auto px-4 relative z-10">
@@ -14,7 +14,7 @@ export default function HeroSection() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
-                    className="max-w-2xl text-center mx-auto"
+                    className="max-w-2xl mx-auto text-center px-1 sm:px-6 md:px-0"
                 >
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
                         <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
@@ -24,7 +24,7 @@ export default function HeroSection() {
                         que siempre quisiste
                     </h1>
 
-                    <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed">
+                    <p className="text-base md:text-xl text-muted-foreground mb-8 leading-relaxed">
                         Tu salud bucal en las mejores manos. Reserva tu turno online de forma
                         rápida y sencilla para cuidar tu sonrisa con atención profesional.
                     </p>

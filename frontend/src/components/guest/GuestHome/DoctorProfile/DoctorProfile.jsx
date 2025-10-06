@@ -16,7 +16,7 @@ export default function DoctorProfile() {
                         <AvatarImage src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?&w=128&h=128&fit=crop" alt="Dra. Erica" />
                         <AvatarFallback>EZ</AvatarFallback>
                     </Avatar>
-                    <div>
+                    <div className="text-center md:text-left">
                         <CardTitle className="mb-2">Dra. Erica L. Zaghis</CardTitle>
                         <CardDescription>
                             Con más de 15 años de experiencia en odontología general y estética dental,
