@@ -114,7 +114,7 @@ export default function DentistForm({
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:gap-0">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
             </Button>
