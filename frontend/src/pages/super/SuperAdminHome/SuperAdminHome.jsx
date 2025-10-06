@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import Header from "@/components/super/SuperAdmin/Header/Header"
-import SearchBar from "@/components/super/SuperAdmin/SearchBar/SearchBar"
+import SearchBar from "@/components/common/SearchBar/SearchBar"
 import StatsCards from "@/components/super/SuperAdmin/StatsCards/StatsCards"
 import DentistList from "@/components/super/SuperAdmin/DentistList/DentistList"
 import DentistForm from "@/components/super/SuperAdmin/DentistForm/DentistForm"
@@ -164,6 +164,7 @@ export default function SuperAdminPage() {
       <SearchBar
         searchTerm={searchTerm}
         onChange={setSearchTerm}
+        placeholder="Buscar por nombre, email o matrícula..."
         className="text-sm p-2"
       />
 

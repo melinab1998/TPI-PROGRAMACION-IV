@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Header from "@/components/admin/Visits/Header/Header";
-import SearchBar from "@/components/admin/Visits/SearchBar/SearchBar";
+import SearchBar from "@/components/common/SearchBar/SearchBar";
 import TurnsList from "@/components/admin/Visits/TurnsList/TurnsList";
 import VisitForm from "@/components/admin/Visits/VisitForm/VisitForm";
 import { successToast, errorToast } from "@/utils/notifications";
 
-const mockTurns = [{ id_turn: 1, patient_name: "María González", patient_dni: "12345678A", scheduled_time: "09:00" }, { id_turn: 2, patient_name: "Carlos Rodríguez", patient_dni: "87654321B", scheduled_time: "10:30" }, { id_turn: 3, patient_name: "Ana Martínez", patient_dni: "11223344C", scheduled_time: "11:15" }, { id_turn: 4, patient_name: "Pedro López", patient_dni: "44332211D", scheduled_time: "14:00" }] 
+const mockTurns = [{ id_turn: 1, patient_name: "María González", patient_dni: "12345678A", scheduled_time: "09:00" }, { id_turn: 2, patient_name: "Carlos Rodríguez", patient_dni: "87654321B", scheduled_time: "10:30" }, { id_turn: 3, patient_name: "Ana Martínez", patient_dni: "11223344C", scheduled_time: "11:15" }, { id_turn: 4, patient_name: "Pedro López", patient_dni: "44332211D", scheduled_time: "14:00" }]
 const mockVisitRecords = [{ id_visit_record: 1, visit_date: new Date().toISOString(), treatment: "Limpieza dental completa", diagnosis: "Gingivitis leve", notes: "Paciente con buena higiene bucal, necesita mejorar técnica de cepillado", prescription: "Enjuague bucal con clorhexidina 2 veces al día por 7 días", id_turn: 1 }]
 
 export default function VisitsPage() {
@@ -66,7 +66,11 @@ export default function VisitsPage() {
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
             <Header totalTurns={turns.length} />
-            <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+            <SearchBar
+                searchTerm={searchTerm}
+                onChange={setSearchTerm}
+                placeholder="Buscar por nombre, apellido o DNI..."
+            />
             <TurnsList turns={filteredTurns} getVisitRecordForTurn={getVisitRecordForTurn} handleCreateVisitRecord={handleCreateVisitRecord} />
             <VisitForm
                 selectedTurn={selectedTurn}

@@ -11,7 +11,7 @@ import PatientVisitsModal from "@/components/admin/Patients/PatientVisitsModal/P
 import PatientOdontogramModal from "@/components/admin/Patients/PatientOdontogramModal/PatientOdontogramModal"
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
-
+import SearchBar from "@/components/common/SearchBar/SearchBar"
 
 const mockPatients = [
   {
@@ -634,12 +634,10 @@ export default function PatientsPage() {
       </motion.div>
       <motion.div variants={fadeSlideDown} initial="hidden" animate="visible" transition={{ delay: 0.1 }}>
         <div className="relative w-full">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input
+          <SearchBar
+            searchTerm={searchTerm}
+            onChange={setSearchTerm}
             placeholder="Buscar por nombre, apellido o DNI..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9 w-full"
           />
         </div>
       </motion.div>
