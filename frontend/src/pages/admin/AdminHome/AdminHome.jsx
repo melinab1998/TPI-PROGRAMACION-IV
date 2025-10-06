@@ -39,7 +39,7 @@ export default function AdminHome() {
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-10 space-y-10 max-w-6xl mx-auto">
+    <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-10 max-w-6xl mx-auto">
       <motion.div
         variants={{ hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}
         initial="hidden"

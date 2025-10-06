@@ -4,7 +4,7 @@ import { AuthContext } from "./AuthContext";
 export function AuthContextProvider({ children }) {
     const [auth, setAuth] = useState({
         isLoggedIn: true,
-        role: "admin", // guest | user | admin | superadmin
+        role: "superadmin", // guest | user | admin | superadmin
     });
 
     const login = (role = "user") =>
