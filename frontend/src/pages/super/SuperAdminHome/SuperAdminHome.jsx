@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react"
-import Header from "@/components/SuperAdmin/Header/Header"
-import SearchBar from "@/components/SuperAdmin/SearchBar/SearchBar"
-import StatsCards from "@/components/SuperAdmin/StatsCards/StatsCards"
-import DentistList from "@/components/SuperAdmin/DentistList/DentistList"
-import DentistForm from "@/components/SuperAdmin/DentistForm/DentistForm"
-import ConfirmDialog from "@/components/SuperAdmin/ConfirmDialog/ConfirmDialog"
+import Header from "@/components/super/SuperAdmin/Header/Header"
+import SearchBar from "@/components/super/SuperAdmin/SearchBar/SearchBar"
+import StatsCards from "@/components/super/SuperAdmin/StatsCards/StatsCards"
+import DentistList from "@/components/super/SuperAdmin/DentistList/DentistList"
+import DentistForm from "@/components/super/SuperAdmin/DentistForm/DentistForm"
+import ConfirmDialog from "@/components/super/SuperAdmin/ConfirmDialog/ConfirmDialog"
 
 const mockDentists = [
   {

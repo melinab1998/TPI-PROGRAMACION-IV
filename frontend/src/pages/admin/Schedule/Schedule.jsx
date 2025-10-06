@@ -1,12 +1,12 @@
 import { useState } from "react"
 import { parseISO, isSameDay } from "date-fns"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import Header from "@/components/AdminSchedule/Header/Header"
-import Calendar from "@/components/AdminSchedule/Calendar/Calendar"
-import DaySummary from "@/components/AdminSchedule/DaySummary/DaySummary"
-import AppointmentList from "@/components/AdminSchedule/AppointmentList/AppointmentList"
-import AppointmentFormModal from "@/components/AdminSchedule/AppointmentFormModal/AppointmentFormModal"
-import CancelAppointmentModal from "@/components/AdminSchedule/CancelAppointmentModal/CancelAppointmentModal"
+import Header from "@/components/admin/Schedule/Header/Header"
+import Calendar from "@/components/admin/Schedule/Calendar/Calendar"
+import DaySummary from "@/components/admin/Schedule/DaySummary/DaySummary"
+import AppointmentList from "@/components/admin/Schedule/AppointmentList/AppointmentList"
+import AppointmentFormModal from "@/components/admin/Schedule/AppointmentFormModal/AppointmentFormModal"
+import CancelAppointmentModal from "@/components/admin/Schedule/CancelAppointmentModal/CancelAppointmentModal"
 import { motion } from "framer-motion"
 
 const initialAppointments = [

@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FileText } from "lucide-react";
 import { motion } from "framer-motion";
-import Odontogram from "@/components/Odontogram/Odontogram/Odontogram";
+import Odontogram from "@/components/admin/Odontogram/Odontogram/Odontogram";
 
 export default function VisitForm({
     selectedTurn,

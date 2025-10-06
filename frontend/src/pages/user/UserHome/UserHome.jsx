@@ -1,7 +1,7 @@
 import React from "react";
-import Header from "@/components/UserHome/Header/Header";
-import NextAppointmentCard from "@/components/UserHome/NextAppointmentCard/NextAppointmentCard";
-import QuickActions from "@/components/UserHome/QuickActions/QuickActions";
+import Header from "@/components/user/UserHome/Header/Header";
+import NextAppointmentCard from "@/components/user/UserHome/NextAppointmentCard/NextAppointmentCard";
+import QuickActions from "@/components/user/UserHome/QuickActions/QuickActions";
 import { Sparkles, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 

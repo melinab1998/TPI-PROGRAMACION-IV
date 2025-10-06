@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import Odontogram from "@/components/Odontogram/Odontogram/Odontogram"
+import Odontogram from "@/components/admin/Odontogram/Odontogram/Odontogram"
 import { FileText } from "lucide-react"
 
 export default function PatientOdontogramModal({ open, onClose, patient }) {

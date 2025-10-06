@@ -1,7 +1,7 @@
-import Hero from "@/components/Contact/Hero/Hero";
-import ContactInfoCard from "@/components/Contact/ContactInfoCard/ContactInfoCard";
-import ContactForm from "@/components/Contact/ContactForm/ContactForm";
-import LocationMap from "@/components/Contact/LocationMap/LocationMap";
+import Hero from "@/components/guest/Contact/Hero/Hero";
+import ContactInfoCard from "@/components/guest/Contact/ContactInfoCard/ContactInfoCard";
+import ContactForm from "@/components/guest/Contact/ContactForm/ContactForm";
+import LocationMap from "@/components/guest/Contact/LocationMap/LocationMap";
 import { motion } from "framer-motion";
 
 const containerVariants = {

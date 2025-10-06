@@ -2,9 +2,9 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import Header from "@/components/Availability/Header/Header";
-import DayRow from "@/components/Availability/DayRow/DayRow";
-import WeeklySummary from "@/components/Availability/WeeklySummary/WeeklySummary";
+import Header from "@/components/admin/Availability/Header/Header";
+import DayRow from "@/components/admin/Availability/DayRow/DayRow";
+import WeeklySummary from "@/components/admin/Availability/WeeklySummary/WeeklySummary";
 import { successToast, errorToast } from "@/utils/notifications";
 
 // Datos

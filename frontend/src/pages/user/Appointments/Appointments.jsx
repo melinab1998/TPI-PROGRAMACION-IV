@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import DoctorFilters from "@/components/Appointments/DoctorFilters/DoctorFilters";
-import DoctorCard from "@/components/Appointments/DoctorCard/DoctorCard";
+import DoctorFilters from "@/components/user/Appointments/DoctorFilters/DoctorFilters";
+import DoctorCard from "@/components/user/Appointments/DoctorCard/DoctorCard";
 import { motion, AnimatePresence } from "framer-motion";
 
 const doctorsData = [

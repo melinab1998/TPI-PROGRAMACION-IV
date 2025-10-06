@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Plus } from "lucide-react"
 import { motion } from "framer-motion"
-import PatientDetailModal from "@/components/Patients/PatientDetailModal/PatientDetailModal"
-import PatientFormModal from "@/components/Patients/PatientFormModal/PatientFormModal"
-import PatientsList from "@/components/Patients/PatientsList/PatientsList"
-import PatientVisitsModal from "@/components/Patients/PatientVisitsModal/PatientVisitsModal"
-import PatientOdontogramModal from "@/components/Patients/PatientOdontogramModal/PatientOdontogramModal"
+import PatientDetailModal from "@/components/admin/Patients/PatientDetailModal/PatientDetailModal"
+import PatientFormModal from "@/components/admin/Patients/PatientFormModal/PatientFormModal"
+import PatientsList from "@/components/admin/Patients/PatientsList/PatientsList"
+import PatientVisitsModal from "@/components/admin/Patients/PatientVisitsModal/PatientVisitsModal"
+import PatientOdontogramModal from "@/components/admin/Patients/PatientOdontogramModal/PatientOdontogramModal"
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 

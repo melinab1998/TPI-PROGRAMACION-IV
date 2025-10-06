@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion"; 
-import ServiceCard from "@/components/Services/ServiceCard/ServiceCard";
-import ServiceModal from "@/components/Services/ServiceModal/ServiceModal";
+import ServiceCard from "@/components/guest/Services/ServiceCard/ServiceCard";
+import ServiceModal from "@/components/guest/Services/ServiceModal/ServiceModal";
 import { GiToothbrush } from "react-icons/gi";
 import { RiMedicineBottleLine, RiScissorsCutLine, RiSparkling2Line } from "react-icons/ri";
 import { CgBrackets, CgAlignTop, CgSmileMouthOpen } from "react-icons/cg";

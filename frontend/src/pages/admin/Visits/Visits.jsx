@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import Header from "@/components/VisitPage/Header/Header";
-import SearchBar from "@/components/VisitPage/SearchBar/SearchBar";
-import TurnsList from "@/components/VisitPage/TurnsList/TurnsList";
-import VisitForm from "@/components/VisitPage/VisitForm/VisitForm";
+import Header from "@/components/admin/Visits/Header/Header";
+import SearchBar from "@/components/admin/Visits/SearchBar/SearchBar";
+import TurnsList from "@/components/admin/Visits/TurnsList/TurnsList";
+import VisitForm from "@/components/admin/Visits/VisitForm/VisitForm";
 import { successToast, errorToast } from "@/utils/notifications";
 
 const mockTurns = [{ id_turn: 1, patient_name: "María González", patient_dni: "12345678A", scheduled_time: "09:00" }, { id_turn: 2, patient_name: "Carlos Rodríguez", patient_dni: "87654321B", scheduled_time: "10:30" }, { id_turn: 3, patient_name: "Ana Martínez", patient_dni: "11223344C", scheduled_time: "11:15" }, { id_turn: 4, patient_name: "Pedro López", patient_dni: "44332211D", scheduled_time: "14:00" }] 

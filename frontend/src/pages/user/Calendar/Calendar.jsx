@@ -2,9 +2,9 @@ import React, { useState } from "react"
 import { useParams } from "react-router-dom"
 import { format, parseISO } from "date-fns"
 import { es } from "date-fns/locale"
-import CalendarWidget from "@/components/Calendar/CalendarWidget/CalendarWidget"
-import TimeSlots from "@/components/Calendar/TimeSlots/TimeSlots"
-import BookingModal from "@/components/Calendar/BookingModal/BookingModal"
+import CalendarWidget from "@/components/user/Calendar/CalendarWidget/CalendarWidget"
+import TimeSlots from "@/components/user/Calendar/TimeSlots/TimeSlots"
+import BookingModal from "@/components/user/Calendar/BookingModal/BookingModal"
 import { motion } from "framer-motion"
 
 const availability = {

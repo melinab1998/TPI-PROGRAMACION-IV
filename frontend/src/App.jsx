@@ -17,8 +17,8 @@ import PatientsPage from "./pages/admin/Patients/Patients";
 import Availability from "./pages/admin/Availability/Availability";
 import VisitsPage from "./pages/admin/Visits/Visits";
 import SuperAdmin from "./pages/super/SuperAdminHome/SuperAdminHome";
-import ForgotPassword from "./components/ForgotPassword/ForgotPasswordForm/ForgotPasswordForm";
-import ResetPassword from "./components/ForgotPassword/ResetPasswordForm/ResetPasswordForm";
+import ForgotPassword from "./components/guest/ForgotPassword/ForgotPasswordForm/ForgotPasswordForm";
+import ResetPassword from "./components/guest/ForgotPassword/ResetPasswordForm/ResetPasswordForm";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; 
 import "./utils/notifications.css"

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import Header from "@/components/PatientProfile/Header/Header";
-import PersonalInfoCard from "@/components/PatientProfile/PersonalInfoCard/PersonalInfoCard";
-import UpdateEmailDialog from "@/components/PatientProfile/UpdateEmailDialog/UpdateEmailDialog";
-import UpdatePasswordDialog from "@/components/PatientProfile/UpdatePasswordDialog/UpdatePasswordDialog";
-import AppointmentsCard from "@/components/PatientProfile/AppointmentsCard/AppointmentsCard";
+import Header from "@/components/user/PatientProfile/Header/Header";
+import PersonalInfoCard from "@/components/user/PatientProfile/PersonalInfoCard/PersonalInfoCard";
+import UpdateEmailDialog from "@/components/user/PatientProfile/UpdateEmailDialog/UpdateEmailDialog";
+import UpdatePasswordDialog from "@/components/user/PatientProfile/UpdatePasswordDialog/UpdatePasswordDialog";
+import AppointmentsCard from "@/components/user/PatientProfile/AppointmentsCard/AppointmentsCard";
 
 export default function PatientProfile() {
   const [patientData] = useState({
