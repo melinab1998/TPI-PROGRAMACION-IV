@@ -38,68 +38,68 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
     // Validación personalizada para email
     const validateEmail = (email) => {
         if (!email) return "El email es requerido"
-        
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(email)) {
             return "Ingrese un email válido"
         }
-        
+
         return true
     }
 
     // Validación personalizada para DNI
     const validateDNI = (dni) => {
         if (!dni) return "El DNI es requerido"
-        
+
         const dniRegex = /^\d+$/
         if (!dniRegex.test(dni)) {
             return "El DNI debe contener solo números"
         }
-        
+
         if (dni.length < 7 || dni.length > 9) {
             return "El DNI debe tener entre 7 y 9 dígitos"
         }
-        
+
         return true
     }
 
     // Validación personalizada para fecha de nacimiento
     const validateBirthDate = (date) => {
         if (!date) return true // No es obligatorio
-        
+
         const birthDate = new Date(date)
         const today = new Date()
-        
+
         if (birthDate > today) {
             return "La fecha de nacimiento no puede ser futura"
         }
-        
+
         // Validar que no sea menor a 150 años (aproximadamente)
         const minDate = new Date()
         minDate.setFullYear(today.getFullYear() - 150)
-        
+
         if (birthDate < minDate) {
             return "La fecha de nacimiento no es válida"
         }
-        
+
         return true
     }
 
     // Validación personalizada para teléfono
     const validatePhone = (phone) => {
         if (!phone) return true // No es obligatorio
-        
+
         const phoneRegex = /^[\d\s+\-()]+$/
         if (!phoneRegex.test(phone)) {
             return "El teléfono contiene caracteres inválidos"
         }
-        
+
         // Remover caracteres especiales y contar dígitos
         const digitsOnly = phone.replace(/\D/g, '')
         if (digitsOnly.length < 8) {
             return "El teléfono debe tener al menos 8 dígitos"
         }
-        
+
         return true
     }
 
@@ -168,7 +168,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                             <Label htmlFor="first_name">Nombre *</Label>
                             <Input
                                 id="first_name"
-                                {...register("first_name", { 
+                                {...register("first_name", {
                                     required: "El nombre es requerido",
                                     minLength: {
                                         value: 2,
@@ -186,12 +186,12 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                                 <p className="text-red-500 text-xs">{errors.first_name.message}</p>
                             )}
                         </div>
-                        
+
                         <div className="space-y-2">
                             <Label htmlFor="last_name">Apellido *</Label>
                             <Input
                                 id="last_name"
-                                {...register("last_name", { 
+                                {...register("last_name", {
                                     required: "El apellido es requerido",
                                     minLength: {
                                         value: 2,
@@ -216,7 +216,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                             <Label htmlFor="dni">DNI *</Label>
                             <Input
                                 id="dni"
-                                {...register("dni", { 
+                                {...register("dni", {
                                     required: "El DNI es requerido",
                                     validate: validateDNI
                                 })}
@@ -227,7 +227,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                                 <p className="text-red-500 text-xs">{errors.dni.message}</p>
                             )}
                         </div>
-                        
+
                         <div className="space-y-2">
                             <Label htmlFor="birth_date">Fecha de Nacimiento</Label>
                             <Input
@@ -249,7 +249,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                         <Input
                             id="email"
                             type="email"
-                            {...register("email", { 
+                            {...register("email", {
                                 required: "El email es requerido",
                                 validate: validateEmail
                             })}
@@ -277,7 +277,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                                 <p className="text-red-500 text-xs">{errors.phone_number.message}</p>
                             )}
                         </div>
-                        
+
                         <div className="space-y-2">
                             <Label htmlFor="city">Ciudad</Label>
                             <Input
@@ -338,7 +338,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                                 {...register("id_health_plan")}
                             />
                         </div>
-                        
+
                         <div className="space-y-2">
                             <Label htmlFor="membership_number">Número de Afiliado</Label>
                             <Input
@@ -362,11 +362,11 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                         * Campos obligatorios
                     </div>
 
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={onClose}>
+                    <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-0">
+                        <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto">
                             Cancelar
                         </Button>
-                        <Button type="submit">
+                        <Button type="submit" className="w-full sm:w-auto">
                             {isEditing ? "Guardar Cambios" : "Crear Paciente"}
                         </Button>
                     </DialogFooter>

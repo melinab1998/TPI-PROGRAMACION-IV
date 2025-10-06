@@ -7,7 +7,7 @@ import { es } from "date-fns/locale"
 export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
   if (!patient) return null
 
-  const formattedBirthDate = patient.birth_date 
+  const formattedBirthDate = patient.birth_date
     ? format(parseISO(patient.birth_date), "dd/MM/yyyy")
     : "No especificada"
 
@@ -75,7 +75,7 @@ export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
               <div>
                 <span className="text-muted-foreground">Plan:</span>
                 <p>
-                  {patient.health_plan 
+                  {patient.health_plan
                     ? `${patient.health_plan.health_insurance.name} - ${patient.health_plan.name}`
                     : "Particular"
                   }
@@ -91,11 +91,11 @@ export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+        <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-0">
+          <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
             Cerrar
           </Button>
-          <Button onClick={onEdit}>
+          <Button onClick={onEdit} className="w-full sm:w-auto">
             Editar Paciente
           </Button>
         </DialogFooter>

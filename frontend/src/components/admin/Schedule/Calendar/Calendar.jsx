@@ -28,9 +28,9 @@ export default function Calendar({ selectedDate, onDateChange, appointments }) {
         <Button variant="outline" size="sm" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
           <ChevronLeft className="w-4 h-4" /> Anterior
         </Button>
-        <h3 className="font-semibold text-lg capitalize">
-          {format(currentMonth, "MMMM yyyy", { locale: es })}
-        </h3>
+        <h3 className="font-semibold text-xs sm:text-lg capitalize">
+  {format(currentMonth, "MMMM yyyy", { locale: es })}
+</h3>
         <Button variant="outline" size="sm" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
           Siguiente <ChevronRight className="w-4 h-4" />
         </Button>
