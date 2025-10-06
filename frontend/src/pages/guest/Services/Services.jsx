@@ -53,7 +53,7 @@ export default function ServicesPage() {
 
       {Object.entries(servicesByCategory).map(([category, categoryServices]) => (
         <div key={category} className="mb-16">
-          <h3 className="text-2xl font-semibold mb-8 text-foreground border-b pb-2">{category}</h3>
+          <h3 className="text-2xl font-semibold mb-8 text-foreground border-b pb-2 text-center md:text-left">{category}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {categoryServices.map((service, index) => (
               <ServiceCard key={service.id} service={service} index={index} onSelect={setSelectedService} />
