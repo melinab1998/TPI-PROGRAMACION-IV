@@ -2,11 +2,14 @@ import { Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Header({ totalTurns }) {
-    const fadeSlideDown = { hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
+    const fadeSlideDown = { 
+        hidden: { opacity: 0, y: -20 }, 
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } 
+    };
 
     return (
         <motion.div variants={fadeSlideDown} initial="hidden" animate="visible">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center items-center text-center sm:text-left gap-4">
                 <div>
                     <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mt-4">
                         Visitas del Día
@@ -21,5 +24,6 @@ export default function Header({ totalTurns }) {
                 </div>
             </div>
         </motion.div>
-    )
+    );
 }
+
