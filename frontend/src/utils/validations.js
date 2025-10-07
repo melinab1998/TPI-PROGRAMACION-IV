@@ -119,3 +119,128 @@ export const dentistValidations = {
         }
     }
 };
+
+export const appointmentValidations = {
+    appointment_date: {
+        required: "La fecha es requerida",
+        validate: {
+            notPast: (date) => {
+                if (!date) return "La fecha es requerida"
+                const selected = new Date(date)
+                const today = new Date()
+                today.setHours(0, 0, 0, 0)
+                return selected >= today || "No se pueden agendar turnos pasados"
+            }
+        }
+    },
+    appointment_time: {
+        required: "La hora es requerida"
+    },
+    dentist_id: {
+        required: "Seleccione un dentista"
+    },
+    patient_id: {
+        required: "Seleccione un paciente",
+        validate: (value) => value ? true : "Seleccione un paciente"
+    },
+    consultation_type: {
+        required: "Seleccione el tipo de turno"
+    }
+};
+
+export const patientValidations = {
+    first_name: {
+        required: "El nombre es requerido",
+        minLength: { value: 2, message: "Debe tener al menos 2 caracteres" },
+        maxLength: { value: 50, message: "No puede exceder 50 caracteres" }
+    },
+    last_name: {
+        required: "El apellido es requerido",
+        minLength: { value: 2, message: "Debe tener al menos 2 caracteres" },
+        maxLength: { value: 50, message: "No puede exceder 50 caracteres" }
+    },
+    email: {
+        required: "El email es requerido",
+        validate: {
+            validEmail: (email) => {
+                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+                return regex.test(email) || "Ingrese un email válido"
+            }
+        }
+    },
+    dni: {
+        required: "El DNI es requerido",
+        validate: {
+            onlyNumbers: (value) => /^\d+$/.test(value) || "El DNI debe contener solo números",
+            validLength: (value) => (value.length >= 7 && value.length <= 9) || "El DNI debe tener entre 7 y 9 dígitos"
+        }
+    },
+    birth_date: {
+        validate: {
+            notFuture: (date) => {
+                if (!date) return true
+                const birth = new Date(date)
+                const today = new Date()
+                return birth <= today || "La fecha no puede ser futura"
+            },
+            notTooOld: (date) => {
+                if (!date) return true
+                const birth = new Date(date)
+                const today = new Date()
+                const min = new Date()
+                min.setFullYear(today.getFullYear() - 150)
+                return birth >= min || "La fecha no es válida"
+            }
+        }
+    },
+    phone_number: {
+        validate: {
+            validCharacters: (phone) => {
+                if (!phone) return true
+                const regex = /^[\d\s+\-()]+$/
+                return regex.test(phone) || "El teléfono contiene caracteres inválidos"
+            },
+            minDigits: (phone) => {
+                if (!phone) return true
+                const digits = phone.replace(/\D/g, "")
+                return digits.length >= 8 || "Debe tener al menos 8 dígitos"
+            }
+        }
+    },
+    city: {
+        maxLength: { value: 50, message: "No puede exceder 50 caracteres" }
+    },
+    address: {
+        maxLength: { value: 100, message: "No puede exceder 100 caracteres" }
+    },
+    membership_number: {
+        maxLength: { value: 20, message: "No puede exceder 20 caracteres" }
+    }
+};
+
+export const visitValidations = {
+    treatment: {
+        required: "El tratamiento realizado es obligatorio",
+        minLength: { value: 3, message: "Debe tener al menos 3 caracteres" }
+    },
+    diagnosis: {
+        required: "El diagnóstico es obligatorio",
+        minLength: { value: 3, message: "Debe tener al menos 3 caracteres" }
+    }
+};
+
+export const availabilityValidations = {
+    timeSlot: {
+        validateTimeSlot: (start, end) => {
+            const timeToMinutes = (time) => {
+                const [h, m] = time.split(":").map(Number);
+                return h * 60 + m;
+            };
+            return timeToMinutes(start) < timeToMinutes(end);
+        },
+        errorMessages: {
+            invalidTimeSlot: "La hora de fin debe ser posterior a la hora de inicio",
+            overlappingSlots: "Los horarios se superponen con otro bloque"
+        }
+    }
+};

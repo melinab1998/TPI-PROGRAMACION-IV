@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { FileText } from "lucide-react";
 import { motion } from "framer-motion";
 import Odontogram from "@/components/admin/Odontogram/Odontogram/Odontogram";
+import { visitValidations } from "@/utils/validations";
 
 export default function VisitForm({
   selectedTurn,
@@ -57,10 +58,7 @@ export default function VisitForm({
               <Textarea
                 id="treatment"
                 placeholder="Ingrese el tratamiento realizado..."
-                {...register("treatment", {
-                  required: "El tratamiento realizado es obligatorio",
-                  minLength: { value: 3, message: "Debe tener al menos 3 caracteres" }
-                })}
+                {...register("treatment", visitValidations.treatment)}
                 className={errors.treatment ? "border-red-500" : ""}
                 rows={3}
               />
@@ -76,10 +74,7 @@ export default function VisitForm({
               <Textarea
                 id="diagnosis"
                 placeholder="Ingrese el diagnóstico..."
-                {...register("diagnosis", {
-                  required: "El diagnóstico es obligatorio",
-                  minLength: { value: 3, message: "Debe tener al menos 3 caracteres" }
-                })}
+                {...register("diagnosis", visitValidations.diagnosis)}
                 className={errors.diagnosis ? "border-red-500" : ""}
                 rows={3}
               />

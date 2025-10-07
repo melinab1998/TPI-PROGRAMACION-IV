@@ -6,6 +6,7 @@ import DayRow from "@/components/admin/Availability/DayRow/DayRow";
 import WeeklySummary from "@/components/admin/Availability/WeeklySummary/WeeklySummary";
 import { successToast, errorToast } from "@/utils/notifications";
 import Header from "@/components/common/Header/Header";
+import { availabilityValidations } from "@/utils/validations";
 
 const daysOfWeek = [
   { id: 1, name: "Lunes", label: "Lun" },
@@ -40,7 +41,7 @@ export default function Availability() {
     return h * 60 + m;
   };
 
-  const validateTimeSlot = (start, end) => timeToMinutes(start) < timeToMinutes(end);
+  const validateTimeSlot = (start, end) => availabilityValidations.timeSlot.validateTimeSlot(start, end);
 
   const validateDayAvailabilities = (daySlots) => {
     const sorted = [...daySlots].sort((a, b) => timeToMinutes(a.start_time) - timeToMinutes(b.start_time));
@@ -58,7 +59,7 @@ export default function Availability() {
       const daySlots = toValidate.filter(a => a.day_of_week === day.id);
       daySlots.forEach(slot => {
         if (!validateTimeSlot(slot.start_time, slot.end_time)) {
-          newErrors[slot.id_availability] = "La hora de fin debe ser posterior a la hora de inicio";
+          newErrors[slot.id_availability] = availabilityValidations.timeSlot.errorMessages.invalidTimeSlot;
         }
       });
 
@@ -67,7 +68,7 @@ export default function Availability() {
         const validation = validateDayAvailabilities(daySlots);
         if (validation.hasError) {
           validation.conflictingSlots.forEach(id => {
-            newErrors[id] = "Los horarios se superponen con otro bloque";
+            newErrors[id] = availabilityValidations.timeSlot.errorMessages.overlappingSlots;
           });
         }
       }

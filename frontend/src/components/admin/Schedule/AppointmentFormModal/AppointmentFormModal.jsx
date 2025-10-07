@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search } from "lucide-react"
 import { useNavigate } from "react-router-dom";
 import { successToast } from "@/utils/notifications"
+import { appointmentValidations } from "@/utils/validations"
 
 const mockPatients = [
     { id: 1, name: "María López", email: "maria@email.com", dni: "41239736", phone: "1122334455" },
@@ -192,16 +193,7 @@ export default function AppointmentFormModal({
                             <Input
                                 id="appointment_date"
                                 type="date"
-                                {...register("appointment_date", {
-                                    required: "La fecha es requerida",
-                                    validate: (date) => {
-                                        if (!date) return "La fecha es requerida"
-                                        const selected = new Date(date)
-                                        const today = new Date()
-                                        today.setHours(0, 0, 0, 0)
-                                        return selected >= today || "No se pueden agendar turnos pasados"
-                                    }
-                                })}
+                                {...register("appointment_date", appointmentValidations.appointment_date)}
                                 className={errors.appointment_date ? "border-red-500" : ""}
                             />
                             {errors.appointment_date && (
@@ -227,7 +219,7 @@ export default function AppointmentFormModal({
                             </Select>
                             <input
                                 type="hidden"
-                                {...register("appointment_time", { required: "La hora es requerida" })}
+                                {...register("appointment_time", appointmentValidations.appointment_time)}
                             />
                             {errors.appointment_time && (
                                 <p className="text-red-500 text-xs">{errors.appointment_time.message}</p>
@@ -253,7 +245,7 @@ export default function AppointmentFormModal({
                         </Select>
                         <input
                             type="hidden"
-                            {...register("dentist_id", { required: "Seleccione un dentista" })}
+                            {...register("dentist_id", appointmentValidations.dentist_id)}
                         />
                         {errors.dentist_id && (
                             <p className="text-red-500 text-xs">{errors.dentist_id.message}</p>
@@ -328,10 +320,7 @@ export default function AppointmentFormModal({
 
                         <input
                             type="hidden"
-                            {...register("patient_id", {
-                                required: "Seleccione un paciente",
-                                validate: (value) => value ? true : "Seleccione un paciente"
-                            })}
+                            {...register("patient_id", appointmentValidations.patient_id)}
                         />
                         {!watchPatientId && (
                             <Button
@@ -361,7 +350,7 @@ export default function AppointmentFormModal({
                         </Select>
                         <input
                             type="hidden"
-                            {...register("consultation_type", { required: "Seleccione el tipo de turno" })}
+                            {...register("consultation_type", appointmentValidations.consultation_type)}
                         />
                         {errors.consultation_type && (
                             <p className="text-red-500 text-xs">{errors.consultation_type.message}</p>

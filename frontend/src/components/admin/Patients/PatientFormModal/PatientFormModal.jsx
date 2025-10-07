@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { successToast } from "@/utils/notifications"
+import { patientValidations } from "@/utils/validations"
 
 export default function PatientFormModal({ open, onClose, onSave, patient, healthPlans }) {
     const isEditing = !!patient
@@ -71,18 +72,13 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    {/* Nombre y Apellido */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="first_name">Nombre *</Label>
                             <Input
                                 id="first_name"
                                 placeholder="Ingrese el nombre"
-                                {...register("first_name", {
-                                    required: "El nombre es requerido",
-                                    minLength: { value: 2, message: "Debe tener al menos 2 caracteres" },
-                                    maxLength: { value: 50, message: "No puede exceder 50 caracteres" }
-                                })}
+                                {...register("first_name", patientValidations.first_name)}
                                 className={errors.first_name ? "border-red-500" : ""}
                             />
                             {errors.first_name && <p className="text-red-500 text-xs">{errors.first_name.message}</p>}
@@ -93,11 +89,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                             <Input
                                 id="last_name"
                                 placeholder="Ingrese el apellido"
-                                {...register("last_name", {
-                                    required: "El apellido es requerido",
-                                    minLength: { value: 2, message: "Debe tener al menos 2 caracteres" },
-                                    maxLength: { value: 50, message: "No puede exceder 50 caracteres" }
-                                })}
+                                {...register("last_name", patientValidations.last_name)}
                                 className={errors.last_name ? "border-red-500" : ""}
                             />
                             {errors.last_name && <p className="text-red-500 text-xs">{errors.last_name.message}</p>}
@@ -110,15 +102,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                             <Input
                                 id="dni"
                                 placeholder="Ingrese el DNI"
-                                {...register("dni", {
-                                    required: "El DNI es requerido",
-                                    validate: (value) => {
-                                        if (!/^\d+$/.test(value)) return "El DNI debe contener solo números"
-                                        if (value.length < 7 || value.length > 9)
-                                            return "El DNI debe tener entre 7 y 9 dígitos"
-                                        return true
-                                    }
-                                })}
+                                {...register("dni", patientValidations.dni)}
                                 className={errors.dni ? "border-red-500" : ""}
                             />
                             {errors.dni && <p className="text-red-500 text-xs">{errors.dni.message}</p>}
@@ -129,18 +113,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                             <Input
                                 id="birth_date"
                                 type="date"
-                                {...register("birth_date", {
-                                    validate: (date) => {
-                                        if (!date) return true
-                                        const birth = new Date(date)
-                                        const today = new Date()
-                                        if (birth > today) return "La fecha no puede ser futura"
-                                        const min = new Date()
-                                        min.setFullYear(today.getFullYear() - 150)
-                                        if (birth < min) return "La fecha no es válida"
-                                        return true
-                                    }
-                                })}
+                                {...register("birth_date", patientValidations.birth_date)}
                                 className={errors.birth_date ? "border-red-500" : ""}
                             />
                             {errors.birth_date && <p className="text-red-500 text-xs">{errors.birth_date.message}</p>}
@@ -153,13 +126,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                             id="email"
                             type="email"
                             placeholder="ejemplo@correo.com"
-                            {...register("email", {
-                                required: "El email es requerido",
-                                validate: (email) => {
-                                    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-                                    return regex.test(email) || "Ingrese un email válido"
-                                }
-                            })}
+                            {...register("email", patientValidations.email)}
                             className={errors.email ? "border-red-500" : ""}
                         />
                         {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
@@ -171,15 +138,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                             <Input
                                 id="phone_number"
                                 placeholder="+54 11 1234-5678"
-                                {...register("phone_number", {
-                                    validate: (phone) => {
-                                        if (!phone) return true
-                                        const regex = /^[\d\s+\-()]+$/
-                                        if (!regex.test(phone)) return "El teléfono contiene caracteres inválidos"
-                                        const digits = phone.replace(/\D/g, "")
-                                        return digits.length >= 8 || "Debe tener al menos 8 dígitos"
-                                    }
-                                })}
+                                {...register("phone_number", patientValidations.phone_number)}
                                 className={errors.phone_number ? "border-red-500" : ""}
                             />
                             {errors.phone_number && <p className="text-red-500 text-xs">{errors.phone_number.message}</p>}
@@ -190,9 +149,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                             <Input
                                 id="city"
                                 placeholder="Ingrese la ciudad"
-                                {...register("city", {
-                                    maxLength: { value: 50, message: "No puede exceder 50 caracteres" }
-                                })}
+                                {...register("city", patientValidations.city)}
                                 className={errors.city ? "border-red-500" : ""}
                             />
                             {errors.city && <p className="text-red-500 text-xs">{errors.city.message}</p>}
@@ -204,9 +161,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                         <Input
                             id="address"
                             placeholder="Ingrese la dirección completa"
-                            {...register("address", {
-                                maxLength: { value: 100, message: "No puede exceder 100 caracteres" }
-                            })}
+                            {...register("address", patientValidations.address)}
                             className={errors.address ? "border-red-500" : ""}
                         />
                         {errors.address && <p className="text-red-500 text-xs">{errors.address.message}</p>}
@@ -241,9 +196,7 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                             <Input
                                 id="membership_number"
                                 placeholder="Número de afiliado"
-                                {...register("membership_number", {
-                                    maxLength: { value: 20, message: "No puede exceder 20 caracteres" }
-                                })}
+                                {...register("membership_number", patientValidations.membership_number)}
                                 className={errors.membership_number ? "border-red-500" : ""}
                             />
                             {errors.membership_number && (
