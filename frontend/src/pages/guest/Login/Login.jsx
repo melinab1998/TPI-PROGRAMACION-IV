@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
+import { loginValidations } from "@/utils/validations";
 
 export default function Login() {
   const { login } = useAuth();
@@ -69,7 +70,7 @@ export default function Login() {
                   type="email"
                   placeholder="Ingrese el email..."
                   className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
-                  {...register("email", { required: "El email es obligatorio" })}
+                  {...register("email", loginValidations.email)}
                 />
                 {errors.email && <p className="text-red-500 text-sm mt-1.5">{errors.email.message}</p>}
               </motion.div>
@@ -83,7 +84,7 @@ export default function Login() {
                   type="password"
                   placeholder="Ingrese la contraseña..."
                   className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
-                  {...register("password", { required: "La contraseña es obligatoria" })}
+                  {...register("password", loginValidations.password)}
                 />
                 {errors.password && <p className="text-red-500 text-sm mt-1.5">{errors.password.message}</p>}
               </motion.div>

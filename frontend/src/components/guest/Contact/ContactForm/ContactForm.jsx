@@ -7,6 +7,7 @@ import { MessageSquare, Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { successToast } from "@/utils/notifications";
+import { contactValidations } from "@/utils/validations"
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -51,7 +52,7 @@ export default function ContactForm() {
                                     id="name"
                                     placeholder="Tu nombre completo"
                                     className="py-4 px-4 w-full"
-                                    {...register("name", { required: "El nombre es obligatorio" })}
+                                    {...register("name", contactValidations.name)}
                                 />
                                 {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
                             </motion.div>
@@ -63,10 +64,7 @@ export default function ContactForm() {
                                     type="email"
                                     placeholder="tu.email@ejemplo.com"
                                     className="py-4 px-4 w-full"
-                                    {...register("email", {
-                                        required: "El email es obligatorio",
-                                        pattern: { value: /^\S+@\S+$/i, message: "Email inválido" }
-                                    })}
+                                    {...register("email", contactValidations.email)}
                                 />
                                 {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
                             </motion.div>
@@ -78,10 +76,7 @@ export default function ContactForm() {
                                 id="message"
                                 placeholder="Cuéntanos cómo podemos ayudarte..."
                                 className="min-h-[180px] resize-none p-4 w-full"
-                                {...register("message", {
-                                    required: "El mensaje es obligatorio",
-                                    minLength: { value: 10, message: "El mensaje debe tener al menos 10 caracteres" }
-                                })}
+                                {...register("message", contactValidations.message)}
                             />
                             {errors.message && <p className="text-red-500 text-sm">{errors.message.message}</p>}
                         </motion.div>

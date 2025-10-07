@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { successToast } from "@/utils/notifications";
+import { forgotPasswordValidations } from "@/utils/validations";
 
 export default function ForgotPassword() {
     const {
@@ -65,13 +66,7 @@ export default function ForgotPassword() {
                                     id="email"
                                     type="email"
                                     placeholder="Ingresa tu correo electrónico"
-                                    {...register("email", {
-                                        required: "El correo electrónico es obligatorio",
-                                        pattern: {
-                                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                            message: "Correo electrónico inválido",
-                                        },
-                                    })}
+                                    {...register("email", forgotPasswordValidations.email)}
                                 />
                                 {errors.email && (
                                     <p className="text-red-500 text-sm">{errors.email.message}</p>

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { successToast } from "@/utils/notifications";
+import { resetPasswordValidations } from "@/utils/validations"
 
 export default function ResetPassword() {
     const navigate = useNavigate();
@@ -74,17 +75,7 @@ export default function ResetPassword() {
                                     type="password"
                                     id="password"
                                     placeholder="Nueva contraseña"
-                                    {...register("password", {
-                                        required: "La contraseña es obligatoria",
-                                        minLength: {
-                                            value: 8,
-                                            message: "Debe tener al menos 8 caracteres",
-                                        },
-                                        pattern: {
-                                            value: /^(?=.*[A-Z]).+$/,
-                                            message: "Debe contener al menos una mayúscula",
-                                        },
-                                    })}
+                                    {...register("password", resetPasswordValidations.password)}
                                 />
                                 {errors.password && (
                                     <p className="text-red-500 text-sm">{errors.password.message}</p>
@@ -97,7 +88,7 @@ export default function ResetPassword() {
                                     id="confirm_password"
                                     placeholder="Confirmar contraseña"
                                     {...register("confirm_password", {
-                                        required: "Debe confirmar la contraseña",
+                                        ...resetPasswordValidations.confirm_password,
                                         validate: (value) =>
                                             value === password || "Las contraseñas no coinciden",
                                     })}
