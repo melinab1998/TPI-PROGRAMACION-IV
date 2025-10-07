@@ -24,11 +24,7 @@ export default function ResetPassword() {
     const onSubmit = (data) => {
         console.log("Contraseña cambiada:", data);
         successToast("Contraseña actualizada con éxito");
-
-        // Limpiamos el formulario
         reset();
-
-        // Redirigimos al login después de un pequeño delay para que se vea el toast
         setTimeout(() => {
             navigate("/login");
         }, 1000);
@@ -72,7 +68,6 @@ export default function ResetPassword() {
                             initial="hidden"
                             animate="visible"
                         >
-                            {/* Contraseña */}
                             <motion.div className="space-y-2" custom={0} variants={inputVariants}>
                                 <Label htmlFor="password">Nueva Contraseña</Label>
                                 <Input
@@ -95,8 +90,6 @@ export default function ResetPassword() {
                                     <p className="text-red-500 text-sm">{errors.password.message}</p>
                                 )}
                             </motion.div>
-
-                            {/* Confirmar contraseña */}
                             <motion.div className="space-y-2" custom={1} variants={inputVariants}>
                                 <Label htmlFor="confirm_password">Confirmar Contraseña</Label>
                                 <Input

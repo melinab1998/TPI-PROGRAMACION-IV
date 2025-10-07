@@ -111,17 +111,17 @@ export default function NavBar() {
     <nav className="w-full border-b border-[var(--border)] bg-[var(--card)]">
       <div className="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
         <div className="flex items-center gap-3">
-  <Link to="/" className="flex items-center gap-3">
-    <img
-      src={theme === "dark" ? logoDark : logoLight}
-      alt="Logo clínica"
-      className="h-12 w-auto"
-    />
-    <span className="hidden md:inline text-2xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent tracking-tight">
-      Turnando
-    </span>
-  </Link>
-</div>
+          <Link to="/" className="flex items-center gap-3">
+            <img
+              src={theme === "dark" ? logoDark : logoLight}
+              alt="Logo clínica"
+              className="h-12 w-auto"
+            />
+            <span className="hidden md:inline text-2xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent tracking-tight">
+              Turnando
+            </span>
+          </Link>
+        </div>
         <div className="hidden md:flex gap-3 items-center">
           <Link to="/">
             <Button variant="ghost" size="default" className="text-sm font-medium">

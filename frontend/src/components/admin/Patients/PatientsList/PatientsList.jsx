@@ -3,10 +3,10 @@ import { Eye, Edit, FileText, MoreVertical } from "lucide-react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import usePagination from "@/hooks/usePagination"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
 export default function PatientsList({ patients, onView, onEdit, onViewVisits }) {
@@ -49,8 +49,7 @@ export default function PatientsList({ patients, onView, onEdit, onViewVisits })
                                 </div>
                             </div>
                         </div>
-                        
-                        {/* Botones para desktop */}
+
                         <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
                             <Button variant="outline" size="sm" onClick={() => onView(patient)}>
                                 <Eye className="w-4 h-4" />
@@ -65,7 +64,7 @@ export default function PatientsList({ patients, onView, onEdit, onViewVisits })
                                 <span className="sr-only sm:not-sr-only sm:ml-2">Editar</span>
                             </Button>
                         </div>
-                        
+
                         {/* Menú dropdown para mobile */}
                         <div className="sm:hidden flex justify-end">
                             <DropdownMenu>

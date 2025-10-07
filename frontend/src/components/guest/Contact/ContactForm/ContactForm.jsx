@@ -22,9 +22,8 @@ export default function ContactForm() {
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
     const onSubmit = (data) => {
-        // Aquí iría la lógica de envío al backend
         console.log(data);
-        successToast("Mensaje enviado correctamente");
+        successToast("Mensaje enviado con éxito");
         reset();
     };
 
@@ -46,7 +45,6 @@ export default function ContactForm() {
                         onSubmit={handleSubmit(onSubmit)}
                     >
                         <motion.div className="space-y-6" variants={itemVariants}>
-                            {/* Nombre */}
                             <motion.div className="space-y-3" variants={itemVariants}>
                                 <Label htmlFor="name" className="text-base">Nombre completo</Label>
                                 <Input
@@ -58,7 +56,6 @@ export default function ContactForm() {
                                 {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
                             </motion.div>
 
-                            {/* Email */}
                             <motion.div className="space-y-3" variants={itemVariants}>
                                 <Label htmlFor="email" className="text-base">Correo electrónico</Label>
                                 <Input
@@ -75,7 +72,6 @@ export default function ContactForm() {
                             </motion.div>
                         </motion.div>
 
-                        {/* Mensaje */}
                         <motion.div className="space-y-3 flex-1" variants={itemVariants}>
                             <Label htmlFor="message" className="text-base">Mensaje</Label>
                             <Textarea
@@ -90,7 +86,6 @@ export default function ContactForm() {
                             {errors.message && <p className="text-red-500 text-sm">{errors.message.message}</p>}
                         </motion.div>
 
-                        {/* Botón enviar */}
                         <motion.div variants={itemVariants}>
                             <Button
                                 type="submit"

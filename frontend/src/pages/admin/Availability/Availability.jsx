@@ -7,7 +7,6 @@ import WeeklySummary from "@/components/admin/Availability/WeeklySummary/WeeklyS
 import { successToast, errorToast } from "@/utils/notifications";
 import Header from "@/components/common/Header/Header";
 
-// Datos
 const daysOfWeek = [
   { id: 1, name: "Lunes", label: "Lun" },
   { id: 2, name: "Martes", label: "Mar" },
@@ -36,7 +35,6 @@ export default function Availability() {
 
   const [errors, setErrors] = useState({});
 
-  // --- Funciones de validación ---
   const timeToMinutes = (time) => {
     const [h, m] = time.split(":").map(Number);
     return h * 60 + m;
@@ -78,7 +76,6 @@ export default function Availability() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // --- Funciones de manejo ---
   const getAvailabilityForDay = (dayId) => availabilities.filter(a => a.day_of_week === dayId);
 
   const handleToggleDay = (dayId, enabled) => {

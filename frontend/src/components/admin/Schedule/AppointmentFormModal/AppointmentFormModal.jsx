@@ -59,11 +59,9 @@ export default function AppointmentFormModal({
 
     const navigate = useNavigate();
 
-    // Observar cambios en los campos
     const watchPatientId = watch("patient_id")
     const watchAppointmentDate = watch("appointment_date")
 
-    // Validación personalizada para fecha
     const validateDate = (date) => {
         if (!date) return "La fecha es requerida"
         
@@ -78,7 +76,6 @@ export default function AppointmentFormModal({
         return true
     }
 
-    // Validación personalizada para paciente
     const validatePatient = (patientId) => {
         if (!patientId) {
             return "Seleccione un paciente"
@@ -149,15 +146,12 @@ export default function AppointmentFormModal({
     }
 
     const onSubmit = (data) => {
-        // Forzar validación del paciente si no se ha tocado
         if (!patientFieldTouched) {
             setPatientFieldTouched(true)
         }
 
-        // Validar todos los campos incluyendo paciente
         trigger().then(isValid => {
             if (!isValid) {
-                // Si hay errores, mostrar mensaje general
                 if (!data.patient_id) {
                     setError("patient_id", { 
                         type: "manual", 
@@ -167,7 +161,6 @@ export default function AppointmentFormModal({
                 return
             }
 
-            // Si todo está válido, proceder con el envío
             const appointmentDateTime = `${data.appointment_date}T${data.appointment_time}:00`
 
             const selectedPatient = mockPatients.find(p => p.id === parseInt(data.patient_id))
@@ -214,7 +207,6 @@ export default function AppointmentFormModal({
 
     const timeSlots = generateTimeSlots()
 
-    // Determinar si mostrar error del paciente
     const showPatientError = errors.patient_id && (patientFieldTouched || isSubmitted)
 
     return (

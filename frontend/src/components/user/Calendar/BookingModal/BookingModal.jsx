@@ -11,7 +11,7 @@ export default function BookingModal({ time, date, doctor, formData, setFormData
     
     const handleConfirmSubmit = (e) => {
         e.preventDefault()
-        successToast("Turno confirmado correctamente")
+        successToast("Turno confirmado con éxito")
         handleSubmit(e)
     }
 

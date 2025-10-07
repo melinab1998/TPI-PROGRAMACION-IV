@@ -24,7 +24,7 @@ export default function Register() {
 
     const onSubmit = (data) => {
         console.log(data);
-        successToast("¡Registro exitoso!");
+        successToast("¡Registro exitoso! Ahora puedes iniciar sesión.");
         reset();
     };
 

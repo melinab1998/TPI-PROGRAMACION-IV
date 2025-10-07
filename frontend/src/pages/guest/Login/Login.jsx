@@ -60,7 +60,6 @@ export default function Login() {
               initial="hidden"
               animate="show"
             >
-              {/* Email */}
               <motion.div variants={itemVariants}>
                 <Label htmlFor="email" className="mb-2">
                   Correo electrónico
@@ -75,7 +74,6 @@ export default function Login() {
                 {errors.email && <p className="text-red-500 text-sm mt-1.5">{errors.email.message}</p>}
               </motion.div>
 
-              {/* Password */}
               <motion.div variants={itemVariants}>
                 <Label htmlFor="password" className="mb-2">
                   Contraseña
@@ -90,7 +88,6 @@ export default function Login() {
                 {errors.password && <p className="text-red-500 text-sm mt-1.5">{errors.password.message}</p>}
               </motion.div>
 
-              {/* Recordar contraseña y olvido */}
               <motion.div
                 variants={itemVariants}
                 className="flex justify-between items-center py-2"
@@ -113,7 +110,6 @@ export default function Login() {
                 </Link>
               </motion.div>
 
-              {/* Botón ingresar */}
               <motion.div variants={itemVariants}>
                 <Button
                   type="submit"
@@ -127,7 +123,6 @@ export default function Login() {
               </motion.div>
             </motion.form>
 
-            {/* Registro */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

@@ -29,16 +29,15 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
       ...toothData,
       [toothNumber]: data,
     };
-    
+
     setToothData(newToothData);
-    
+
     if (onSave) {
-      // Usar setTimeout para evitar conflictos con eventos de React
       setTimeout(() => {
         onSave(newToothData);
       }, 0);
     }
-    
+
     setSelectedTooth(null);
   };
 
@@ -80,17 +79,16 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
   };
 
   return (
-    <div 
+    <div
       className="p-2 sm:p-4 flex flex-col items-center w-full max-w-full overflow-hidden"
       onClick={handleContainerClick}
     >
       <h1 className="text-xl sm:text-2xl font-extrabold tracking-wide mb-4 sm:mb-8 mt-2 sm:mt-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70 drop-shadow-sm">
         ODONTOGRAMA
       </h1>
-      
+
       <div className="w-full max-w-full overflow-x-auto">
         <div className="min-w-max mx-auto px-2">
-          {/* Adulto - Arriba */}
           <div className={`flex justify-center mb-3 sm:mb-4 ${readOnly ? 'opacity-80' : ''}`}>
             {topRowRight.map((t) => (
               <Tooth
@@ -112,8 +110,6 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
               />
             ))}
           </div>
-
-          {/* Adulto - Abajo */}
           <div className={`flex justify-center mb-6 sm:mb-8 ${readOnly ? 'opacity-80' : ''}`}>
             {bottomRowRight.map((t) => (
               <Tooth
@@ -135,8 +131,6 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
               />
             ))}
           </div>
-
-          {/* Niño - Arriba */}
           <div className={`flex justify-center mb-3 sm:mb-4 ${readOnly ? 'opacity-80' : ''}`}>
             {topChildRight.map((t) => (
               <Tooth
@@ -158,8 +152,6 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
               />
             ))}
           </div>
-
-          {/* Niño - Abajo */}
           <div className={`flex justify-center mb-6 sm:mb-8 ${readOnly ? 'opacity-80' : ''}`}>
             {bottomChildRight.map((t) => (
               <Tooth
@@ -200,10 +192,10 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
                       obs.color === "blue"
                         ? "#1E3A8A"
                         : obs.color === "red"
-                        ? "#B22222"
-                        : obs.color === "green"
-                        ? "#2E7D32"
-                        : "white"
+                          ? "#B22222"
+                          : obs.color === "green"
+                            ? "#2E7D32"
+                            : "white"
                   }}
                 />
                 <span className="font-semibold text-gray-700 text-sm sm:text-base">

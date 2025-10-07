@@ -38,13 +38,8 @@ export default function NextAppointmentCard({ appointment }) {
     }
 
     const handleCancelAppointment = () => {
-        // Aquí iría la lógica para cancelar el turno en el backend
         console.log("Turno cancelado:", appointment);
-        
-        // Mostrar toast de éxito
-        successToast("Turno cancelado correctamente");
-        
-        // Cerrar el modal
+        successToast("Turno cancelado con éxito");
         setIsModalOpen(false);
     };
 

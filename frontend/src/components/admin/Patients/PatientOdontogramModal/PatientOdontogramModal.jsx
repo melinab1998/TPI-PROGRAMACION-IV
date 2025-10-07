@@ -15,8 +15,6 @@ export default function PatientOdontogramModal({ open, onClose, patient }) {
                         Odontograma - {patient.first_name} {patient.last_name}
                     </DialogTitle>
                 </DialogHeader>
-
-                {/* Botón de cerrar flotante para móvil */}
                 <Button 
                     variant="ghost" 
                     size="icon"

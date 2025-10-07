@@ -15,7 +15,7 @@ export default function UpdateEmailDialog({ currentEmail, onUpdate }) {
 
     const onSubmit = (data) => {
         onUpdate(data.email);
-        successToast("Correo electrónico actualizado correctamente");
+        successToast("Correo electrónico actualizado con éxito");
         setOpen(false);
         reset();
     };
@@ -24,7 +24,6 @@ export default function UpdateEmailDialog({ currentEmail, onUpdate }) {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button variant="outline" className="flex-1 h-11 gap-2 border-border hover:bg-accent hover:text-accent-foreground">
-                    {/* Icono */}
                     Actualizar correo electrónico
                 </Button>
             </DialogTrigger>

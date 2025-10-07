@@ -50,7 +50,6 @@ export default function VisitForm({
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-            {/* Tratamiento Realizado */}
             <div className="space-y-2">
               <Label htmlFor="treatment" className="text-sm font-medium">
                 Tratamiento Realizado *
@@ -70,7 +69,6 @@ export default function VisitForm({
               )}
             </div>
 
-            {/* Diagnóstico */}
             <div className="space-y-2">
               <Label htmlFor="diagnosis" className="text-sm font-medium">
                 Diagnóstico *
@@ -90,7 +88,6 @@ export default function VisitForm({
               )}
             </div>
 
-            {/* Notas */}
             <div className="space-y-2">
               <Label htmlFor="notes" className="text-sm font-medium">
                 Notas Adicionales
@@ -104,7 +101,6 @@ export default function VisitForm({
               />
             </div>
 
-            {/* Prescripción */}
             <div className="space-y-2">
               <Label htmlFor="prescription" className="text-sm font-medium">
                 Prescripción Médica
@@ -118,7 +114,6 @@ export default function VisitForm({
               />
             </div>
 
-            {/* Odontograma */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">
                 Odontograma del Paciente

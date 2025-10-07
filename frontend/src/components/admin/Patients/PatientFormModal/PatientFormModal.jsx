@@ -32,10 +32,8 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
         }
     })
 
-    // Observar cambios en los campos
     const watchBirthDate = watch("birth_date")
 
-    // Validación personalizada para email
     const validateEmail = (email) => {
         if (!email) return "El email es requerido"
 
@@ -47,7 +45,6 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
         return true
     }
 
-    // Validación personalizada para DNI
     const validateDNI = (dni) => {
         if (!dni) return "El DNI es requerido"
 
@@ -63,9 +60,8 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
         return true
     }
 
-    // Validación personalizada para fecha de nacimiento
     const validateBirthDate = (date) => {
-        if (!date) return true // No es obligatorio
+        if (!date) return true 
 
         const birthDate = new Date(date)
         const today = new Date()
@@ -74,7 +70,6 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
             return "La fecha de nacimiento no puede ser futura"
         }
 
-        // Validar que no sea menor a 150 años (aproximadamente)
         const minDate = new Date()
         minDate.setFullYear(today.getFullYear() - 150)
 
@@ -85,16 +80,14 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
         return true
     }
 
-    // Validación personalizada para teléfono
     const validatePhone = (phone) => {
-        if (!phone) return true // No es obligatorio
+        if (!phone) return true 
 
         const phoneRegex = /^[\d\s+\-()]+$/
         if (!phoneRegex.test(phone)) {
             return "El teléfono contiene caracteres inválidos"
         }
 
-        // Remover caracteres especiales y contar dígitos
         const digitsOnly = phone.replace(/\D/g, '')
         if (digitsOnly.length < 8) {
             return "El teléfono debe tener al menos 8 dígitos"
@@ -105,7 +98,6 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
 
     useEffect(() => {
         if (patient) {
-            // Establecer valores cuando hay un paciente para editar
             reset({
                 first_name: patient.first_name || "",
                 last_name: patient.last_name || "",
@@ -119,7 +111,6 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                 id_health_plan: patient.id_health_plan || ""
             })
         } else {
-            // Resetear formulario para nuevo paciente
             reset({
                 first_name: "",
                 last_name: "",
@@ -162,7 +153,6 @@ export default function PatientFormModal({ open, onClose, onSave, patient, healt
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    {/* Campos Obligatorios */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="first_name">Nombre *</Label>

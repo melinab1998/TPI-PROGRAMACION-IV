@@ -14,7 +14,7 @@ export default function UpdatePasswordDialog({ onUpdate }) {
 
     const onSubmit = (data) => {
         onUpdate(data.newPassword);
-        successToast("Contraseña actualizada correctamente");
+        successToast("Contraseña actualizada con éxito");
         setOpen(false);
         reset();
     };
