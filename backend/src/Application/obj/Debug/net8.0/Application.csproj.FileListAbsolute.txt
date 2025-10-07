@@ -1,0 +1,16 @@
+D:\TPI-PROGRAMACION-IV\backend\src\Application\bin\Debug\net8.0\Application.deps.json
+D:\TPI-PROGRAMACION-IV\backend\src\Application\bin\Debug\net8.0\Application.dll
+D:\TPI-PROGRAMACION-IV\backend\src\Application\bin\Debug\net8.0\Application.pdb
+D:\TPI-PROGRAMACION-IV\backend\src\Application\bin\Debug\net8.0\Domain.dll
+D:\TPI-PROGRAMACION-IV\backend\src\Application\bin\Debug\net8.0\Domain.pdb
+D:\TPI-PROGRAMACION-IV\backend\src\Application\obj\Debug\net8.0\Application.csproj.AssemblyReference.cache
+D:\TPI-PROGRAMACION-IV\backend\src\Application\obj\Debug\net8.0\Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\TPI-PROGRAMACION-IV\backend\src\Application\obj\Debug\net8.0\Application.AssemblyInfoInputs.cache
+D:\TPI-PROGRAMACION-IV\backend\src\Application\obj\Debug\net8.0\Application.AssemblyInfo.cs
+D:\TPI-PROGRAMACION-IV\backend\src\Application\obj\Debug\net8.0\Application.csproj.CoreCompileInputs.cache
+D:\TPI-PROGRAMACION-IV\backend\src\Application\obj\Debug\net8.0\Application.sourcelink.json
+D:\TPI-PROGRAMACION-IV\backend\src\Application\obj\Debug\net8.0\Applicat.44B5EDA2.Up2Date
+D:\TPI-PROGRAMACION-IV\backend\src\Application\obj\Debug\net8.0\Application.dll
+D:\TPI-PROGRAMACION-IV\backend\src\Application\obj\Debug\net8.0\refint\Application.dll
+D:\TPI-PROGRAMACION-IV\backend\src\Application\obj\Debug\net8.0\Application.pdb
+D:\TPI-PROGRAMACION-IV\backend\src\Application\obj\Debug\net8.0\ref\Application.dll
