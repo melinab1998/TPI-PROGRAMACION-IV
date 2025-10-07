@@ -33,12 +33,12 @@ export default function AppointmentFormModal({
 }) {
     const editMode = !!appointment
 
-    const { 
-        register, 
-        handleSubmit, 
-        formState: { errors, isSubmitted }, 
-        setValue, 
-        watch, 
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitted },
+        setValue,
+        watch,
         reset,
         trigger,
         setError,
@@ -56,32 +56,9 @@ export default function AppointmentFormModal({
     const [patientSearch, setPatientSearch] = useState("")
     const [filteredPatients, setFilteredPatients] = useState(mockPatients)
     const [patientFieldTouched, setPatientFieldTouched] = useState(false)
-
     const navigate = useNavigate();
 
     const watchPatientId = watch("patient_id")
-    const watchAppointmentDate = watch("appointment_date")
-
-    const validateDate = (date) => {
-        if (!date) return "La fecha es requerida"
-        
-        const selectedDate = new Date(date)
-        const today = new Date()
-        today.setHours(0, 0, 0, 0)
-        
-        if (selectedDate < today) {
-            return "No se pueden agendar turnos en fechas pasadas"
-        }
-        
-        return true
-    }
-
-    const validatePatient = (patientId) => {
-        if (!patientId) {
-            return "Seleccione un paciente"
-        }
-        return true
-    }
 
     const handleNewPatient = () => {
         onClose();
@@ -146,16 +123,12 @@ export default function AppointmentFormModal({
     }
 
     const onSubmit = (data) => {
-        if (!patientFieldTouched) {
-            setPatientFieldTouched(true)
-        }
-
         trigger().then(isValid => {
             if (!isValid) {
                 if (!data.patient_id) {
-                    setError("patient_id", { 
-                        type: "manual", 
-                        message: "Seleccione un paciente" 
+                    setError("patient_id", {
+                        type: "manual",
+                        message: "Seleccione un paciente"
                     })
                 }
                 return
@@ -183,13 +156,8 @@ export default function AppointmentFormModal({
             }
 
             onSave(appointmentData)
-            
-            if (editMode) {
-                successToast("Turno actualizado exitosamente")
-            } else {
-                successToast("Turno creado exitosamente")
-            }
-            
+
+            successToast(editMode ? "Turno actualizado exitosamente" : "Turno creado exitosamente")
             onClose()
         })
     }
@@ -206,7 +174,6 @@ export default function AppointmentFormModal({
     }
 
     const timeSlots = generateTimeSlots()
-
     const showPatientError = errors.patient_id && (patientFieldTouched || isSubmitted)
 
     return (
@@ -225,9 +192,15 @@ export default function AppointmentFormModal({
                             <Input
                                 id="appointment_date"
                                 type="date"
-                                {...register("appointment_date", { 
+                                {...register("appointment_date", {
                                     required: "La fecha es requerida",
-                                    validate: validateDate
+                                    validate: (date) => {
+                                        if (!date) return "La fecha es requerida"
+                                        const selected = new Date(date)
+                                        const today = new Date()
+                                        today.setHours(0, 0, 0, 0)
+                                        return selected >= today || "No se pueden agendar turnos pasados"
+                                    }
                                 })}
                                 className={errors.appointment_date ? "border-red-500" : ""}
                             />
@@ -261,7 +234,6 @@ export default function AppointmentFormModal({
                             )}
                         </div>
                     </div>
-                    
                     <div className="space-y-2">
                         <Label htmlFor="dentist_id">Dentista</Label>
                         <Select
@@ -287,7 +259,6 @@ export default function AppointmentFormModal({
                             <p className="text-red-500 text-xs">{errors.dentist_id.message}</p>
                         )}
                     </div>
-                    
                     <div className="space-y-2">
                         <Label htmlFor="patient_search">Paciente *</Label>
 
@@ -354,11 +325,12 @@ export default function AppointmentFormModal({
                                 </Button>
                             </div>
                         )}
+
                         <input
                             type="hidden"
-                            {...register("patient_id", { 
+                            {...register("patient_id", {
                                 required: "Seleccione un paciente",
-                                validate: validatePatient
+                                validate: (value) => value ? true : "Seleccione un paciente"
                             })}
                         />
                         {!watchPatientId && (
@@ -373,7 +345,6 @@ export default function AppointmentFormModal({
                             </Button>
                         )}
                     </div>
-                    
                     <div className="space-y-2">
                         <Label htmlFor="consultation_type">Tipo de Turno</Label>
                         <Select
