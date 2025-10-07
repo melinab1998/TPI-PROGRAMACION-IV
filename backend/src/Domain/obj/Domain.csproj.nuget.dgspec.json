@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj": {}
+    "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj": {}
   },
   "projects": {
-    "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj": {
+    "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj",
+        "projectUniqueName": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj",
+        "projectPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj",
         "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
-        "outputPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\obj\\",
+        "outputPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
