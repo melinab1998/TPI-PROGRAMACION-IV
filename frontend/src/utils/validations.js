@@ -54,6 +54,37 @@ export const resetPasswordValidations = {
         }
     },
     confirm_password: {
-        required: "Debe confirmar la contraseña"
+        required: "Debe confirmar la contraseña",
+        validate: (value, { password }) => value === password || "Las contraseñas no coinciden"
+    }
+};
+
+export const updateEmailValidations = {
+    email: {
+        required: "El email es obligatorio",
+        pattern: {
+            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            message: "Formato de email inválido"
+        }
+    }
+};
+
+export const updatePasswordValidations = {
+    currentPassword: {
+        required: "La contraseña actual es obligatoria"
+    },
+    newPassword: {
+        required: "La nueva contraseña es obligatoria",
+        minLength: {
+            value: 8,
+            message: "Debe tener al menos 8 caracteres"
+        },
+        validate: {
+            hasUpperCase: value => /[A-Z]/.test(value) || "Debe contener al menos una mayúscula"
+        }
+    },
+    confirmPassword: {
+        required: "Debes confirmar la nueva contraseña",
+        validate: (value, { newPassword }) => value === newPassword || "Las contraseñas no coinciden"
     }
 };

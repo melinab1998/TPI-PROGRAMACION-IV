@@ -5,12 +5,12 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { successToast } from "@/utils/notifications";
 import { useForm } from "react-hook-form";
+import { updatePasswordValidations } from "@/utils/validations";
 
 export default function UpdatePasswordDialog({ onUpdate }) {
     const [open, setOpen] = useState(false);
 
-    const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
-    const newPassword = watch("newPassword");
+    const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
     const onSubmit = (data) => {
         onUpdate(data.newPassword);
@@ -20,16 +20,9 @@ export default function UpdatePasswordDialog({ onUpdate }) {
     };
 
     const inputs = [
-        { label: "Contraseña Actual", name: "currentPassword", type: "password", validation: { required: "La contraseña actual es obligatoria" } },
-        { label: "Nueva Contraseña", name: "newPassword", type: "password", validation: { 
-            required: "La nueva contraseña es obligatoria",
-            minLength: { value: 8, message: "Debe tener al menos 8 caracteres" },
-            validate: value => /[A-Z]/.test(value) || "Debe contener al menos una mayúscula"
-        }},
-        { label: "Confirmar Nueva Contraseña", name: "confirmPassword", type: "password", validation: {
-            required: "Debes confirmar la nueva contraseña",
-            validate: value => value === newPassword || "Las contraseñas no coinciden"
-        }}
+        { label: "Contraseña Actual", name: "currentPassword", type: "password", validation: updatePasswordValidations.currentPassword },
+        { label: "Nueva Contraseña", name: "newPassword", type: "password", validation: updatePasswordValidations.newPassword },
+        { label: "Confirmar Nueva Contraseña", name: "confirmPassword", type: "password", validation: updatePasswordValidations.confirmPassword }
     ];
 
     return (
@@ -70,4 +63,3 @@ export default function UpdatePasswordDialog({ onUpdate }) {
         </Dialog>
     );
 }
-

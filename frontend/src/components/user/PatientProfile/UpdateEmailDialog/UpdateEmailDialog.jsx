@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { successToast } from "@/utils/notifications";
 import { useForm } from "react-hook-form";
+import { updateEmailValidations } from "@/utils/validations";
 
 export default function UpdateEmailDialog({ currentEmail, onUpdate }) {
     const [open, setOpen] = useState(false);
@@ -37,13 +38,7 @@ export default function UpdateEmailDialog({ currentEmail, onUpdate }) {
                         <Label>Nuevo Email</Label>
                         <Input
                             type="email"
-                            {...register("email", { 
-                                required: "El email es obligatorio",
-                                pattern: {
-                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                    message: "Formato de email inválido"
-                                }
-                            })}
+                            {...register("email", updateEmailValidations.email)}
                             className="border-border focus-visible:ring-primary"
                         />
                         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
