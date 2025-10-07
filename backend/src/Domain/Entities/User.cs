@@ -33,7 +33,7 @@ public abstract class User
             throw new ArgumentException("El nombre no puede estar vacío.");
 
         if (string.IsNullOrWhiteSpace(LastName))
-            throw new ArgumentException("El nombre no puede estar vacío.");
+            throw new ArgumentException("El apellido no puede estar vacío.");
 
         if (string.IsNullOrWhiteSpace(Email))
             throw new ArgumentException("El email no puede estar vacío.");

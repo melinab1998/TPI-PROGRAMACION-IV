@@ -8,7 +8,7 @@ public class Patient : User
 
     public string Dni { get; private set; }
 
-    // Datos opcionales que se completan al sacar un turno
+    // Datos opcionales 
     public DateOnly? BirthDate { get; private set; }
     public string? Address { get; private set; }
     public string? PhoneNumber { get; private set; }

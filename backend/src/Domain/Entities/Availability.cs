@@ -22,12 +22,34 @@ namespace Domain.Entities
 
         public Availability() { }
 
-       public Availability(WorkDay dayOfWeek, TimeOnly startTime, TimeOnly endTime, int dentistId)
+        public Availability(WorkDay dayOfWeek, TimeOnly startTime, TimeOnly endTime, int dentistId)
         {
+
+            ValidateTimes(startTime, endTime);
+            ValidateIds(dentistId);
+
             DayOfWeek = dayOfWeek;
             StartTime = startTime;
             EndTime = endTime;
             DentistId = dentistId;
+        }
+
+
+        private static void ValidateTimes(TimeOnly start, TimeOnly end)
+        {
+            if (end <= start)
+                throw new ArgumentException("La hora de fin debe ser posterior a la hora de inicio.");
+        }
+
+        private static void ValidateIds(int dentistId)
+        {
+            if (dentistId <= 0)
+                throw new ArgumentException("El Id del dentista no es válido.");
+        }
+
+         public bool IsWithinRange(TimeOnly appointmentTime)
+        {
+            return appointmentTime >= StartTime && appointmentTime <= EndTime;
         }
 
     }
