@@ -1,5 +1,6 @@
 <p align="center">
-  <img src="https://github.com/melinab1998/TPI-PROGRAMACION-IV/blob/main/frontend/src/img/logo-dark-1.png" alt="Logo-Turnando" width="200"/>
+  <img src="https://github.com/melinab1998/TPI-PROGRAMACION-IV/blob/main/frontend/src/img/Logo-Turnando.svg" alt="Logo-Turnando" width="500"/> 
+  <img src="https://github.com/melinab1998/TPI-PROGRAMACION-IV/blob/main/frontend/src/img/logo-dark-1.png" alt="Logo-Turnando" width="300"/>
 </p>
 
 ## Descripción
@@ -24,13 +25,11 @@ En su versión actual, se encuentra orientado a la administración de turnos par
 
 - ![HTML5](https://img.shields.io/badge/-HTML5-333333?style=flat&logo=HTML5)
 
-- ![CSS](https://img.shields.io/badge/-CSS-333333?style=flat&logo=CSS)
-
 - ![JavaScript](https://img.shields.io/badge/-JavaScript-333333?style=flat&logo=javascript)
 
 - ![React](https://img.shields.io/badge/-React-333333?style=flat&logo=react)
-
-- ![Bootstrap](https://img.shields.io/badge/-Bootstrap-333333?style=flat-square&logo=bootstrap)
+  
+- ![Shadcnui](https://img.shields.io/badge/-shadcnui-333333?style=flat&logo=shadcnui)
 
 - ![Tailwind](https://img.shields.io/badge/-Tailwind_CSS-333333?style=flat&logo=tailwind-css)
 
