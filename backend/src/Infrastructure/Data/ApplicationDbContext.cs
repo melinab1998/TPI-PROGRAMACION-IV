@@ -7,12 +7,12 @@ namespace Infrastructure.Data
     {
         public DbSet<Patient> Patients { get; set; }
 
-        
+        public DbSet<Availability> Availabilities { get; set; }
 
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
 
         }
-    }    
+    }
 }
