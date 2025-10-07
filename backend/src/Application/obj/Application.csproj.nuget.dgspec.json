@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj": {}
+    "C:\\Users\\IVAN BERRINO\\desktop\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj": {}
   },
   "projects": {
-    "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj": {
+    "C:\\Users\\IVAN BERRINO\\desktop\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj",
+        "projectUniqueName": "C:\\Users\\IVAN BERRINO\\desktop\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj",
         "projectName": "Application",
-        "projectPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj",
-        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
-        "outputPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\obj\\",
+        "projectPath": "C:\\Users\\IVAN BERRINO\\desktop\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj",
+        "packagesPath": "C:\\Users\\IVAN BERRINO\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\IVAN BERRINO\\desktop\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\IVAN BERRINO\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -32,8 +32,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj": {
-                "projectPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj"
+              "C:\\Users\\IVAN BERRINO\\desktop\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\IVAN BERRINO\\desktop\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj"
               }
             }
           }
@@ -47,7 +47,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -68,24 +69,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.413/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj": {
+    "C:\\Users\\IVAN BERRINO\\desktop\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj",
+        "projectUniqueName": "C:\\Users\\IVAN BERRINO\\desktop\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj",
-        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
-        "outputPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\obj\\",
+        "projectPath": "C:\\Users\\IVAN BERRINO\\desktop\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj",
+        "packagesPath": "C:\\Users\\IVAN BERRINO\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\IVAN BERRINO\\desktop\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\IVAN BERRINO\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -111,7 +112,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -132,7 +134,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.413/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
