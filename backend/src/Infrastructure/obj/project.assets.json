@@ -3215,6 +3215,7 @@
   "projectFileDependencyGroups": {
     "net8.0": [
       "Application >= 1.0.0",
+      "Microsoft.EntityFrameworkCore >= 9.0.9",
       "Microsoft.EntityFrameworkCore.Design >= 9.0.9",
       "Microsoft.EntityFrameworkCore.Sqlite >= 9.0.9"
     ]
@@ -3226,11 +3227,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\Infrastructure.csproj",
+      "projectUniqueName": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\Infrastructure.csproj",
       "projectName": "Infrastructure",
-      "projectPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\Infrastructure.csproj",
+      "projectPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\Infrastructure.csproj",
       "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
-      "outputPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\obj\\",
+      "outputPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -3251,8 +3252,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj": {
-              "projectPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj"
+            "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj": {
+              "projectPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj"
             }
           }
         }
@@ -3272,6 +3273,10 @@
       "net8.0": {
         "targetAlias": "net8.0",
         "dependencies": {
+          "Microsoft.EntityFrameworkCore": {
+            "target": "Package",
+            "version": "[9.0.9, )"
+          },
           "Microsoft.EntityFrameworkCore.Design": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
             "suppressParent": "All",
