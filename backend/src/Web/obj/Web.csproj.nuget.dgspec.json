@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Web\\Web.csproj": {}
+    "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Web\\Web.csproj": {}
   },
   "projects": {
-    "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj": {
+    "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj",
+        "projectUniqueName": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj",
         "projectName": "Application",
-        "projectPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj",
+        "projectPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj",
         "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
-        "outputPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\obj\\",
+        "outputPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -32,8 +32,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj": {
-                "projectPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj"
+              "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj": {
+                "projectPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj"
               }
             }
           }
@@ -72,14 +72,14 @@
         }
       }
     },
-    "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj": {
+    "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj",
+        "projectUniqueName": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj",
+        "projectPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\Domain.csproj",
         "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
-        "outputPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\obj\\",
+        "outputPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -136,14 +136,14 @@
         }
       }
     },
-    "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\Infrastructure.csproj": {
+    "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\Infrastructure.csproj",
+        "projectUniqueName": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\Infrastructure.csproj",
         "projectName": "Infrastructure",
-        "projectPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\Infrastructure.csproj",
+        "projectPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\Infrastructure.csproj",
         "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
-        "outputPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\obj\\",
+        "outputPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -164,8 +164,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj": {
-                "projectPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj"
+              "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj": {
+                "projectPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj"
               }
             }
           }
@@ -204,14 +204,14 @@
         }
       }
     },
-    "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Web\\Web.csproj": {
+    "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Web\\Web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Web\\Web.csproj",
+        "projectUniqueName": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Web\\Web.csproj",
         "projectName": "Web",
-        "projectPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Web\\Web.csproj",
+        "projectPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Web\\Web.csproj",
         "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
-        "outputPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Web\\obj\\",
+        "outputPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Web\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -232,11 +232,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj": {
-                "projectPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj"
+              "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj": {
+                "projectPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Application\\Application.csproj"
               },
-              "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\Infrastructure.csproj": {
-                "projectPath": "d:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\Infrastructure.csproj"
+              "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "D:\\TPI-PROGRAMACION-IV\\backend\\src\\Infrastructure\\Infrastructure.csproj"
               }
             }
           }
