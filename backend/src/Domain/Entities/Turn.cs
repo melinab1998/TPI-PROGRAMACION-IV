@@ -42,7 +42,7 @@ namespace Domain.Entities
             if (Status != TurnStatus.Pending)
                 throw new InvalidOperationException("Solo los turnos pendientes pueden completarse.");
 
-            Status = TurnStatus.Confirmed;
+            Status = TurnStatus.Completed;
         }
 
         public void MarkAsCancelled()
