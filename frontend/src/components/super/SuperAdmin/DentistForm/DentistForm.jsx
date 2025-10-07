@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { successToast } from "@/utils/notifications"
+import { dentistValidations } from "@/utils/validations"
 
 export default function DentistForm({
   isOpen,
@@ -47,10 +48,7 @@ export default function DentistForm({
                   id="first_name"
                   className="h-11"
                   placeholder="Ingrese el nombre"
-                  {...register("first_name", {
-                    required: "El nombre es obligatorio",
-                    minLength: { value: 2, message: "Debe tener al menos 2 caracteres" }
-                  })}
+                  {...register("first_name", dentistValidations.first_name)}
                 />
                 {errors.first_name && (
                   <p className="text-sm text-red-500">{errors.first_name.message}</p>
@@ -63,10 +61,7 @@ export default function DentistForm({
                   id="last_name"
                   className="h-11"
                   placeholder="Ingrese el apellido"
-                  {...register("last_name", {
-                    required: "El apellido es obligatorio",
-                    minLength: { value: 2, message: "Debe tener al menos 2 caracteres" }
-                  })}
+                  {...register("last_name", dentistValidations.last_name)}
                 />
                 {errors.last_name && (
                   <p className="text-sm text-red-500">{errors.last_name.message}</p>
@@ -81,13 +76,7 @@ export default function DentistForm({
                 type="email"
                 className="h-11"
                 placeholder="Ingrese el email"
-                {...register("email", {
-                  required: "El email es obligatorio",
-                  pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: "El formato del email no es válido"
-                  }
-                })}
+                {...register("email", dentistValidations.email)}
               />
               {errors.email && (
                 <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -100,13 +89,7 @@ export default function DentistForm({
                 id="license_number"
                 className="h-11"
                 placeholder="Ej: MN-12345"
-                {...register("license_number", {
-                  required: "La matrícula es obligatoria",
-                  pattern: {
-                    value: /^MN-\d{3,6}$/,
-                    message: "Formato inválido. Ej: MN-12345"
-                  }
-                })}
+                {...register("license_number", dentistValidations.license_number)}
               />
               {errors.license_number && (
                 <p className="text-sm text-red-500">{errors.license_number.message}</p>

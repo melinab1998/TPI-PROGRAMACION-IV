@@ -88,3 +88,34 @@ export const updatePasswordValidations = {
         validate: (value, { newPassword }) => value === newPassword || "Las contraseñas no coinciden"
     }
 };
+
+export const dentistValidations = {
+    first_name: {
+        required: "El nombre es obligatorio",
+        minLength: {
+            value: 2,
+            message: "Debe tener al menos 2 caracteres"
+        }
+    },
+    last_name: {
+        required: "El apellido es obligatorio",
+        minLength: {
+            value: 2,
+            message: "Debe tener al menos 2 caracteres"
+        }
+    },
+    email: {
+        required: "El email es obligatorio",
+        pattern: {
+            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            message: "El formato del email no es válido"
+        }
+    },
+    license_number: {
+        required: "La matrícula es obligatoria",
+        pattern: {
+            value: /^MN-\d{3,6}$/,
+            message: "Formato inválido. Ej: MN-12345"
+        }
+    }
+};
