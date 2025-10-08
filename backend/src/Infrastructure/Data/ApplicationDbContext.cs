@@ -7,12 +7,14 @@ namespace Infrastructure.Data
     {
         // DbSets concretos
         public DbSet<Patient> Patients { get; set; }
+        public DbSet<Dentist> Dentists { get; set; }
+        public DbSet<SuperAdmin> SuperAdmins { get; set; }
         public DbSet<Availability> Availabilities { get; set; }
 
-        // Opcional: si quieres acceder a todos los Users
+        // DbSet general para User (opcional, útil para login)
         public DbSet<User> Users { get; set; }
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
@@ -21,12 +23,13 @@ namespace Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configurar herencia TPH
+            // Herencia TPH
             modelBuilder.Entity<User>()
                 .HasDiscriminator<string>("UserType")
-                .HasValue<Patient>("Patient");
-                // .HasValue<Dentist>("Dentist")
-                // .HasValue<Admin>("Admin");
+                .HasValue<Patient>("Patient")
+                .HasValue<Dentist>("Dentist")
+                .HasValue<SuperAdmin>("SuperAdmin");
         }
     }
 }
+

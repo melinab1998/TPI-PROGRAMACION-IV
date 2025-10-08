@@ -29,12 +29,12 @@ namespace Web.Controllers
         }
 
         [HttpPost("register")]
-        public ActionResult<Patient> Register([FromBody] RegisterPatientRequest dto)
+        public ActionResult<User> Register([FromBody] RegisterUserRequest dto)
         {
             try
             {
-                var patient = _authService.RegisterPatient(dto);
-                return Ok(patient);
+                var user = _authService.RegisterUser(dto);
+                return Ok(user);
             }
             catch (Exception ex)
             {

@@ -1,6 +1,6 @@
 using Domain.Entities;
 using Application.Models.Requests;
-using Application.Models; // <- para AuthenticationResponseDto
+using Application.Models;
 using Infrastructure.Data;
 using Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -23,30 +23,27 @@ namespace Infrastructure.Services
             _config = config;
         }
 
-        // Método para validar password dentro del servicio
+        // Validar password (por ahora en claro)
         private bool ValidatePassword(User user, string password)
         {
-            // Aquí podrías implementar hashing más adelante
             return user != null && user.Password == password;
         }
 
+        // Login
         public AuthenticationResponseDto Authenticate(AuthenticationRequest request)
         {
-            // Buscar usuario por email
-            var user = _context.Set<User>()
+            var user = _context.Users
                 .FirstOrDefault(u => u.Email == request.Email);
 
             if (user == null || !ValidatePassword(user, request.Password))
                 return null!;
 
-            // Crear claims
             var claims = new List<Claim>
             {
                 new Claim("sub", user.Id.ToString()),
                 new Claim("role", user.GetType().Name)
             };
 
-            // Validar que la clave no sea nula
             var secret = _config["Authentication:SecretForKey"];
             if (string.IsNullOrEmpty(secret))
                 throw new Exception("La clave de autenticación no está configurada.");
@@ -65,25 +62,43 @@ namespace Infrastructure.Services
             return new AuthenticationResponseDto
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
-                Role = user.GetType().Name // extrae el tipo de usuario automáticamente
+                Role = user.GetType().Name
             };
         }
 
-        public Patient RegisterPatient(RegisterPatientRequest request)
+        // Registro unificado
+        public User RegisterUser(RegisterUserRequest request)
         {
-            // Crear paciente usando constructor (no tocar propiedades privadas)
-            var patient = new Patient(
-                request.FirstName,
-                request.LastName,
-                request.Email,
-                request.Password,
-                request.Dni
-            );
+            User user;
 
-            _context.Patients.Add(patient);
+            switch (request.Role?.ToLower())
+            {
+                case "patient":
+                    if (string.IsNullOrEmpty(request.Dni))
+                        throw new ArgumentException("DNI es obligatorio para pacientes.");
+                    user = new Patient(request.FirstName, request.LastName, request.Email, request.Password, request.Dni);
+                    _context.Patients.Add((Patient)user);
+                    break;
+
+                case "dentist":
+                    if (string.IsNullOrEmpty(request.LicenseNumber))
+                        throw new ArgumentException("LicenseNumber es obligatorio para dentistas.");
+                    user = new Dentist(request.FirstName, request.LastName, request.Email, request.Password, request.LicenseNumber);
+                    _context.Dentists.Add((Dentist)user);
+                    break;
+
+                case "superadmin":
+                    user = new SuperAdmin(request.FirstName, request.LastName, request.Email, request.Password);
+                    _context.SuperAdmins.Add((SuperAdmin)user);
+                    break;
+
+                default:
+                    throw new ArgumentException("Rol inválido.");
+            }
+
             _context.SaveChanges();
-
-            return patient;
+            return user;
         }
     }
 }
+
