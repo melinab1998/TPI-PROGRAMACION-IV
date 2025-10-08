@@ -16,42 +16,14 @@ namespace Domain.Entities
         // Propiedades de navegación
         public Patient? Patient { get; private set; }
         public Dentist? Dentist { get; private set; }
-
-
-
         public Turn() { }
-
-        public Turn(DateTime appointmentDate, TurnStatus status, string consultationType, int patientId, int dentistId)
+        public Turn(DateTime appointmentDate, TurnStatus status, string? consultationType, int patientId, int dentistId)
         {
-            ValidateAppointmentDate(appointmentDate);
             AppointmentDate = appointmentDate;
-            Status = TurnStatus.Pending;
+            Status = status;
             ConsultationType = consultationType;
             PatientId = patientId;
             DentistId = dentistId;
         }
-
-        private void ValidateAppointmentDate(DateTime date)
-        {
-            if (date < DateTime.Now)
-                throw new ArgumentException("No puedes sacar un turno en el pasado.");
-        }
-        
-        public void MarkAsCompleted()
-        {
-            if (Status != TurnStatus.Pending)
-                throw new InvalidOperationException("Solo los turnos pendientes pueden completarse.");
-
-            Status = TurnStatus.Completed;
-        }
-
-        public void MarkAsCancelled()
-        {
-            if (Status != TurnStatus.Pending)
-                throw new InvalidOperationException("Solo los turnos pendientes pueden cancelarse.");
-
-            Status = TurnStatus.Cancelled;
-        }
-
     }
 }

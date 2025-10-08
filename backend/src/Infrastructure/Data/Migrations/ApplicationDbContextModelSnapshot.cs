@@ -39,7 +39,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("DentistId");
 
-                    b.ToTable("Availabilities");
+                    b.ToTable("Availabilities", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Dentist", b =>
@@ -66,7 +66,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Dentist");
+                    b.ToTable("Dentist", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.HealthInsurance", b =>
@@ -81,7 +81,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HealthInsurance");
+                    b.ToTable("HealthInsurance", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.HealthPlan", b =>
@@ -101,7 +101,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("HealthInsuranceId");
 
-                    b.ToTable("HealthPlan");
+                    b.ToTable("HealthPlan", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Patient", b =>
@@ -148,7 +148,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("HealthPlanId");
 
-                    b.ToTable("Patients");
+                    b.ToTable("Patients", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Availability", b =>
