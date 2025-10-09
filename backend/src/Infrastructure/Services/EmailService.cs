@@ -29,7 +29,7 @@ namespace Infrastructure.Services
         Console.WriteLine($"📧 Para: {email}");
         Console.WriteLine($"🆔 Dentist ID: {dentistId}");
 
-        var activationLink = $"{_config["App:FrontendUrl"]}/activate-dentist?token={GenerateToken(dentistId)}";
+        var activationLink = $"{_config["App:FrontendUrl"]}/reset-password?token={GenerateToken(dentistId)}&mode=activate";
         Console.WriteLine($"🔗 Link de activación: {activationLink}");
 
         var message = new MimeMessage();

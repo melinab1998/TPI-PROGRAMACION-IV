@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
-import { successToast } from "@/utils/notifications";
-import { resetPasswordValidations } from "@/utils/validations"
+import { successToast, errorToast } from "@/utils/notifications";
+import { resetPasswordValidations } from "@/utils/validations";
 import { activateDentist } from "@/services/api.services";
 
 export default function ResetPassword() {
@@ -22,20 +22,31 @@ export default function ResetPassword() {
     } = useForm();
 
     const password = watch("password");
+    const token = new URLSearchParams(window.location.search).get("token");
 
     const onSubmit = (data) => {
-        const token = new URLSearchParams(window.location.search).get("token");
+        if (!token) {
+            errorToast("El enlace no es válido o ha expirado");
+            return;
+        }
+
+        if (!data.password) {
+            errorToast("Debes ingresar una contraseña");
+            return;
+        }
 
         activateDentist(
             token,
             data.password,
             () => {
-                successToast("Contraseña actualizada con éxito");
+                successToast("Cuenta activada correctamente 🎉");
                 reset();
-                setTimeout(() => navigate("/login"), 1000);
+                setTimeout(() => navigate("/login"), 1200);
             },
-            ({ data, message }) => {
-                errorToast(message || "Error al actualizar la contraseña");
+            (err) => {
+                // err puede ser objeto con message o un string
+                const msg = err?.message || "Error al activar la cuenta";
+                errorToast(msg);
             }
         );
     };
@@ -51,19 +62,12 @@ export default function ResetPassword() {
 
     return (
         <div className="min-h-[80vh] flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
-            <motion.div
-                variants={cardVariants}
-                initial="hidden"
-                animate="visible"
-                className="w-full max-w-md"
-            >
+            <motion.div initial="hidden" animate="visible" className="w-full max-w-md">
                 <Card>
                     <CardHeader className="space-y-1">
-                        <CardTitle className="text-2xl font-bold text-center">
-                            Restablecer Contraseña
-                        </CardTitle>
+                        <CardTitle className="text-2xl font-bold text-center">Activar Cuenta</CardTitle>
                         <CardDescription className="text-center">
-                            Ingresa tu nueva contraseña.
+                            Crea tu nueva contraseña para activar tu cuenta.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -81,10 +85,9 @@ export default function ResetPassword() {
                                     placeholder="Nueva contraseña"
                                     {...register("password", resetPasswordValidations.password)}
                                 />
-                                {errors.password && (
-                                    <p className="text-red-500 text-sm">{errors.password.message}</p>
-                                )}
+                                {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
                             </motion.div>
+
                             <motion.div className="space-y-2" custom={1} variants={inputVariants}>
                                 <Label htmlFor="confirm_password">Confirmar Contraseña</Label>
                                 <Input
@@ -93,20 +96,17 @@ export default function ResetPassword() {
                                     placeholder="Confirmar contraseña"
                                     {...register("confirm_password", {
                                         ...resetPasswordValidations.confirm_password,
-                                        validate: (value) =>
-                                            value === password || "Las contraseñas no coinciden",
+                                        validate: (value) => value === password || "Las contraseñas no coinciden",
                                     })}
                                 />
                                 {errors.confirm_password && (
-                                    <p className="text-red-500 text-sm">
-                                        {errors.confirm_password.message}
-                                    </p>
+                                    <p className="text-red-500 text-sm">{errors.confirm_password.message}</p>
                                 )}
                             </motion.div>
 
                             <motion.div custom={2} variants={inputVariants}>
                                 <Button type="submit" className="w-full">
-                                    Cambiar contraseña
+                                    Activar Cuenta
                                 </Button>
                             </motion.div>
                         </motion.form>
@@ -116,4 +116,5 @@ export default function ResetPassword() {
         </div>
     );
 }
+
 
