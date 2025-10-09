@@ -1,45 +1,71 @@
-using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Application.Models;
+using Application.Interfaces;
 using Application.Models.Requests;
+using Application.Models;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Infrastructure.Services;
 
-namespace Web.Controllers
+[Route("api/authentication")]
+[ApiController]
+public class AuthenticationController : ControllerBase
 {
-    [Route("api/authentication")]
-    [ApiController]
-    public class AuthenticationController : ControllerBase
+    private readonly AutenticacionService _authService;
+
+    public AuthenticationController(AutenticacionService authService)
     {
-        private readonly ICustomAuthenticationService _authService;
+        _authService = authService;
+    }
 
-        public AuthenticationController(ICustomAuthenticationService authService)
+    [HttpPost("login")]
+    public ActionResult<AuthenticationResponseDto> Login([FromBody] AuthenticationRequest dto)
+    {
+        var response = _authService.Authenticate(dto);
+        if (response == null) return Unauthorized("Email o contraseña incorrectos o usuario inactivo.");
+        return Ok(response);
+    }
+
+    [HttpPost("register-patient")]
+    public ActionResult<Patient> RegisterPatient([FromBody] RegisterPatientRequest dto)
+    {
+        try
         {
-            _authService = authService;
+            var patient = _authService.RegisterPatient(dto);
+            return Ok(patient);
         }
-
-        [HttpPost("login")]
-        public ActionResult<AuthenticationResponseDto> Login([FromBody] AuthenticationRequest dto)
+        catch (Exception ex)
         {
-            // Ahora Authenticate devuelve AuthenticationResponseDto
-            var response = _authService.Authenticate(dto);
-            if (response == null)
-                return Unauthorized("Email o contraseña incorrectos.");
-
-            return Ok(response);
+            return BadRequest(ex.Message);
         }
+    }
 
-        [HttpPost("register")]
-        public ActionResult<User> Register([FromBody] RegisterUserRequest dto)
+    [HttpPost("create-dentist")]
+    [Authorize(Roles = "SuperAdmin")]
+    public ActionResult<Dentist> CreateDentist([FromBody] CreateDentistRequest dto)
+    {
+        try
         {
-            try
-            {
-                var user = _authService.RegisterUser(dto);
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var dentist = _authService.CreateDentist(dto);
+            return Ok(dentist);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost("activate-dentist")]
+    public ActionResult ActivateDentist([FromBody] ActivateDentistRequest dto)
+    {
+        try
+        {
+            _authService.ActivateDentist(dto);
+            return Ok("Cuenta activada correctamente.");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
         }
     }
 }
+

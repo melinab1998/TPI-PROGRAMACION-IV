@@ -1,18 +1,26 @@
-namespace Domain.Entities;
-
-public abstract class User
+namespace Domain.Entities
 {
-    public int Id { get; private set; }
-    public string FirstName { get; private set; }
-    public string LastName { get; private set; }
-    public string Email { get; private set; }
-    public string Password { get; private set; }
-    protected User() { }
-    protected User(string firstName, string lastName, string email, string password)
+    public abstract class User
     {
-        FirstName = firstName;
-        LastName = lastName;
-        Email = email;
-        Password = password; 
-    }   
+        public int Id { get; private set; }
+        public string FirstName { get; private set; }
+        public string LastName { get; private set; }
+        public string Email { get; private set; }
+        public string Password { get; private set; }
+
+        protected User() { }
+
+        protected User(string firstName, string lastName, string email, string password)
+        {
+            FirstName = firstName;
+            LastName = lastName;
+            Email = email;
+            Password = password;
+        }
+
+        public void SetPassword(string hashedPassword)
+        {
+            Password = hashedPassword;
+        }
+    }
 }

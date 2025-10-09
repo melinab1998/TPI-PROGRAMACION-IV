@@ -23,13 +23,16 @@ namespace Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Herencia TPH
-            modelBuilder.Entity<User>()
-                .HasDiscriminator<string>("UserType")
-                .HasValue<Patient>("Patient")
-                .HasValue<Dentist>("Dentist")
-                .HasValue<SuperAdmin>("SuperAdmin");
+            // Table-Per-Type (TPT)
+            modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<Patient>().ToTable("Patients");
+            modelBuilder.Entity<Dentist>().ToTable("Dentists");
+            modelBuilder.Entity<SuperAdmin>().ToTable("SuperAdmins");
+
+            // Configuraciones opcionales de propiedades
+            modelBuilder.Entity<Patient>()
+                .Property(p => p.Dni)
+                .IsRequired(); // Dni obligatorio solo para pacientes
         }
     }
 }
-

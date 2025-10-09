@@ -48,10 +48,15 @@ using (var command = connection.CreateCommand())
     command.CommandText = "PRAGMA journal_mode = DELETE;";
     command.ExecuteNonQuery();
 }
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connection));
 
 // Configuración JWT
+var secretKey = builder.Configuration["Authentication:SecretForKey"];
+if (string.IsNullOrEmpty(secretKey))
+    throw new Exception("La clave de autenticación no está configurada en appsettings.");
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
     {
@@ -62,16 +67,23 @@ builder.Services.AddAuthentication("Bearer")
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Authentication:Issuer"],
             ValidAudience = builder.Configuration["Authentication:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.ASCII.GetBytes(builder.Configuration["Authentication:SecretForKey"])
-            )
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey))
         };
     });
 
-// Inyección de dependencias del servicio de autenticación
+// Inyección de dependencias
 builder.Services.AddScoped<ICustomAuthenticationService, AutenticacionService>();
+builder.Services.AddScoped<AutenticacionService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
+
+// 🔹 Crear SuperAdmin una sola vez al iniciar la app
+using (var scope = app.Services.CreateScope())
+{
+    var authService = scope.ServiceProvider.GetRequiredService<AutenticacionService>();
+    authService.CreateSuperAdminOnce();
+}
 
 // Pipeline
 if (app.Environment.IsDevelopment())
@@ -81,10 +93,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthentication(); // 🔹 Esto es necesario para JWT
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

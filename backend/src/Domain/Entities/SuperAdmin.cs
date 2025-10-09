@@ -7,6 +7,7 @@ namespace Domain.Entities
         public SuperAdmin(string firstName, string lastName, string email, string password)
             : base(firstName, lastName, email, password)
         {
+            SetPassword(password);
         }
     }
 }
