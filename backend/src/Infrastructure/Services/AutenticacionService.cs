@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Linq;
 using BCrypt.Net;
-using Microsoft.EntityFrameworkCore; 
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services;
 
@@ -29,71 +29,71 @@ public class AutenticacionService : ICustomAuthenticationService
 
     // Login
     public AuthenticationResponseDto Authenticate(AuthenticationRequest request)
-{
-    Console.WriteLine($"=== INTENTO DE LOGIN ===");
-    Console.WriteLine($"Email: {request.Email}");
-    Console.WriteLine($"Password recibida: {request.Password}");
-
-    // Buscamos en cada DbSet concreto
-    User? user = _context.SuperAdmins.FirstOrDefault(u => u.Email == request.Email)
-                 ?? (User?)_context.Dentists.FirstOrDefault(u => u.Email == request.Email)
-                 ?? (User?)_context.Patients.FirstOrDefault(u => u.Email == request.Email);
-
-    if (user == null)
     {
-        Console.WriteLine($"❌ USUARIO NO ENCONTRADO para email: {request.Email}");
-        return null!;
-    }
+        Console.WriteLine($"=== INTENTO DE LOGIN ===");
+        Console.WriteLine($"Email: {request.Email}");
+        Console.WriteLine($"Password recibida: {request.Password}");
 
-    Console.WriteLine($"✅ Usuario encontrado: {user.GetType().Name} - ID: {user.Id}");
+        // Buscamos en cada DbSet concreto
+        User? user = _context.SuperAdmins.FirstOrDefault(u => u.Email == request.Email)
+                     ?? (User?)_context.Dentists.FirstOrDefault(u => u.Email == request.Email)
+                     ?? (User?)_context.Patients.FirstOrDefault(u => u.Email == request.Email);
 
-    // Validación de estado solo para dentista
-    if (user is Dentist d && !d.IsActive)
-    {
-        Console.WriteLine("❌ Dentista inactivo");
-        return null!;
-    }
+        if (user == null)
+        {
+            Console.WriteLine($"❌ USUARIO NO ENCONTRADO para email: {request.Email}");
+            return null!;
+        }
 
-    // Verificación de contraseña
-    Console.WriteLine($"Contraseña en BD (hash): {user.Password}");
-    bool passwordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.Password);
+        Console.WriteLine($"✅ Usuario encontrado: {user.GetType().Name} - ID: {user.Id}");
 
-    if (!passwordValid)
-    {
-        Console.WriteLine("❌ CONTRASEÑA INCORRECTA");
-        return null!;
-    }
+        // Validación de estado solo para dentista
+        if (user is Dentist d && !d.IsActive)
+        {
+            Console.WriteLine("❌ Dentista inactivo");
+            return null!;
+        }
 
-    Console.WriteLine($"✅ LOGIN EXITOSO - Generando token para {user.GetType().Name}");
+        // Verificación de contraseña
+        Console.WriteLine($"Contraseña en BD (hash): {user.Password}");
+        bool passwordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.Password);
 
-    // Generación del token JWT
-    var claims = new List<Claim>
+        if (!passwordValid)
+        {
+            Console.WriteLine("❌ CONTRASEÑA INCORRECTA");
+            return null!;
+        }
+
+        Console.WriteLine($"✅ LOGIN EXITOSO - Generando token para {user.GetType().Name}");
+
+        // Generación del token JWT
+        var claims = new List<Claim>
     {
         new Claim("sub", user.Id.ToString()),
         new Claim("role", user.GetType().Name)
     };
 
-    var secret = _config["Authentication:SecretForKey"];
-    var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret!));
-    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var secret = _config["Authentication:SecretForKey"];
+        var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-    var token = new JwtSecurityToken(
-        issuer: _config["Authentication:Issuer"],
-        audience: _config["Authentication:Audience"],
-        claims: claims,
-        expires: DateTime.UtcNow.AddHours(1),
-        signingCredentials: creds
-    );
+        var token = new JwtSecurityToken(
+            issuer: _config["Authentication:Issuer"],
+            audience: _config["Authentication:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: creds
+        );
 
-    var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-    Console.WriteLine($"✅ TOKEN GENERADO: {tokenString.Substring(0, 50)}...");
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+        Console.WriteLine($"✅ TOKEN GENERADO: {tokenString.Substring(0, 50)}...");
 
-    return new AuthenticationResponseDto
-    {
-        Token = tokenString,
-        Role = user.GetType().Name
-    };
-}
+        return new AuthenticationResponseDto
+        {
+            Token = tokenString,
+            Role = user.GetType().Name
+        };
+    }
 
     // Registro paciente
     public Patient RegisterPatient(RegisterPatientRequest request)
@@ -122,56 +122,64 @@ public class AutenticacionService : ICustomAuthenticationService
     }
 
     // Crear dentista (superadmin)
+
     public Dentist CreateDentist(CreateDentistRequest request)
-{
-    try
     {
-        Console.WriteLine("=== CREANDO DENTISTA ===");
-        
-        // Verificar si el email ya existe
-        if (_context.Users.Any(u => u.Email == request.Email))
+        try
         {
-            throw new Exception($"El email {request.Email} ya está registrado");
-        }
+            Console.WriteLine("=== CREANDO DENTISTA ===");
 
-        // Verificar si la licencia ya existe
-        if (_context.Dentists.Any(d => d.LicenseNumber == request.LicenseNumber))
+            if (_context.Users.Any(u => u.Email == request.Email))
+                throw new Exception($"El email {request.Email} ya está registrado");
+
+            if (_context.Dentists.Any(d => d.LicenseNumber == request.LicenseNumber))
+                throw new Exception($"La matrícula {request.LicenseNumber} ya está registrada");
+
+            var dentist = new Dentist(
+                request.FirstName,
+                request.LastName,
+                request.Email,
+                request.LicenseNumber
+            );
+
+            // Generar contraseña temporal
+            var tempPassword = GenerateTemporaryPassword();
+
+            // Hashear la contraseña temporal
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(tempPassword);
+
+            // ✅ Activar el dentista con la contraseña ya hasheada
+            dentist.Activate(hashedPassword);
+
+            _context.Dentists.Add(dentist);
+            _context.SaveChanges();
+
+            Console.WriteLine($"✅ Dentista guardado con ID: {dentist.Id}");
+            Console.WriteLine($"🧩 Contraseña temporal generada: {tempPassword}");
+
+            return dentist;
+        }
+        catch (DbUpdateException dbEx)
         {
-            throw new Exception($"La matrícula {request.LicenseNumber} ya está registrada");
+            Console.WriteLine($"❌ ERROR BD: {dbEx.Message}");
+            Console.WriteLine($"Inner: {dbEx.InnerException?.Message}");
+            throw new Exception("Error al guardar en la base de datos: " + dbEx.InnerException?.Message);
         }
-
-        var dentist = new Dentist(
-            request.FirstName,
-            request.LastName, 
-            request.Email,
-            request.LicenseNumber
-        );
-
-        Console.WriteLine($"Dentista creado: {dentist.FirstName} {dentist.LastName}");
-
-        _context.Dentists.Add(dentist);
-        _context.SaveChanges();
-
-        Console.WriteLine($"✅ Dentista guardado con ID: {dentist.Id}");
-
-        // ⚠️ TEMPORAL: Comenta la línea del email
-        // _emailService.SendActivationEmail(dentist.Email, dentist.Id);
-        Console.WriteLine($"📧 Email de activación DESHABILITADO temporalmente");
-
-        return dentist;
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ ERROR: {ex.Message}");
+            throw;
+        }
     }
-    catch (DbUpdateException dbEx)
+    private string GenerateTemporaryPassword()
     {
-        Console.WriteLine($"❌ ERROR BD: {dbEx.Message}");
-        Console.WriteLine($"Inner: {dbEx.InnerException?.Message}");
-        throw new Exception("Error al guardar en la base de datos: " + dbEx.InnerException?.Message);
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var random = new Random();
+        var password = new string(Enumerable.Repeat(chars, 10)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+
+        return $"Tmp-{password}";
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"❌ ERROR: {ex.Message}");
-        throw;
-    }
-}
 
     // Activar dentista desde email
     public void ActivateDentist(ActivateDentistRequest request)
