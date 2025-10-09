@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { successToast } from "@/utils/notifications";
 import { resetPasswordValidations } from "@/utils/validations"
+import { activateDentist } from "@/services/api.services";
 
 export default function ResetPassword() {
     const navigate = useNavigate();
@@ -23,17 +24,20 @@ export default function ResetPassword() {
     const password = watch("password");
 
     const onSubmit = (data) => {
-        console.log("Contraseña cambiada:", data);
-        successToast("Contraseña actualizada con éxito");
-        reset();
-        setTimeout(() => {
-            navigate("/login");
-        }, 1000);
-    };
+        const token = new URLSearchParams(window.location.search).get("token");
 
-    const cardVariants = {
-        hidden: { opacity: 0, scale: 0.9 },
-        visible: { opacity: 1, scale: 1, transition: { duration: 0.4 } },
+        activateDentist(
+            token,
+            data.password,
+            () => {
+                successToast("Contraseña actualizada con éxito");
+                reset();
+                setTimeout(() => navigate("/login"), 1000);
+            },
+            ({ data, message }) => {
+                errorToast(message || "Error al actualizar la contraseña");
+            }
+        );
     };
 
     const inputVariants = {

@@ -40,19 +40,19 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("create-dentist")]
-    [Authorize(Roles = "SuperAdmin")]
-    public ActionResult<Dentist> CreateDentist([FromBody] CreateDentistRequest dto)
+[Authorize(Roles = "SuperAdmin")]
+public async Task<ActionResult<Dentist>> CreateDentist([FromBody] CreateDentistRequest dto)
+{
+    try
     {
-        try
-        {
-            var dentist = _authService.CreateDentist(dto);
-            return Ok(dentist);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var dentist = await _authService.CreateDentist(dto);
+        return Ok(dentist);
     }
+    catch (Exception ex)
+    {
+        return BadRequest(ex.Message);
+    }
+}
 
     [HttpPost("activate-dentist")]
     public ActionResult ActivateDentist([FromBody] ActivateDentistRequest dto)

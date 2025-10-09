@@ -123,82 +123,82 @@ public class AutenticacionService : ICustomAuthenticationService
 
     // Crear dentista (superadmin)
 
-    public Dentist CreateDentist(CreateDentistRequest request)
+   public async Task<Dentist> CreateDentist(CreateDentistRequest request)
+{
+    try
     {
-        try
-        {
-            Console.WriteLine("=== CREANDO DENTISTA ===");
+        Console.WriteLine("=== CREANDO DENTISTA ===");
 
-            if (_context.Users.Any(u => u.Email == request.Email))
-                throw new Exception($"El email {request.Email} ya está registrado");
+        if (_context.Users.Any(u => u.Email == request.Email))
+            throw new Exception($"El email {request.Email} ya está registrado");
 
-            if (_context.Dentists.Any(d => d.LicenseNumber == request.LicenseNumber))
-                throw new Exception($"La matrícula {request.LicenseNumber} ya está registrada");
+        if (_context.Dentists.Any(d => d.LicenseNumber == request.LicenseNumber))
+            throw new Exception($"La matrícula {request.LicenseNumber} ya está registrada");
 
-            var dentist = new Dentist(
-                request.FirstName,
-                request.LastName,
-                request.Email,
-                request.LicenseNumber
-            );
+        var dentist = new Dentist(
+            request.FirstName,
+            request.LastName,
+            request.Email,
+            request.LicenseNumber
+        );
 
-            // Generar contraseña temporal
-            var tempPassword = GenerateTemporaryPassword();
+        // Generamos contraseña temporal
+        var tempPassword = GenerateTemporaryPassword();
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(tempPassword);
 
-            // Hashear la contraseña temporal
-            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(tempPassword);
-
-            // ✅ Activar el dentista con la contraseña ya hasheada
-            dentist.Activate(hashedPassword);
-
-            _context.Dentists.Add(dentist);
-            _context.SaveChanges();
-
-            Console.WriteLine($"✅ Dentista guardado con ID: {dentist.Id}");
-            Console.WriteLine($"🧩 Contraseña temporal generada: {tempPassword}");
-
-            return dentist;
-        }
-        catch (DbUpdateException dbEx)
-        {
-            Console.WriteLine($"❌ ERROR BD: {dbEx.Message}");
-            Console.WriteLine($"Inner: {dbEx.InnerException?.Message}");
-            throw new Exception("Error al guardar en la base de datos: " + dbEx.InnerException?.Message);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"❌ ERROR: {ex.Message}");
-            throw;
-        }
-    }
-    private string GenerateTemporaryPassword()
-    {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        var random = new Random();
-        var password = new string(Enumerable.Repeat(chars, 10)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
-
-        return $"Tmp-{password}";
-    }
-
-    // Activar dentista desde email
-    public void ActivateDentist(ActivateDentistRequest request)
-    {
-        var dentist = _context.Dentists.FirstOrDefault(d => d.Id == ValidateToken(request.Token));
-        if (dentist == null) throw new Exception("Token inválido o expirado.");
-
-        // Generamos hash y activamos usando método de la entidad
-        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
+        // Activamos con la contraseña hasheada
         dentist.Activate(hashedPassword);
 
+        _context.Dentists.Add(dentist);
         _context.SaveChanges();
-    }
 
-    private int ValidateToken(string token)
-    {
-        // TODO: implementar validación de token de activación (GUID o JWT)
-        return 1;
+        // Enviamos email al dentista con token de activación
+        await _emailService.SendActivationEmailAsync(dentist.Email, dentist.Id);
+
+        Console.WriteLine($"✅ Dentista guardado con ID: {dentist.Id}");
+        Console.WriteLine($"🧩 Contraseña temporal generada: {tempPassword}");
+
+        return dentist;
     }
+    catch (DbUpdateException dbEx)
+    {
+        Console.WriteLine($"❌ ERROR BD: {dbEx.Message}");
+        throw new Exception("Error al guardar en la base de datos: " + dbEx.InnerException?.Message);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ ERROR: {ex.Message}");
+        throw;
+    }
+}
+   public void ActivateDentist(ActivateDentistRequest request)
+{
+    var dentistId = ValidateToken(request.Token);
+    var dentist = _context.Dentists.FirstOrDefault(d => d.Id == dentistId);
+    if (dentist == null) throw new Exception("Token inválido o expirado.");
+
+    var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
+    dentist.Activate(hashedPassword);
+
+    _context.SaveChanges();
+}
+
+// Método temporal para generar contraseña
+private string GenerateTemporaryPassword()
+{
+    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var random = new Random();
+    var password = new string(Enumerable.Repeat(chars, 10)
+        .Select(s => s[random.Next(s.Length)]).ToArray());
+    return $"Tmp-{password}";
+}
+
+// Validación de token (temporal, luego reemplazar por JWT/GUID real)
+private int ValidateToken(string token)
+{
+    // TODO: implementar validación real
+    return 1;
+}
 
     public User RegisterUser(RegisterUserRequest request) => throw new NotImplementedException();
 
