@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/guest/Layout/Layout";
 import GuestHome from "./pages/guest/GuestHome/GuestHome";
@@ -7,38 +7,37 @@ import Login from "./pages/guest/Login/Login";
 import ServicesPage from "./pages/guest/Services/Services";
 import Register from "./pages/guest/Register/Register";
 import Contact from "./pages/guest/Contact/Contact";
-import Appointments from "./pages/user/Appointments/Appointments";
+import Appointments from "./pages/user/Appointments/appointments";
 import Calendar from "./pages/user/Calendar/Calendar";
-import { useAuth } from "@/hooks/useAuth";
 import PatientProfile from "./pages/user/PatientProfile/PatientProfile";
 import AdminHome from "./pages/admin/AdminHome/AdminHome";
 import AdminSchedule from "./pages/admin/Schedule/Schedule";
 import PatientsPage from "./pages/admin/Patients/Patients";
 import Availability from "./pages/admin/Availability/Availability";
 import VisitsPage from "./pages/admin/Visits/Visits";
-import SuperAdmin from "./pages/super/SuperAdminHome/SuperAdminHome";
+import SuperAdminPage from "./pages/super/SuperAdminHome/SuperAdminHome";
 import ForgotPassword from "./components/guest/ForgotPassword/ForgotPasswordForm/ForgotPasswordForm";
 import ResetPassword from "./components/guest/ForgotPassword/ResetPasswordForm/ResetPasswordForm";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; 
-import "./utils/notifications.css"
-
+import "react-toastify/dist/ReactToastify.css";
+import "./utils/notifications.css";
+import { AuthContext } from "@/services/auth/AuthContextProvider"; // <- importamos contexto
 
 function App() {
-  const { isLoggedIn, role } = useAuth();
 
-  const getHome = () => {
-    if (!isLoggedIn) return <GuestHome />;
-    if (role === "user") return <UserHome />;
-    if (role === "admin") return <AdminHome />;
-    if (role === "superadmin") return <SuperAdmin />;
-  };
+  const { role } = useContext(AuthContext);
 
   return (
     <>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={getHome()} />
+          <Route index element={
+            role === "SuperAdmin" ? <SuperAdminPage />
+              : role === "Dentist" ? <AdminHome />
+                : role === "Patient" ? <UserHome />
+                  : <GuestHome />
+          } />
+
           <Route path="login" element={<Login />} />
           <Route path="services" element={<ServicesPage />} />
           <Route path="register" element={<Register />} />
@@ -70,4 +69,3 @@ function App() {
 }
 
 export default App;
-

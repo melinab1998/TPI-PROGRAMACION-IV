@@ -3,20 +3,77 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { loginValidations } from "@/utils/validations";
+import { loginUser } from "@/services/api.services";
+import { useContext, useState } from "react";
+import { AuthContext } from "@/services/auth/AuthContextProvider";
+import { jwtDecode } from "jwt-decode";
 
 export default function Login() {
-  const { login } = useAuth();
-  const navigate = useNavigate();
-
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit = (data) => {
-    login();
-    navigate("/");
+  const onSubmit = async (data) => {
+    setIsSubmitting(true);
+    
+    loginUser(
+      data.email,
+      data.password,
+      (response) => {
+        if (response.token) {
+          try {
+            // Decodificamos el token para obtener el rol
+            const decoded = jwtDecode(response.token);
+            const userRole = decoded.role;
+
+            console.log("✅ Login exitoso - Rol:", userRole, "Token:", response.token);
+
+            // Primero actualizamos el contexto
+            login(response.token);
+
+            // Pequeño delay para asegurar que el contexto se actualice
+            setTimeout(() => {
+              // Redirigimos según el rol con rutas específicas
+              switch (userRole) {
+                case "Patient":
+                  console.log("🔄 Redirigiendo Patient a /");
+                  navigate("/", { replace: true });
+                  break;
+                case "Dentist":
+                  console.log("🔄 Redirigiendo Dentist a /schedule");
+                  navigate("/schedule", { replace: true });
+                  break;
+                case "SuperAdmin":
+                  console.log("🔄 Redirigiendo SuperAdmin a /");
+                  navigate("/", { replace: true });
+                  break;
+                default:
+                  console.log("🔄 Rol no reconocido, redirigiendo a /");
+                  navigate("/", { replace: true });
+              }
+            }, 100);
+            
+          } catch (error) {
+            console.error("❌ Error decodificando token:", error);
+            alert("Error en la autenticación");
+            setIsSubmitting(false);
+          }
+        } else {
+          console.error("❌ No se recibió token del servidor");
+          alert("No se recibió token del servidor");
+          setIsSubmitting(false);
+        }
+      },
+      (err) => {
+        console.error("❌ Error en login:", err);
+        alert(err?.message || "Error al iniciar sesión");
+        setIsSubmitting(false);
+      }
+    );
   };
 
   const containerVariants = {
@@ -115,11 +172,9 @@ export default function Login() {
                 <Button
                   type="submit"
                   className="w-full"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  as={motion.button}
+                  disabled={isSubmitting}
                 >
-                  Ingresar
+                  {isSubmitting ? "Iniciando sesión..." : "Ingresar"}
                 </Button>
               </motion.div>
             </motion.form>

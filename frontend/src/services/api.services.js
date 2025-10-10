@@ -26,3 +26,20 @@ export const activateDentist = (token, password, onSuccess, onError) => {
         .then(onSuccess)
         .catch(onError);
 };
+
+
+export const loginUser = (email, password, onSuccess, onError) => {
+    if (!email || !password) {
+        onError({ message: "Email o contraseña faltante" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/authentication/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
