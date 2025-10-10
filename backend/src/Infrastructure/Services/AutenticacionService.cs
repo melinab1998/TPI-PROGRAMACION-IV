@@ -153,7 +153,9 @@ public class AutenticacionService : ICustomAuthenticationService
         _context.SaveChanges();
 
         // Enviamos email al dentista con token de activación
-        await _emailService.SendActivationEmailAsync(dentist.Email, dentist.Id);
+        var activationToken = GenerateActivationToken(dentist.Id);
+        await _emailService.SendActivationEmailAsync(dentist.Email, activationToken);
+
 
         Console.WriteLine($"✅ Dentista guardado con ID: {dentist.Id}");
         Console.WriteLine($"🧩 Contraseña temporal generada: {tempPassword}");
@@ -171,33 +173,85 @@ public class AutenticacionService : ICustomAuthenticationService
         throw;
     }
 }
-   public void ActivateDentist(ActivateDentistRequest request)
+   public async Task ActivateDentist(ActivateDentistRequest dto)
 {
-    var dentistId = ValidateToken(request.Token);
-    var dentist = _context.Dentists.FirstOrDefault(d => d.Id == dentistId);
-    if (dentist == null) throw new Exception("Token inválido o expirado.");
+    var dentistId = ValidateToken(dto.Token);
 
-    var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
+    var dentist = _context.Dentists.FirstOrDefault(d => d.Id == dentistId);
+    if (dentist == null) throw new Exception("Dentista no encontrado.");
+
+    var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
     dentist.Activate(hashedPassword);
 
-    _context.SaveChanges();
+    await _context.SaveChangesAsync();
 }
 
-// Método temporal para generar contraseña
-private string GenerateTemporaryPassword()
+
+private string GenerateActivationToken(int dentistId)
 {
-    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    var random = new Random();
-    var password = new string(Enumerable.Repeat(chars, 10)
-        .Select(s => s[random.Next(s.Length)]).ToArray());
-    return $"Tmp-{password}";
+    var claims = new List<Claim>
+    {
+        new Claim("dentistId", dentistId.ToString()),
+        new Claim("purpose", "activation")
+    };
+
+    var secret = _config["Authentication:SecretForKey"];
+    var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret!));
+    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+    var token = new JwtSecurityToken(
+        issuer: _config["Authentication:Issuer"],
+        audience: _config["Authentication:Audience"],
+        claims: claims,
+        expires: DateTime.UtcNow.AddHours(24), // válido por 24 horas
+        signingCredentials: creds
+    );
+
+    return new JwtSecurityTokenHandler().WriteToken(token);
 }
+
+    // Método temporal para generar contraseña
+    private string GenerateTemporaryPassword()
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var random = new Random();
+        var password = new string(Enumerable.Repeat(chars, 10)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+        return $"Tmp-{password}";
+    }
 
 // Validación de token (temporal, luego reemplazar por JWT/GUID real)
 private int ValidateToken(string token)
 {
-    // TODO: implementar validación real
-    return 1;
+    var secret = _config["Authentication:SecretForKey"];
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var key = Encoding.ASCII.GetBytes(secret!);
+
+    var parameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ClockSkew = TimeSpan.Zero
+    };
+
+    try
+    {
+        var principal = tokenHandler.ValidateToken(token, parameters, out SecurityToken validatedToken);
+
+        // Verificamos propósito del token
+        var purpose = principal.Claims.FirstOrDefault(c => c.Type == "purpose")?.Value;
+        if (purpose != "activation") throw new Exception("Token no válido para activación.");
+
+        var dentistId = int.Parse(principal.Claims.First(c => c.Type == "dentistId").Value);
+        return dentistId;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Token inválido: {ex.Message}");
+        throw new Exception("Token inválido o expirado.");
+    }
 }
 
     public User RegisterUser(RegisterUserRequest request) => throw new NotImplementedException();

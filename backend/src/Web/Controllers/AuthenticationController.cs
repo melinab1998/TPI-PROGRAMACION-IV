@@ -55,12 +55,11 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("activate-dentist")]
-    public ActionResult ActivateDentist([FromBody] ActivateDentistRequest dto)
+    public async Task<ActionResult> ActivateDentist([FromBody] ActivateDentistRequest dto)
     {
         try
         {
-            _authService.ActivateDentist(dto);
-            // Devuelve un objeto JSON
+            await _authService.ActivateDentist(dto); // 👈 importante
             return Ok(new { message = "Cuenta activada correctamente." });
         }
         catch (Exception ex)
