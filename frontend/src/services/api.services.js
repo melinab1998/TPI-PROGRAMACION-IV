@@ -43,3 +43,14 @@ export const loginUser = (email, password, onSuccess, onError) => {
         .then(onSuccess)
         .catch(onError);
 };
+
+export const registerPatient = (payload, onSuccess, onError) => {
+    fetch(`${baseUrl}/api/authentication/register-patient`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
