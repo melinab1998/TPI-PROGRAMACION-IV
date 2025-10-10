@@ -485,3 +485,6 @@ $RECYCLE.BIN/
 
 # Basededatos
 *.db
+
+# App settings locales (contienen credenciales sensibles)
+appsettings.Development.json

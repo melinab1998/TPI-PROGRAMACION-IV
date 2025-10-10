@@ -8,6 +8,7 @@ import { Eye, EyeOff, User, Mail, CreditCard, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { successToast } from "@/utils/notifications";
+import { registerPatient } from "@/services/api.services.js";
 
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
@@ -23,10 +24,28 @@ export default function Register() {
     };
 
     const onSubmit = (data) => {
-        console.log(data);
-        successToast("¡Registro exitoso! Ahora puedes iniciar sesión.");
-        reset();
+    // Armar payload según lo que tu backend espera
+    const payload = {
+        firstName: data.nombre,
+        lastName: data.apellido,
+        dni: data.dni,
+        email: data.email,
+        password: data.password,
     };
+
+    registerPatient(
+        payload,
+        (response) => {
+            console.log("✅ Registro exitoso:", response);
+            successToast("¡Registro exitoso! Ahora puedes iniciar sesión.");
+            reset(); // limpiar formulario
+        },
+        (err) => {
+            console.error("❌ Error en registro:", err);
+            alert(err?.message || "Error al registrarse");
+        }
+    );
+};
 
     return (
         <motion.div

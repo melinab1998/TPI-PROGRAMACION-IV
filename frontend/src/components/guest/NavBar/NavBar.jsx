@@ -1,17 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import logoLight from "@/img/logo-light-1.png";
 import logoDark from "@/img/logo-dark-1.png";
 import ModeToggle from "@/components/ui/mode-toggle";
 import { useTheme } from "next-themes";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { AuthContext } from "@/services/auth/AuthContextProvider";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 
 export default function NavBar() {
   const { theme } = useTheme();
-  const { isLoggedIn, role, logout } = useAuth();
+  const { isLoggedIn, role, logout } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
 
   const closeSheet = () => setIsOpen(false);
@@ -28,15 +28,16 @@ export default function NavBar() {
           Turnando
         </span>
       </div>
+
       <Link to="/" onClick={closeSheet} className="w-full">
         <Button variant="ghost" className="w-full justify-center text-base font-medium">
-          {role === "superadmin" ? "Gestión" : "Inicio"}
+          {role === "SuperAdmin" ? "Gestión" : "Inicio"}
         </Button>
       </Link>
 
       {isLoggedIn ? (
         <>
-          {role === "user" && (
+          {role === "Patient" && (
             <>
               <Link to="/appointments" onClick={closeSheet} className="w-full">
                 <Button variant="ghost" className="w-full justify-center text-base font-medium">
@@ -50,7 +51,7 @@ export default function NavBar() {
               </Link>
             </>
           )}
-          {role === "admin" && (
+          {role === "Dentist" && (
             <>
               <Link to="/schedule" onClick={closeSheet} className="w-full">
                 <Button variant="ghost" className="w-full justify-center text-base font-medium">
@@ -122,62 +123,64 @@ export default function NavBar() {
             </span>
           </Link>
         </div>
+
+        {/* Desktop Menu */}
         <div className="hidden md:flex gap-3 items-center">
           <Link to="/">
             <Button variant="ghost" size="default" className="text-sm font-medium">
-              {role === "superadmin" ? "Gestión" : "Inicio"}
+              {role === "SuperAdmin" ? "Gestión" : "Inicio"}
             </Button>
           </Link>
 
-          {isLoggedIn ? (
+          {isLoggedIn && role === "Patient" && (
             <>
-              {role === "user" && (
-                <>
-                  <Link to="/appointments">
-                    <Button variant="ghost" size="default" className="text-sm font-medium">
-                      Turnos
-                    </Button>
-                  </Link>
-                  <Link to="/profile">
-                    <Button variant="ghost" size="default" className="text-sm font-medium">
-                      Mi Perfil
-                    </Button>
-                  </Link>
-                </>
-              )}
-              {role === "admin" && (
-                <>
-                  <Link to="/schedule">
-                    <Button variant="ghost" size="default" className="text-sm font-medium">
-                      Agenda
-                    </Button>
-                  </Link>
-                  <Link to="/patients">
-                    <Button variant="ghost" size="default" className="text-sm font-medium">
-                      Pacientes
-                    </Button>
-                  </Link>
-                  <Link to="/visit-record">
-                    <Button variant="ghost" size="default" className="text-sm font-medium">
-                      Visitas
-                    </Button>
-                  </Link>
-                  <Link to="/availability">
-                    <Button variant="ghost" size="default" className="text-sm font-medium">
-                      Horarios
-                    </Button>
-                  </Link>
-                </>
-              )}
-              <Button
-                variant="outline"
-                size="default"
-                onClick={logout}
-                className="text-sm font-medium"
-              >
-                Cerrar sesión
-              </Button>
+              <Link to="/appointments">
+                <Button variant="ghost" size="default" className="text-sm font-medium">
+                  Turnos
+                </Button>
+              </Link>
+              <Link to="/profile">
+                <Button variant="ghost" size="default" className="text-sm font-medium">
+                  Mi Perfil
+                </Button>
+              </Link>
             </>
+          )}
+
+          {isLoggedIn && role === "Dentist" && (
+            <>
+              <Link to="/schedule">
+                <Button variant="ghost" size="default" className="text-sm font-medium">
+                  Agenda
+                </Button>
+              </Link>
+              <Link to="/patients">
+                <Button variant="ghost" size="default" className="text-sm font-medium">
+                  Pacientes
+                </Button>
+              </Link>
+              <Link to="/visit-record">
+                <Button variant="ghost" size="default" className="text-sm font-medium">
+                  Visitas
+                </Button>
+              </Link>
+              <Link to="/availability">
+                <Button variant="ghost" size="default" className="text-sm font-medium">
+                  Horarios
+                </Button>
+              </Link>
+            </>
+          )}
+
+          {isLoggedIn ? (
+            <Button
+              variant="outline"
+              size="default"
+              onClick={logout}
+              className="text-sm font-medium"
+            >
+              Cerrar sesión
+            </Button>
           ) : (
             <>
               <Link to="/services">
@@ -200,6 +203,8 @@ export default function NavBar() {
 
           <ModeToggle />
         </div>
+
+        {/* Mobile Menu */}
         <div className="flex md:hidden gap-3 items-center">
           <ModeToggle />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>

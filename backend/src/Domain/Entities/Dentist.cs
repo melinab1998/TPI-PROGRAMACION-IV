@@ -1,22 +1,25 @@
-namespace Domain.Entities;
-
-public class Dentist : User
+namespace Domain.Entities
 {
-    public string LicenseNumber { get; private set; }
-
-
-    public Dentist() : base() { }
-
-    public Dentist(string firstName, string lastName, string email, string password, string licenseNumber) : base(firstName, lastName, email, password)
+    public class Dentist : User
     {
-        ValidateLicenseNumber(licenseNumber);
-        LicenseNumber = licenseNumber;
-    }
+        public string LicenseNumber { get; private set; }
+        public bool IsActive { get; private set; } = false;
 
-    private static void ValidateLicenseNumber(string licenseNumber)
-    {
-        if (string.IsNullOrWhiteSpace(licenseNumber))
-            throw new ArgumentException("La matrícula es obligatoria.");
+        public Dentist() : base() { }
+
+        public Dentist(string firstName, string lastName, string email, string licenseNumber)
+            : base(firstName, lastName, email, null!)
+        {
+            LicenseNumber = licenseNumber;
+            IsActive = false;
+        }
+
+        public void Activate(string password)
+        {
+            SetPassword(password);
+            IsActive = true;
+        }
     }
- }
-    
+}
+
+

@@ -42,33 +42,6 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("Availabilities");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Dentist", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LicenseNumber")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Dentist");
-                });
-
             modelBuilder.Entity("Domain.Entities.HealthInsurance", b =>
                 {
                     b.Property<int>("Id")
@@ -104,11 +77,52 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("HealthPlan");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Patient", b =>
+            modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users", (string)null);
+
+                    b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("Domain.Entities.Dentist", b =>
+                {
+                    b.HasBaseType("Domain.Entities.User");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("LicenseNumber")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.ToTable("Dentists", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Patient", b =>
+                {
+                    b.HasBaseType("Domain.Entities.User");
 
                     b.Property<string>("Address")
                         .HasColumnType("TEXT");
@@ -123,20 +137,8 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int?>("HealthPlanId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("MembershipNumber")
                         .HasColumnType("TEXT");
@@ -144,11 +146,16 @@ namespace Infrastructure.Data.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
-
                     b.HasIndex("HealthPlanId");
 
-                    b.ToTable("Patients");
+                    b.ToTable("Patients", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.SuperAdmin", b =>
+                {
+                    b.HasBaseType("Domain.Entities.User");
+
+                    b.ToTable("SuperAdmins", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Availability", b =>
@@ -173,13 +180,37 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("HealthInsurance");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Dentist", b =>
+                {
+                    b.HasOne("Domain.Entities.User", null)
+                        .WithOne()
+                        .HasForeignKey("Domain.Entities.Dentist", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Entities.Patient", b =>
                 {
                     b.HasOne("Domain.Entities.HealthPlan", "HealthPlan")
                         .WithMany()
                         .HasForeignKey("HealthPlanId");
 
+                    b.HasOne("Domain.Entities.User", null)
+                        .WithOne()
+                        .HasForeignKey("Domain.Entities.Patient", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("HealthPlan");
+                });
+
+            modelBuilder.Entity("Domain.Entities.SuperAdmin", b =>
+                {
+                    b.HasOne("Domain.Entities.User", null)
+                        .WithOne()
+                        .HasForeignKey("Domain.Entities.SuperAdmin", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entities.HealthInsurance", b =>
