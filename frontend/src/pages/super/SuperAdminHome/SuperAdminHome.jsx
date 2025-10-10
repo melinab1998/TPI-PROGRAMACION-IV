@@ -1,11 +1,14 @@
-import { useState, useEffect } from "react"
-import Header from "@/components/common/Header/Header"
-import SearchBar from "@/components/common/SearchBar/SearchBar"
-import StatsCards from "@/components/super/SuperAdmin/StatsCards/StatsCards"
-import DentistList from "@/components/super/SuperAdmin/DentistList/DentistList"
-import DentistForm from "@/components/super/SuperAdmin/DentistForm/DentistForm"
-import ConfirmDialog from "@/components/super/SuperAdmin/ConfirmDialog/ConfirmDialog"
-import { Plus } from "lucide-react"
+import { useState, useEffect, useContext } from "react";
+import Header from "@/components/common/Header/Header";
+import SearchBar from "@/components/common/SearchBar/SearchBar";
+import StatsCards from "@/components/super/SuperAdmin/StatsCards/StatsCards";
+import DentistList from "@/components/super/SuperAdmin/DentistList/DentistList";
+import DentistForm from "@/components/super/SuperAdmin/DentistForm/DentistForm";
+import ConfirmDialog from "@/components/super/SuperAdmin/ConfirmDialog/ConfirmDialog";
+import { Plus } from "lucide-react";
+import { createDentist } from "@/services/api.services.js";
+import { AuthContext } from "@/services/auth/AuthContextProvider";
+import { successToast, errorToast } from "@/utils/notifications.js";
 
 const mockDentists = [
   {
@@ -65,71 +68,91 @@ const mockDentists = [
 ]
 
 export default function SuperAdminPage() {
-  const [dentists, setDentists] = useState(mockDentists)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [isFormOpen, setIsFormOpen] = useState(false)
-  const [editingDentist, setEditingDentist] = useState(null)
-  const [deleteConfirm, setDeleteConfirm] = useState(null)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(5)
+  const { token } = useContext(AuthContext);
+
+  const [dentists, setDentists] = useState(mockDentists);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingDentist, setEditingDentist] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     email: "",
     license_number: ""
-  })
+  });
 
   const filteredDentists = dentists.filter(dentist =>
     `${dentist.first_name} ${dentist.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
     dentist.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     dentist.license_number.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  );
 
   useEffect(() => {
-    setCurrentPage(1)
-  }, [searchTerm])
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   const handleCreateDentist = () => {
-    setEditingDentist(null)
-    setFormData({ first_name: "", last_name: "", email: "", license_number: "" })
-    setIsFormOpen(true)
-  }
+    setEditingDentist(null);
+    setFormData({ first_name: "", last_name: "", email: "", license_number: "" });
+    setIsFormOpen(true);
+  };
 
   const handleEditDentist = (dentist) => {
-    setEditingDentist(dentist)
+    setEditingDentist(dentist);
     setFormData({
       first_name: dentist.first_name,
       last_name: dentist.last_name,
       email: dentist.email,
       license_number: dentist.license_number
-    })
-    setIsFormOpen(true)
-  }
+    });
+    setIsFormOpen(true);
+  };
 
-  const handleSaveDentist = () => {
-    if (editingDentist) {
-      setDentists(prev => prev.map(dentist =>
-        dentist.id_user === editingDentist.id_user
-          ? { ...dentist, ...formData }
-          : dentist
-      ))
-    } else {
-      const newDentist = {
-        id_user: Date.now(),
-        ...formData,
-        status: "active",
-        created_at: new Date().toISOString().split('T')[0]
+  const handleSaveDentist = async (data) => {
+    try {
+      if (editingDentist) {
+        successToast("Edición no implementada en backend por ahora");
+      } else {
+        const payload = {
+          firstName: data.first_name,
+          lastName: data.last_name,
+          email: data.email,
+          licenseNumber: data.license_number
+        };
+
+        const newDentist = await createDentist(payload, token);
+
+        setDentists(prev => [
+          ...prev,
+          {
+            id_user: newDentist.id_user,
+            first_name: newDentist.firstName,
+            last_name: newDentist.lastName,
+            email: newDentist.email,
+            license_number: newDentist.licenseNumber,
+            status: "active",
+            created_at: new Date().toISOString().split("T")[0]
+          }
+        ]);
+
+        successToast("Dentista creado exitosamente");
       }
-      setDentists(prev => [...prev, newDentist])
+
+      setIsFormOpen(false);
+      setEditingDentist(null);
+    } catch (err) {
+      console.error("Error al crear dentista:", err);
+      errorToast(err?.message || "Error al crear dentista");
     }
-    setIsFormOpen(false)
-    setEditingDentist(null)
-  }
+  };
 
   const handleToggleStatus = (dentist) => {
-    setDeleteConfirm(dentist)
-  }
+    setDeleteConfirm(dentist);
+  };
 
   const handleConfirmToggle = () => {
     if (deleteConfirm) {
@@ -137,21 +160,20 @@ export default function SuperAdminPage() {
         dentist.id_user === deleteConfirm.id_user
           ? { ...dentist, status: dentist.status === "active" ? "inactive" : "active" }
           : dentist
-      ))
-      setDeleteConfirm(null)
+      ));
+      setDeleteConfirm(null);
     }
-  }
+  };
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
-  const activeDentists = dentists.filter(dentist => dentist.status === "active").length
-  const totalDentists = dentists.length
+  const activeDentists = dentists.filter(dentist => dentist.status === "active").length;
+  const totalDentists = dentists.length;
 
   return (
     <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 py-6 space-y-4">
-
       <Header
         title="Super Administrador"
         subtitle="Gestión integral de dentistas del sistema"
@@ -160,13 +182,11 @@ export default function SuperAdminPage() {
         actionIcon={Plus}
       />
 
-
       <StatsCards
         total={totalDentists}
         active={activeDentists}
         className="text-sm p-4 gap-3"
       />
-
 
       <SearchBar
         searchTerm={searchTerm}
@@ -174,7 +194,6 @@ export default function SuperAdminPage() {
         placeholder="Buscar por nombre, email o matrícula..."
         className="text-sm p-2"
       />
-
 
       <DentistList
         dentists={filteredDentists}
@@ -187,7 +206,6 @@ export default function SuperAdminPage() {
         className="text-sm gap-2"
       />
 
-
       <DentistForm
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
@@ -198,7 +216,6 @@ export default function SuperAdminPage() {
         className="text-sm p-4"
       />
 
-
       <ConfirmDialog
         isOpen={!!deleteConfirm}
         onClose={() => setDeleteConfirm(null)}
@@ -207,5 +224,5 @@ export default function SuperAdminPage() {
         className="text-sm"
       />
     </div>
-  )
+  );
 }
