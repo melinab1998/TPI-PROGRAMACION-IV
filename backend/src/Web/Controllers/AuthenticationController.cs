@@ -59,7 +59,7 @@ public class AuthenticationController : ControllerBase
     {
         try
         {
-            await _authService.ActivateDentist(dto); // 👈 importante
+            await _authService.ActivateDentist(dto); 
             return Ok(new { message = "Cuenta activada correctamente." });
         }
         catch (Exception ex)

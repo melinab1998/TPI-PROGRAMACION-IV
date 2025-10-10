@@ -21,7 +21,6 @@ namespace Infrastructure.Services
             _config = config;
         }
 
-        // ✅ Ahora recibe el token JWT generado en AutenticacionService
         public async Task SendActivationEmailAsync(string email, string activationToken)
         {
             try
@@ -30,7 +29,6 @@ namespace Infrastructure.Services
                 Console.WriteLine($"📧 Para: {email}");
                 Console.WriteLine($"🔗 Token: {activationToken.Substring(0, 20)}...");
 
-                // URL al front con token y modo activación
                 var activationLink = $"{_config["App:FrontendUrl"]}/reset-password?token={activationToken}";
                 Console.WriteLine($"🔗 Link de activación: {activationLink}");
 
@@ -54,7 +52,6 @@ namespace Infrastructure.Services
                 await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
                 Console.WriteLine("✅ Conectado a SMTP");
 
-                // Obtener access token con OAuth2 (Gmail API)
                 Console.WriteLine("🔑 Obteniendo Access Token...");
                 var accessToken = await GetAccessTokenAsync();
 

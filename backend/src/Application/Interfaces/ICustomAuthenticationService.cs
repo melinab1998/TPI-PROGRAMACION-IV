@@ -7,8 +7,6 @@ namespace Application.Interfaces
     public interface ICustomAuthenticationService
     {
         AuthenticationResponseDto Authenticate(AuthenticationRequest request);
-
-        // Registro unificado
         User RegisterUser(RegisterUserRequest request);
     }
 }

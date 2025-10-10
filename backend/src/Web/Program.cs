@@ -9,18 +9,18 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 builder.Services.AddControllers();
 
-// 🔹 Configuración CORS
+// Configuración CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173") // URL de tu front
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
+            policy.WithOrigins("http://localhost:5173") 
+            .AllowAnyHeader()
+            .AllowAnyMethod();
         });
 });
 
@@ -90,14 +90,13 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 
-// 🔹 Crear SuperAdmin una sola vez al iniciar la app
+// Crear SuperAdmin una sola vez al iniciar la app
 using (var scope = app.Services.CreateScope())
 {
     var authService = scope.ServiceProvider.GetRequiredService<AutenticacionService>();
     authService.CreateSuperAdminOnce();
 }
 
-// Pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -106,7 +105,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// 🔹 Usar CORS antes de Authentication/Authorization
+// Usar CORS antes de Authentication/Authorization
 app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
