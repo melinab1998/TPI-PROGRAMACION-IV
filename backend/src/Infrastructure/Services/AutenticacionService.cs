@@ -270,10 +270,10 @@ private int ValidateToken(string token)
             {
                 Console.WriteLine("Creando SuperAdmin...");
                 var superAdmin = new SuperAdmin(
-                    firstName: "Super",
-                    lastName: "Admin",
-                    email: "superadmin@tudominio.com", // ← USA ESTE EMAIL
-                    password: "SuperAdmin123!"
+                    firstName: _config["SuperAdmin:FirstName"]!,
+                    lastName: _config["SuperAdmin:LastName"]!,
+                    email: _config["SuperAdmin:Email"]!,
+                    password: _config["SuperAdmin:Password"]!
                 );
 
                 var hashed = BCrypt.Net.BCrypt.HashPassword("SuperAdmin123!");
