@@ -10,7 +10,7 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
         bottom: { color: "white", observation: "" },
         left: { color: "white", observation: "" },
         right: { color: "white", observation: "" },
-        center: { color: "white", observation: "" }
+        center: { color: "white", observation: "" },
       }
     );
   }, [initialData]);
@@ -20,33 +20,33 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
     bottom: "Inferior",
     left: "Izquierdo",
     right: "Derecho",
-    center: "Central"
+    center: "Central",
   };
 
   const customColors = {
     blue: "#1E3A8A",
     red: "#B22222",
-    green: "#2E7D32"
+    green: "#2E7D32",
   };
 
   const colors = {
     white: { label: "Sano", description: "Pieza sana" },
-    blue: { label: "Restaurado", description: "Tratamiento existente" },
-    red: { label: "Pendiente", description: "Tratamiento necesario" },
-    green: { label: "Profesional", description: "Tratamiento realizado" }
+    blue: { label: "Pendiente", description: "Tratamiento necesario" },
+    red: { label: "Restaurado", description: "Tratamiento existente" },
+    green: { label: "Profesional", description: "Tratamiento realizado" },
   };
 
   const handleColorChange = (section, color) => {
     setSections((prev) => ({
       ...prev,
-      [section]: { ...prev[section], color }
+      [section]: { ...prev[section], color },
     }));
   };
 
   const handleObservationChange = (section, observation) => {
     setSections((prev) => ({
       ...prev,
-      [section]: { ...prev[section], observation: observation.slice(0, 250) }
+      [section]: { ...prev[section], observation: observation.slice(0, 250) },
     }));
   };
 
@@ -73,11 +73,11 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div 
+      <div
         className="bg-white rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl border border-gray-200"
         onClick={(e) => e.stopPropagation()}
       >
@@ -101,12 +101,17 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
         <div className="px-6 py-3 bg-gray-50 border-b border-gray-100">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
             {Object.entries(colors).map(([key, colorInfo]) => (
-              <div key={key} className="flex items-center gap-3 p-2 bg-white rounded-lg border border-gray-200">
+              <div
+                key={key}
+                className="flex items-center gap-3 p-2 bg-white rounded-lg border border-gray-200"
+              >
                 <div
                   className="w-4 h-4 rounded-full border-2 flex-shrink-0"
                   style={{
-                    backgroundColor: key === "white" ? "#FFFFFF" : customColors[key],
-                    borderColor: key === "white" ? "#D1D5DB" : customColors[key]
+                    backgroundColor:
+                      key === "white" ? "#FFFFFF" : customColors[key],
+                    borderColor:
+                      key === "white" ? "#D1D5DB" : customColors[key],
                   }}
                 />
                 <div className="flex flex-col">
@@ -135,7 +140,9 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
                       className="w-2 h-2 rounded-full"
                       style={{
                         backgroundColor:
-                          data.color === "white" ? "#D1D5DB" : customColors[data.color]
+                          data.color === "white"
+                            ? "#D1D5DB"
+                            : customColors[data.color],
                       }}
                     />
                     {sectionLabels[section]}
@@ -151,8 +158,10 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
                             : "border-gray-300 hover:border-gray-400"
                         }`}
                         style={{
-                          backgroundColor: c === "white" ? "#FFFFFF" : customColors[c],
-                          borderColor: c === "white" ? "#D1D5DB" : customColors[c]
+                          backgroundColor:
+                            c === "white" ? "#FFFFFF" : customColors[c],
+                          borderColor:
+                            c === "white" ? "#D1D5DB" : customColors[c],
                         }}
                         title={colors[c].description}
                         type="button"
@@ -166,8 +175,12 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
                   </label>
                   <textarea
                     value={data.observation}
-                    onChange={(e) => handleObservationChange(section, e.target.value)}
-                    placeholder={`Describe el estado de la parte ${sectionLabels[section].toLowerCase()}...`}
+                    onChange={(e) =>
+                      handleObservationChange(section, e.target.value)
+                    }
+                    placeholder={`Describe el estado de la parte ${sectionLabels[
+                      section
+                    ].toLowerCase()}...`}
                     className="w-full text-sm border border-gray-300 bg-white rounded-lg p-3 resize-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 min-h-[80px]"
                     rows={3}
                   />
