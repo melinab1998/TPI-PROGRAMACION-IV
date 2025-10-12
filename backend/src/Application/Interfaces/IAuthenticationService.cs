@@ -4,10 +4,12 @@ using Application.Models;
 
 namespace Application.Interfaces
 {
-    public interface ICustomAuthenticationService
+    public interface IAuthenticationService
     {
         AuthenticationResponseDto Authenticate(AuthenticationRequest request);
         User RegisterUser(RegisterUserRequest request);
+         
+         void CreateSuperAdminOnce();
     }
 }
 

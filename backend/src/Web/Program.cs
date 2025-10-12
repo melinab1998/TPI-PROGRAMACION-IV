@@ -84,18 +84,23 @@ builder.Services.AddAuthentication("Bearer")
     });
 
 // Inyección de dependencias
-builder.Services.AddScoped<ICustomAuthenticationService, AutenticacionService>();
-builder.Services.AddScoped<AutenticacionService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IDentistService, DentistService>();
+builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasherService>();
+
 
 var app = builder.Build();
 
 // Crear SuperAdmin una sola vez al iniciar la app
 using (var scope = app.Services.CreateScope())
 {
-    var authService = scope.ServiceProvider.GetRequiredService<AutenticacionService>();
+    var authService = scope.ServiceProvider.GetRequiredService<IAuthenticationService>();
     authService.CreateSuperAdminOnce();
 }
+
 
 if (app.Environment.IsDevelopment())
 {
