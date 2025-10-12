@@ -1,4 +1,4 @@
-using Application.Interfaces;
+/* using Application.Interfaces;
 using Application.Models.Requests;
 using Domain.Entities;
 using Infrastructure.Data;
@@ -33,3 +33,4 @@ public class PatientService : IPatientService
         return patient;
     }
 }
+ */

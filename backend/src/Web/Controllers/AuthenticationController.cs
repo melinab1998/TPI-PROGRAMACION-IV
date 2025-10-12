@@ -1,40 +1,42 @@
 using Microsoft.AspNetCore.Mvc;
-using Application.Interfaces;
 using Application.Models.Requests;
-using Application.Models;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Application.Services;
 using Web.Models.Requests;
 using Web.Models;
+using Web.Models.Responses;
 
 [Route("api/authentication")]
 [ApiController]
 public class AuthenticationController : ControllerBase
 {
-    private readonly IAuthenticationService _authService;
+    private readonly AuthenticationService _authService;
     private readonly DentistService _dentistService;
 
-    private readonly IPatientService _patientService;
+    /* private readonly IPatientService _patientService; */
 
-    public AuthenticationController(IAuthenticationService authService, DentistService dentistService, IPatientService patientService)
+    public AuthenticationController(AuthenticationService authService, DentistService dentistService /* IPatientService patientService */)
     {
         _authService = authService;
         _dentistService = dentistService;
-        _patientService = patientService;
+        /* _patientService = patientService; */
     }
 
     [HttpPost("login")]
     public ActionResult<AuthenticationResponseDto> Login([FromBody] AuthenticationRequest dto)
     {
-        var response = _authService.Authenticate(dto);
-        if (response == null) 
-            return Unauthorized("Email o contraseña incorrectos o usuario inactivo.");
+        var user = _authService.Authenticate(dto.Email, dto.Password);
 
-        return Ok(response);
+        var responseDto = new AuthenticationResponseDto(
+        user.Token,
+        user.GetType().Name
+    );
+
+
+        return Ok(responseDto);
     }
 
-    [HttpPost("register-patient")]
+   /*  [HttpPost("register-patient")]
     public ActionResult<Patient> RegisterPatient([FromBody] RegisterPatientRequest dto)
     {
         try
@@ -46,7 +48,7 @@ public class AuthenticationController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-    }
+    } */
 
     [HttpPost("create-dentist")]
     [Authorize(Roles = "SuperAdmin")]
@@ -67,7 +69,7 @@ public class AuthenticationController : ControllerBase
     public ActionResult ActivateDentist([FromBody] ActivateDentistRequest dto)
     {
         _dentistService.ActivateDentist(dto.Token, dto.Password);
-        
+
         return NoContent();
     }
 }

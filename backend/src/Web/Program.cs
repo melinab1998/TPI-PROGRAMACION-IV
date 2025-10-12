@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Application.Services;
+using Infrastructure.Repositories;
+using Domain.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -84,9 +87,11 @@ builder.Services.AddAuthentication("Bearer")
     });
 
 // Inyección de dependencias
-builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddScoped<IDentistService, DentistService>();
-builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<AuthenticationService>();
+builder.Services.AddScoped<DentistService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IDentistRepository, DentistRepository>();
+/* builder.Services.AddScoped<IPatientService, PatientService>(); */
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasherService>();
@@ -97,8 +102,21 @@ var app = builder.Build();
 // Crear SuperAdmin una sola vez al iniciar la app
 using (var scope = app.Services.CreateScope())
 {
-    var authService = scope.ServiceProvider.GetRequiredService<IAuthenticationService>();
-    authService.CreateSuperAdminOnce();
+    var authService = scope.ServiceProvider.GetRequiredService<AuthenticationService>();
+    var superAdminConfig = new
+    {
+        FirstName = builder.Configuration["SuperAdmin:FirstName"]!,
+        LastName  = builder.Configuration["SuperAdmin:LastName"]!,
+        Email     = builder.Configuration["SuperAdmin:Email"]!,
+        Password  = builder.Configuration["SuperAdmin:Password"] ?? "SuperAdmin123!"
+    };
+
+    authService.CreateSuperAdminOnce(
+        superAdminConfig.FirstName,
+        superAdminConfig.LastName,
+        superAdminConfig.Email,
+        superAdminConfig.Password
+    );
 }
 
 

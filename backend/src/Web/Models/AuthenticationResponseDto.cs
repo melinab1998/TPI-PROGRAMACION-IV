@@ -1,8 +1,7 @@
-namespace Application.Models
+namespace Web.Models.Responses
 {
-    public class AuthenticationResponseDto
-    {
-        public string Token { get; set; } = null!;
-        public string Role { get; set; } = null!;
-    }
+    public record AuthenticationResponseDto(
+        string Token,
+        string Role
+    );
 }

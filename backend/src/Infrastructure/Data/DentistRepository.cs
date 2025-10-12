@@ -20,7 +20,7 @@ public class DentistRepository : IDentistRepository
 
     public Dentist? GetByEmail(string email)
     {
-        return _applicationDbContext.Dentists.Find(email);
+        return _applicationDbContext.Dentists.FirstOrDefault(d => d.Email == email);
     }
 
     public Dentist Add(Dentist dentist)
