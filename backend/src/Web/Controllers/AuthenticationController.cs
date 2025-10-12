@@ -4,17 +4,20 @@ using Application.Models.Requests;
 using Application.Models;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Application.Services;
+using Web.Models.Requests;
+using Web.Models;
 
 [Route("api/authentication")]
 [ApiController]
 public class AuthenticationController : ControllerBase
 {
     private readonly IAuthenticationService _authService;
-    private readonly IDentistService _dentistService;
+    private readonly DentistService _dentistService;
 
     private readonly IPatientService _patientService;
 
-    public AuthenticationController(IAuthenticationService authService, IDentistService dentistService, IPatientService patientService)
+    public AuthenticationController(IAuthenticationService authService, DentistService dentistService, IPatientService patientService)
     {
         _authService = authService;
         _dentistService = dentistService;
@@ -47,32 +50,24 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost("create-dentist")]
     [Authorize(Roles = "SuperAdmin")]
-    public async Task<ActionResult<Dentist>> CreateDentist([FromBody] CreateDentistRequest dto)
+    public ActionResult<DentistDto> CreateDentist([FromBody] CreateDentistRequest dentistDto)
     {
-        try
-        {
-            var dentist = await _dentistService.CreateDentist(dto);
-            return Ok(dentist);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var dentist = _dentistService.CreateDentist(
+            dentistDto.FirstName,
+            dentistDto.LastName,
+            dentistDto.Email,
+            dentistDto.LicenseNumber
+            );
+
+        var dto = DentistDto.Create(dentist);
+        return Ok(dto);
     }
 
     [HttpPost("activate-dentist")]
-    public async Task<ActionResult> ActivateDentist([FromBody] ActivateDentistRequest dto)
+    public ActionResult ActivateDentist([FromBody] ActivateDentistRequest dto)
     {
-          Console.WriteLine($"Token recibido: {dto.Token}");
-        Console.WriteLine($"Password recibido: {dto.Password}");
-        try
-        {
-            await _dentistService.ActivateDentist(dto);
-            return Ok(new { message = "Cuenta activada correctamente." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        _dentistService.ActivateDentist(dto.Token, dto.Password);
+        
+        return NoContent();
     }
 }

@@ -1,3 +1,4 @@
+
 namespace Application.Models.Requests
 {
     public class AuthenticationRequest
