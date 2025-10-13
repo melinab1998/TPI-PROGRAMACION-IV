@@ -1,7 +1,6 @@
 using System.Net;
 using System.Text.Json;
-using Domain.Exceptions;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Web.Middleware;
