@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Application.Interfaces;
+using Domain.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -81,7 +82,7 @@ public class JwtService : IJwtService
 
             // Verificamos propósito del token
             var purpose = principal.Claims.FirstOrDefault(c => c.Type == "purpose")?.Value;
-            if (purpose != "activation") throw new Exception("Token no válido para activación.");
+            if (purpose != "activation") throw new AppValidationException("Token no válido para activación.");
 
             return principal;
         }

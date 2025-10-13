@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Exceptions;
 using Domain.Interfaces;
 
 
@@ -22,10 +23,10 @@ public class DentistService
     public Dentist CreateDentist(string FirstName, string LastName, string Email, string LicenseNumber)
     {
         if (_dentistRepository.GetByEmail(Email) != null)
-            throw new Exception($"El email {Email} ya está registrado");
+            throw new AppValidationException($"El email {Email} ya está registrado");
 
         if (_dentistRepository.LicenseExists(LicenseNumber))
-            throw new Exception($"La matrícula {LicenseNumber} ya está registrada");
+            throw new AppValidationException($"La matrícula {LicenseNumber} ya está registrada");
 
         var dentist = new Dentist(FirstName, LastName, Email,LicenseNumber);
 
@@ -49,13 +50,13 @@ public class DentistService
     Console.WriteLine($"Claim dentistId: {dentistIdClaim?.Value}");
 
     if (dentistIdClaim == null)
-        throw new Exception("Token inválido o dentistId no encontrado.");
+        throw new AppValidationException("Token inválido o dentistId no encontrado.");
 
     int dentistId = int.Parse(dentistIdClaim.Value);
 
     Console.WriteLine($"🔹 Buscando dentista con Id: {dentistId}");
         var dentist = _dentistRepository.GetById(dentistId);
-    if (dentist == null) throw new Exception("Dentista no encontrado");
+    if (dentist == null) throw new AppValidationException("Dentista no encontrado");
 
     Console.WriteLine($"🔹 Activando dentista: {dentist.Email}");
     dentist.Activate(_hasher.HashPassword(Password));

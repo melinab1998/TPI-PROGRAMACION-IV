@@ -96,6 +96,7 @@ builder.Services.AddScoped<IDentistRepository, DentistRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasherService>();
+builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 
 
 var app = builder.Build();
