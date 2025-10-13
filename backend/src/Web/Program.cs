@@ -9,6 +9,7 @@ using System.Text;
 using Application.Services;
 using Infrastructure.Repositories;
 using Domain.Interfaces;
+using Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -133,6 +134,7 @@ app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.MapControllers();
 app.Run();
