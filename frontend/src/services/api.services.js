@@ -1,13 +1,17 @@
 const baseUrl = import.meta.env.VITE_BASE_SERVER_URL;
 
 const handleResponse = async (res) => {
+
+    if (res.status === 204) return;
     let data;
     try {
         data = await res.json();
     } catch {
         throw { message: "Respuesta inválida del servidor" };
     }
-    if (!res.ok) throw { message: data?.message || "Error en la solicitud" };
+    if (!res.ok) {
+        throw { message: data?.message || "Error en la solicitud" };
+    }
     return data;
 };
 
@@ -26,7 +30,6 @@ export const activateDentist = (token, password, onSuccess, onError) => {
         .then(onSuccess)
         .catch(onError);
 };
-
 
 export const loginUser = (email, password, onSuccess, onError) => {
     if (!email || !password) {
@@ -62,8 +65,8 @@ export const createDentist = async (payload, token) => {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
+            "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
     }).then(handleResponse);
 };
