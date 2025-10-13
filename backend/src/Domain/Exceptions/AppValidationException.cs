@@ -1,4 +1,5 @@
-namespace Core.Exceptions;
+
+namespace Domain.Exceptions;
 
 public class AppValidationException : Exception
 {
