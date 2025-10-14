@@ -5,7 +5,8 @@ using Domain.Interfaces;
 
 
 namespace Application.Services;
-public class DentistService 
+
+public class DentistService
 {
     private readonly IDentistRepository _dentistRepository;
     private readonly IPasswordHasher _hasher;
@@ -28,41 +29,41 @@ public class DentistService
         if (_dentistRepository.LicenseExists(LicenseNumber))
             throw new AppValidationException($"La matrícula {LicenseNumber} ya está registrada");
 
-        var dentist = new Dentist(FirstName, LastName, Email,LicenseNumber);
+        var dentist = new Dentist(FirstName, LastName, Email, LicenseNumber);
 
         var tempPassword = GenerateTemporaryPassword();
         dentist.Activate(_hasher.HashPassword(tempPassword));
 
         _dentistRepository.Add(dentist);
-        
+
 
         var activationToken = _jwtService.GenerateActivationToken(dentist.Id);
-         _emailService.SendActivationEmailAsync(dentist.Email, activationToken);
+        _emailService.SendActivationEmailAsync(dentist.Email, activationToken);
 
         return dentist;
     }
 
     public void ActivateDentist(string Token, string Password)
-{
-    Console.WriteLine("🔹 Validando token...");
-    var principal = _jwtService.ValidateToken(Token);
-    var dentistIdClaim = principal.FindFirst("dentistId");
-    Console.WriteLine($"Claim dentistId: {dentistIdClaim?.Value}");
+    {
+        Console.WriteLine("🔹 Validando token...");
+        var principal = _jwtService.ValidateToken(Token);
+        var dentistIdClaim = principal.FindFirst("dentistId");
+        Console.WriteLine($"Claim dentistId: {dentistIdClaim?.Value}");
 
-    if (dentistIdClaim == null)
-        throw new AppValidationException("Token inválido o dentistId no encontrado.");
+        if (dentistIdClaim == null)
+            throw new AppValidationException("Token inválido o dentistId no encontrado.");
 
-    int dentistId = int.Parse(dentistIdClaim.Value);
+        int dentistId = int.Parse(dentistIdClaim.Value);
 
-    Console.WriteLine($"🔹 Buscando dentista con Id: {dentistId}");
+        Console.WriteLine($"🔹 Buscando dentista con Id: {dentistId}");
         var dentist = _dentistRepository.GetById(dentistId);
-    if (dentist == null) throw new AppValidationException("Dentista no encontrado");
+        if (dentist == null) throw new AppValidationException("Dentista no encontrado");
 
-    Console.WriteLine($"🔹 Activando dentista: {dentist.Email}");
-    dentist.Activate(_hasher.HashPassword(Password));
-     _dentistRepository.Update(dentist);
-    Console.WriteLine("✅ Dentista activado correctamente");
-}
+        Console.WriteLine($"🔹 Activando dentista: {dentist.Email}");
+        dentist.Activate(_hasher.HashPassword(Password));
+        _dentistRepository.Update(dentist);
+        Console.WriteLine("✅ Dentista activado correctamente");
+    }
 
 
     private string GenerateTemporaryPassword()
@@ -70,6 +71,14 @@ public class DentistService
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         var random = new Random();
         return "Tmp-" + new string(Enumerable.Repeat(chars, 10).Select(s => s[random.Next(s.Length)]).ToArray());
+    }
+
+
+    public Dentist GetDentistById(int id)
+    {
+        var dentist = _dentistRepository.GetById(id);
+        if (dentist == null) throw new AppValidationException("Dentista no encontrado");
+        return dentist;
     }
 
 }

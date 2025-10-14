@@ -56,15 +56,14 @@ public class AuthenticationController : ControllerBase
     [Authorize(Roles = "SuperAdmin")]
     public ActionResult<DentistDto> CreateDentist([FromBody] CreateDentistRequest dentistDto)
     {
-        var dentist = _dentistService.CreateDentist(
+        var newDentist = _dentistService.CreateDentist(
             dentistDto.FirstName,
             dentistDto.LastName,
             dentistDto.Email,
             dentistDto.LicenseNumber
             );
 
-        var dto = DentistDto.Create(dentist);
-        return Ok(dto);
+        return CreatedAtAction(nameof(GetDentistById), new { id = newDentist.Id }, DentistDto.Create(newDentist));
     }
 
     [HttpPost("activate-dentist")]
@@ -74,4 +73,18 @@ public class AuthenticationController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpGet("{id}", Name ="GetDentistById")]
+    public ActionResult<DentistDto> GetDentistById([FromRoute] int id)
+    {
+        var dentist = _dentistService.GetDentistById(id);
+
+        var dto = DentistDto.Create(dentist);
+
+        return Ok(dto);
+       
+    }
+
+
+
 }
