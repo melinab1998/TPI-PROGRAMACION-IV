@@ -65,7 +65,7 @@ using (var command = connection.CreateCommand())
 }
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connection));
+    options.UseSqlite(connection)); 
 
 // Configuración JWT
 var secretKey = builder.Configuration["Authentication:SecretForKey"];
