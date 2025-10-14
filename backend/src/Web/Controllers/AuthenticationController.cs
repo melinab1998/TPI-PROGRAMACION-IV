@@ -40,7 +40,7 @@ public class AuthenticationController : ControllerBase
     [HttpPost("register-patient")]
     public ActionResult<PatientDto> RegisterPatient([FromBody] RegisterPatientRequest patientDto)
     {
-        var patient = _patientService.RegisterPatient(
+        var newPatient = _patientService.RegisterPatient(
             patientDto.FirstName,
             patientDto.LastName,
             patientDto.Email,
@@ -48,8 +48,19 @@ public class AuthenticationController : ControllerBase
             patientDto.Dni
         );
 
+        return CreatedAtAction(nameof(GetPatientById), new { id = newPatient.Id }, PatientDto.RegisterPatient(newPatient));
+    }
+
+
+    [HttpGet("patient/{id}", Name = "GetPatientById")]
+    public ActionResult<PatientDto> GetPatientById([FromRoute] int id)
+    {
+        var patient = _patientService.GetPatientById(id);
+
         var dto = PatientDto.RegisterPatient(patient);
+
         return Ok(dto);
+       
     }
 
     [HttpPost("create-dentist")]
@@ -74,7 +85,7 @@ public class AuthenticationController : ControllerBase
         return NoContent();
     }
 
-    [HttpGet("{id}", Name ="GetDentistById")]
+    [HttpGet("dentist/{id}", Name ="GetDentistById")]
     public ActionResult<DentistDto> GetDentistById([FromRoute] int id)
     {
         var dentist = _dentistService.GetDentistById(id);

@@ -23,7 +23,7 @@ public class PatientService
         if (_patientRepository.GetByEmail(Email) != null)
             throw new AppValidationException($"El email {Email} ya está registrado");
 
-        if (_patientRepository.GetByDni(Dni) != null) 
+        if (_patientRepository.GetByDni(Dni) != null)
             throw new AppValidationException($"El DNI {Dni} ya está registrado");
 
         var patient = new Patient(
@@ -32,11 +32,18 @@ public class PatientService
             Email,
             Dni
         );
-        
+
         patient.SetPassword(_hasher.HashPassword(Password));
 
         _patientRepository.Add(patient);
 
+        return patient;
+    }
+    
+    public Patient GetPatientById(int id)
+    {
+        var patient = _patientRepository.GetById(id);
+        if (patient == null) throw new AppValidationException("Paciente no encontrado");
         return patient;
     }
 }
