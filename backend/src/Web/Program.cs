@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using Application.Services;
-using Infrastructure.Repositories;
 using Domain.Interfaces;
 using Web.Middleware;
 
@@ -90,6 +89,7 @@ builder.Services.AddAuthentication("Bearer")
 // Inyección de dependencias
 builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<DentistService>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDentistRepository, DentistRepository>();
 /* builder.Services.AddScoped<IPatientService, PatientService>(); */

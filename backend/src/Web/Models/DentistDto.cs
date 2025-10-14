@@ -1,5 +1,4 @@
 using Domain.Entities;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Web.Models;
 

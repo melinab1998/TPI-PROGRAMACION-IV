@@ -1,14 +1,9 @@
 using Domain.Entities;
 
-
-namespace Domain.Interfaces;
-
-public interface IDentistRepository
+namespace Domain.Interfaces
 {
-    Dentist? GetById(int id);
-    Dentist? GetByEmail(string email);
-    Dentist? Add(Dentist dentist);
-    Dentist? Update(Dentist dentist);
-    void Delete(Dentist dentist);
-    bool LicenseExists(string licenseNumber);
+    public interface IDentistRepository : IRepository<Dentist>
+    {
+        bool LicenseExists(string licenseNumber);
+    }
 }

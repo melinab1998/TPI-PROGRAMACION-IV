@@ -1,52 +1,12 @@
 using Domain.Entities;
 using Domain.Interfaces;
-using Infrastructure.Data;
 
-namespace Infrastructure.Repositories;
-
-public class UserRepository : IUserRepository
+namespace Infrastructure.Data
 {
-    private readonly ApplicationDbContext _applicationDbContext;
-
-    public UserRepository(ApplicationDbContext applicationDbcontext)
+    public class UserRepository : Repository<User>, IUserRepository
     {
-        _applicationDbContext = applicationDbcontext;
-    }
+        public UserRepository(ApplicationDbContext applicationDbContext) : base(applicationDbContext) { }
 
-    public User? GetById(int id)
-    {
-        return _applicationDbContext.Users.Find(id);
-    }
-
-    public User? GetByEmail(string email)
-    {
-        return _applicationDbContext.Users.FirstOrDefault(u => u.Email == email);
-    }
-
-    public User Add(User user)
-    {
-        _applicationDbContext.Users.Add(user);
-        _applicationDbContext.SaveChanges();
-        return user;
-    }
-
-    public User Update(User user)
-    {
-        _applicationDbContext.Users.Update(user);
-        _applicationDbContext.SaveChanges();
-        return user;
-    }
-
-    public void Delete(User user)
-    {
-        _applicationDbContext.Users.Remove(user);
-        _applicationDbContext.SaveChanges();
-
-    }
-
-     public List<User> List()
-    {
-        return _applicationDbContext.Users
-        .ToList();
+        // Acá podés agregar métodos específicos de User si aparecen más adelante
     }
 }
