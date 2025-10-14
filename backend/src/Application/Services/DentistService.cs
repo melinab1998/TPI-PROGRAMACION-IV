@@ -9,13 +9,15 @@ namespace Application.Services;
 public class DentistService
 {
     private readonly IDentistRepository _dentistRepository;
+     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _hasher;
     private readonly IEmailService _emailService;
     private readonly IJwtService _jwtService;
 
-    public DentistService(IDentistRepository dentistRepository, IPasswordHasher hasher, IEmailService emailService, IJwtService jwtService)
+    public DentistService(IDentistRepository dentistRepository, IUserRepository userRepository, IPasswordHasher hasher, IEmailService emailService, IJwtService jwtService)
     {
         _dentistRepository = dentistRepository;
+        _userRepository = userRepository;
         _hasher = hasher;
         _emailService = emailService;
         _jwtService = jwtService;
@@ -23,7 +25,7 @@ public class DentistService
 
     public Dentist CreateDentist(string FirstName, string LastName, string Email, string LicenseNumber)
     {
-        if (_dentistRepository.GetByEmail(Email) != null)
+        if (_userRepository.GetByEmail(Email) != null)
             throw new AppValidationException($"El email {Email} ya está registrado");
 
         if (_dentistRepository.LicenseExists(LicenseNumber))

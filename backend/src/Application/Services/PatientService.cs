@@ -8,19 +8,22 @@ namespace Application.Services;
 public class PatientService
 {
     private readonly IPatientRepository _patientRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _hasher;
 
     public PatientService(
         IPatientRepository patientRepository,
+        IUserRepository userRepository,
         IPasswordHasher hasher)
     {
         _patientRepository = patientRepository;
+        _userRepository = userRepository;
         _hasher = hasher;
     }
 
     public Patient RegisterPatient(string FirstName, string LastName, string Email, string Password, string Dni)
     {
-        if (_patientRepository.GetByEmail(Email) != null)
+        if (_userRepository.GetByEmail(Email) != null)
             throw new AppValidationException($"El email {Email} ya está registrado");
 
         if (_patientRepository.GetByDni(Dni) != null)
