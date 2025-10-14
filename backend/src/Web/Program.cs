@@ -9,6 +9,7 @@ using System.Text;
 using Application.Services;
 using Domain.Interfaces;
 using Web.Middleware;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,17 +56,16 @@ builder.Services.AddSwaggerGen(setup =>
     });
 });
 
-// Configuración SQLite
-var connection = new SqliteConnection("Data Source=WebApiTurn.db");
-connection.Open();
-using (var command = connection.CreateCommand())
-{
-    command.CommandText = "PRAGMA journal_mode = DELETE;";
-    command.ExecuteNonQuery();
-}
+// Configuración SQLServer
+Env.Load("../../.env"); // Carga el .env
+var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION");
+
+if (string.IsNullOrEmpty(connectionString))
+    throw new Exception("DB_CONNECTION no se cargó. Revisá el archivo .env");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connection)); 
+    options.UseSqlServer(connectionString));
+
 
 // Configuración JWT
 var secretKey = builder.Configuration["Authentication:SecretForKey"];
