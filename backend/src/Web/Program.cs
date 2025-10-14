@@ -89,10 +89,11 @@ builder.Services.AddAuthentication("Bearer")
 // Inyección de dependencias
 builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<DentistService>();
+builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDentistRepository, DentistRepository>();
-/* builder.Services.AddScoped<IPatientService, PatientService>(); */
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasherService>();

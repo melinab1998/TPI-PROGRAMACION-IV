@@ -1,36 +1,42 @@
-/* using Application.Interfaces;
-using Application.Models.Requests;
+using Application.Interfaces;
 using Domain.Entities;
-using Infrastructure.Data;
+using Domain.Exceptions;
+using Domain.Interfaces;
 
-namespace Infrastructure.Services;
-public class PatientService : IPatientService
+namespace Application.Services;
+
+public class PatientService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IPatientRepository _patientRepository;
     private readonly IPasswordHasher _hasher;
 
-    public PatientService(ApplicationDbContext context, IPasswordHasher hasher)
+    public PatientService(
+        IPatientRepository patientRepository,
+        IPasswordHasher hasher)
     {
-        _context = context;
+        _patientRepository = patientRepository;
         _hasher = hasher;
     }
 
-    public Patient RegisterPatient(RegisterPatientRequest request)
+    public Patient RegisterPatient(string FirstName, string LastName, string Email, string Password, string Dni)
     {
-        var patient = new Patient(request.FirstName, request.LastName, request.Email, request.Dni);
-        patient.SetPassword(_hasher.HashPassword(request.Password));
+        if (_patientRepository.GetByEmail(Email) != null)
+            throw new AppValidationException($"El email {Email} ya está registrado");
 
-        patient.BirthDate = request.BirthDate;
-        patient.Address = request.Address;
-        patient.PhoneNumber = request.PhoneNumber;
-        patient.City = request.City;
-        patient.MembershipNumber = request.MembershipNumber;
-        patient.HealthPlanId = request.HealthPlanId;
+        if (_patientRepository.GetByDni(Dni) != null) 
+            throw new AppValidationException($"El DNI {Dni} ya está registrado");
 
-        _context.Patients.Add(patient);
-        _context.SaveChanges();
+        var patient = new Patient(
+            FirstName,
+            LastName,
+            Email,
+            Dni
+        );
+        
+        patient.SetPassword(_hasher.HashPassword(Password));
+
+        _patientRepository.Add(patient);
 
         return patient;
     }
 }
- */

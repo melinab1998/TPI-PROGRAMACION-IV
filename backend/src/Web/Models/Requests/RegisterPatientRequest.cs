@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
-namespace Application.Models.Requests;
+namespace Web.Models.Requests;
 
    public record RegisterPatientRequest
     (
@@ -17,11 +17,18 @@ namespace Application.Models.Requests;
         [EmailAddress(ErrorMessage = "Ingrese un email válido")]
          string Email,
 
+         [Required(ErrorMessage = "La contraseña es requerida")]
+         [RegularExpression(@"^(?=.*[A-Z]).{8,}$", ErrorMessage = "La contraseña debe tener al menos 8 caracteres y una letra mayúscula")]
+         string Password,
+
         [Required(ErrorMessage = "El DNI es requerido")]
         [RegularExpression(@"^\d{7,9}$", ErrorMessage = "El DNI debe contener solo números y tener entre 7 y 9 dígitos")]
-         string Dni,
+         string Dni
+    );
 
-        [CustomBirthDateValidation(ErrorMessage = "La fecha de nacimiento no es válida")]
+
+
+ /* [CustomBirthDateValidation(ErrorMessage = "La fecha de nacimiento no es válida")]
          DateOnly? BirthDate ,
 
         [StringLength(100, ErrorMessage = "La dirección no puede exceder 100 caracteres")]
@@ -37,27 +44,25 @@ namespace Application.Models.Requests;
 
         [CustomPhoneValidation(ErrorMessage = "El teléfono no es válido")]
          string? PhoneNumber
-    );
-
-    // Validación personalizada para fecha de nacimiento
-     class CustomBirthDateValidation : ValidationAttribute
+// Validación personalizada para fecha de nacimiento
+class CustomBirthDateValidation : ValidationAttribute
+{
+    protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
-        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        if (value is null) return ValidationResult.Success;
+
+        if (value is DateOnly date)
         {
-            if (value is null) return ValidationResult.Success;
-
-            if (value is DateOnly date)
-            {
-                var today = DateOnly.FromDateTime(DateTime.Today);
-                var minDate = today.AddYears(-150);
-                if (date > today) return new ValidationResult("La fecha no puede ser futura");
-                if (date < minDate) return new ValidationResult("La fecha no es válida");
-                return ValidationResult.Success;
-            }
-
-            return new ValidationResult("Formato de fecha inválido");
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var minDate = today.AddYears(-150);
+            if (date > today) return new ValidationResult("La fecha no puede ser futura");
+            if (date < minDate) return new ValidationResult("La fecha no es válida");
+            return ValidationResult.Success;
         }
+
+        return new ValidationResult("Formato de fecha inválido");
     }
+}
 
     // Validación personalizada para teléfono
      class CustomPhoneValidation : ValidationAttribute
@@ -77,3 +82,4 @@ namespace Application.Models.Requests;
         }
     }
 
+ */

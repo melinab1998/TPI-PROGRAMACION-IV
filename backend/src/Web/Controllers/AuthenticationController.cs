@@ -5,6 +5,7 @@ using Application.Services;
 using Web.Models.Requests;
 using Web.Models;
 using Web.Models.Responses;
+using Domain.Entities;
 
 [Route("api/authentication")]
 [ApiController]
@@ -13,13 +14,13 @@ public class AuthenticationController : ControllerBase
     private readonly AuthenticationService _authService;
     private readonly DentistService _dentistService;
 
-    /* private readonly IPatientService _patientService; */
+    private readonly PatientService _patientService;
 
-    public AuthenticationController(AuthenticationService authService, DentistService dentistService /* IPatientService patientService */)
+    public AuthenticationController(AuthenticationService authService, DentistService dentistService, PatientService patientService)
     {
         _authService = authService;
         _dentistService = dentistService;
-        /* _patientService = patientService; */
+        _patientService = patientService;
     }
 
     [HttpPost("login")]
@@ -36,19 +37,20 @@ public class AuthenticationController : ControllerBase
         return Ok(responseDto);
     }
 
-   /*  [HttpPost("register-patient")]
-    public ActionResult<Patient> RegisterPatient([FromBody] RegisterPatientRequest dto)
+    [HttpPost("register-patient")]
+    public ActionResult<PatientDto> RegisterPatient([FromBody] RegisterPatientRequest patientDto)
     {
-        try
-        {
-            var patient = _patientService.RegisterPatient(dto);
-            return Ok(patient);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    } */
+        var patient = _patientService.RegisterPatient(
+            patientDto.FirstName,
+            patientDto.LastName,
+            patientDto.Email,
+            patientDto.Password,
+            patientDto.Dni
+        );
+
+        var dto = PatientDto.RegisterPatient(patient);
+        return Ok(dto);
+    }
 
     [HttpPost("create-dentist")]
     [Authorize(Roles = "SuperAdmin")]
