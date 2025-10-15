@@ -37,12 +37,6 @@ public class AuthenticationService
         return user;
     }
 
-    /* public User RegisterUser(RegisterUserRequest request)
-    {
-        // Aquí podés agregar lógica de creación de paciente, dentista o superadmin según lo que necesites
-        throw new NotImplementedException();
-    } */
-
    public void CreateSuperAdminOnce(string FirstName, string LastName, string Email, string Password)
 {
     try
