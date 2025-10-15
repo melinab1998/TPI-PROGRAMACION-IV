@@ -9,6 +9,7 @@ public record CreateDentistRequest
      string FirstName,
 
      [Required(ErrorMessage = "El apellido es obligatorio")]
+     [MinLength(2, ErrorMessage = "Debe tener al menos 2 caracteres")]
      string LastName,
      [Required] string Email,
      [Required] string LicenseNumber
