@@ -17,6 +17,7 @@ public record CreateDentistRequest
      string Email,
 
      [Required(ErrorMessage = "La matrícula es obligatoria")]
+     [RegularExpression(@"^MN-\d{3,6}$", ErrorMessage = "Formato inválido. Ej: MN-12345")]
      string LicenseNumber
 
 );
