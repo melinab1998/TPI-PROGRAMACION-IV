@@ -13,6 +13,7 @@ public record CreateDentistRequest
      string LastName,
 
      [Required(ErrorMessage = "El email es obligatorio")]
+     [EmailAddress(ErrorMessage = "El formato del email no es válido")]
      string Email,
      [Required] string LicenseNumber
 
