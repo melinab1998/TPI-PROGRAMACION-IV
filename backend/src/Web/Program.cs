@@ -6,6 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Application.Services;
+using Domain.Interfaces;
+using Web.Middleware;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,17 +56,16 @@ builder.Services.AddSwaggerGen(setup =>
     });
 });
 
-// Configuración SQLite
-var connection = new SqliteConnection("Data Source=WebApiTurn.db");
-connection.Open();
-using (var command = connection.CreateCommand())
-{
-    command.CommandText = "PRAGMA journal_mode = DELETE;";
-    command.ExecuteNonQuery();
-}
+// Configuración SQLServer
+Env.Load("../../.env"); // Carga el .env
+var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION");
+
+if (string.IsNullOrEmpty(connectionString))
+    throw new Exception("DB_CONNECTION no se cargó. Revisá el archivo .env");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connection));
+    options.UseSqlServer(connectionString));
+
 
 // Configuración JWT
 var secretKey = builder.Configuration["Authentication:SecretForKey"];
@@ -84,18 +87,41 @@ builder.Services.AddAuthentication("Bearer")
     });
 
 // Inyección de dependencias
-builder.Services.AddScoped<ICustomAuthenticationService, AutenticacionService>();
-builder.Services.AddScoped<AutenticacionService>();
+builder.Services.AddScoped<AuthenticationService>();
+builder.Services.AddScoped<DentistService>();
+builder.Services.AddScoped<PatientService>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IDentistRepository, DentistRepository>();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasherService>();
+builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
+
 
 var app = builder.Build();
 
 // Crear SuperAdmin una sola vez al iniciar la app
 using (var scope = app.Services.CreateScope())
 {
-    var authService = scope.ServiceProvider.GetRequiredService<AutenticacionService>();
-    authService.CreateSuperAdminOnce();
+    var authService = scope.ServiceProvider.GetRequiredService<AuthenticationService>();
+    var superAdminConfig = new
+    {
+        FirstName = builder.Configuration["SuperAdmin:FirstName"]!,
+        LastName  = builder.Configuration["SuperAdmin:LastName"]!,
+        Email     = builder.Configuration["SuperAdmin:Email"]!,
+        Password  = builder.Configuration["SuperAdmin:Password"] ?? "SuperAdmin123!"
+    };
+
+    authService.CreateSuperAdminOnce(
+        superAdminConfig.FirstName,
+        superAdminConfig.LastName,
+        superAdminConfig.Email,
+        superAdminConfig.Password
+    );
 }
+
 
 if (app.Environment.IsDevelopment())
 {
@@ -110,6 +136,7 @@ app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.MapControllers();
 app.Run();
