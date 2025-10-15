@@ -1,71 +1,101 @@
 using Microsoft.AspNetCore.Mvc;
-using Application.Interfaces;
 using Application.Models.Requests;
-using Application.Models;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Infrastructure.Services;
+using Application.Services;
+using Web.Models.Requests;
+using Web.Models;
+using Web.Models.Responses;
+using Domain.Entities;
 
 [Route("api/authentication")]
 [ApiController]
 public class AuthenticationController : ControllerBase
 {
-    private readonly AutenticacionService _authService;
+    private readonly AuthenticationService _authService;
+    private readonly DentistService _dentistService;
 
-    public AuthenticationController(AutenticacionService authService)
+    private readonly PatientService _patientService;
+
+    public AuthenticationController(AuthenticationService authService, DentistService dentistService, PatientService patientService)
     {
         _authService = authService;
+        _dentistService = dentistService;
+        _patientService = patientService;
     }
 
     [HttpPost("login")]
     public ActionResult<AuthenticationResponseDto> Login([FromBody] AuthenticationRequest dto)
     {
-        var response = _authService.Authenticate(dto);
-        if (response == null) return Unauthorized("Email o contraseña incorrectos o usuario inactivo.");
-        return Ok(response);
+        var user = _authService.Authenticate(dto.Email, dto.Password);
+
+        var responseDto = new AuthenticationResponseDto(
+        user.Token,
+        user.GetType().Name
+    );
+
+
+        return Ok(responseDto);
     }
 
     [HttpPost("register-patient")]
-    public ActionResult<Patient> RegisterPatient([FromBody] RegisterPatientRequest dto)
+    public ActionResult<PatientDto> RegisterPatient([FromBody] RegisterPatientRequest patientDto)
     {
-        try
-        {
-            var patient = _authService.RegisterPatient(dto);
-            return Ok(patient);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var newPatient = _patientService.RegisterPatient(
+            patientDto.FirstName,
+            patientDto.LastName,
+            patientDto.Email,
+            patientDto.Password,
+            patientDto.Dni
+        );
+
+        return CreatedAtAction(nameof(GetPatientById), new { id = newPatient.Id }, PatientDto.RegisterPatient(newPatient));
+    }
+
+
+    [HttpGet("patient/{id}", Name = "GetPatientById")]
+    public ActionResult<PatientDto> GetPatientById([FromRoute] int id)
+    {
+        var patient = _patientService.GetPatientById(id);
+
+        var dto = PatientDto.RegisterPatient(patient);
+
+        return Ok(dto);
+    
     }
 
     [HttpPost("create-dentist")]
     [Authorize(Roles = "SuperAdmin")]
-    public async Task<ActionResult<Dentist>> CreateDentist([FromBody] CreateDentistRequest dto)
+    public ActionResult<DentistDto> CreateDentist([FromBody] CreateDentistRequest dentistDto)
     {
-        try
-        {
-            var dentist = await _authService.CreateDentist(dto);
-            return Ok(dentist);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var newDentist = _dentistService.CreateDentist(
+            dentistDto.FirstName,
+            dentistDto.LastName,
+            dentistDto.Email,
+            dentistDto.LicenseNumber
+            );
+
+        return CreatedAtAction(nameof(GetDentistById), new { id = newDentist.Id }, DentistDto.Create(newDentist));
     }
 
     [HttpPost("activate-dentist")]
-    public async Task<ActionResult> ActivateDentist([FromBody] ActivateDentistRequest dto)
+    public ActionResult ActivateDentist([FromBody] ActivateDentistRequest dto)
     {
-        try
-        {
-            await _authService.ActivateDentist(dto); 
-            return Ok(new { message = "Cuenta activada correctamente." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-    }
-}
+        _dentistService.ActivateDentist(dto.Token, dto.Password);
 
+        return NoContent();
+    }
+
+    [HttpGet("dentist/{id}", Name ="GetDentistById")]
+    public ActionResult<DentistDto> GetDentistById([FromRoute] int id)
+    {
+        var dentist = _dentistService.GetDentistById(id);
+
+        var dto = DentistDto.Create(dentist);
+
+        return Ok(dto);
+       
+    }
+
+
+
+}

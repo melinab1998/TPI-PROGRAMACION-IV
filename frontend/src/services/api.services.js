@@ -1,12 +1,8 @@
 const baseUrl = import.meta.env.VITE_BASE_SERVER_URL;
 
 const handleResponse = async (res) => {
-    console.log("🔍 handleResponse - Status:", res.status, "OK:", res.ok);
-    
-    // OBTENER EL TEXTO PRIMERO, luego decidir si es JSON
-    const responseText = await res.text();
-    console.log("🔍 Response text:", responseText);
-    
+
+    if (res.status === 204) return;
     let data;
     
     try {
@@ -21,18 +17,9 @@ const handleResponse = async (res) => {
         console.warn("⚠️ No se pudo parsear como JSON, usando texto plano");
         data = { message: responseText };
     }
-    
-    // ✅ SIEMPRE lanzar error si !res.ok, con la data parseada
     if (!res.ok) {
-        console.log("🚨 Response not OK - Lanzando error:", data);
-        throw { 
-            message: data?.message || `Error ${res.status} en la solicitud`,
-            status: res.status,
-            data: data
-        };
+        throw { message: data?.message || "Error en la solicitud" };
     }
-    
-    console.log("✅ Response OK - Retornando data:", data);
     return data;
 };
 
@@ -51,7 +38,6 @@ export const activateDentist = (token, password, onSuccess, onError) => {
         .then(onSuccess)
         .catch(onError);
 };
-
 
 export const loginUser = (email, password, onSuccess, onError) => {
     if (!email || !password) {
@@ -87,8 +73,8 @@ export const createDentist = async (payload, token) => {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
+            "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
     }).then(handleResponse);
 };

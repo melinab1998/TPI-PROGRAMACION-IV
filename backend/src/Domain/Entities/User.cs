@@ -1,12 +1,17 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Domain.Entities
 {
     public abstract class User
     {
         public int Id { get; private set; }
-        public string FirstName { get; private set; }
-        public string LastName { get; private set; }
-        public string Email { get; private set; }
+        public string FirstName { get;  set; }
+        public string LastName { get;  set; }
+        public string Email { get;  set; }
         public string Password { get; private set; }
+        
+        [NotMapped]
+        public string Token { get; set; }
 
         protected User() { }
 
