@@ -22,9 +22,9 @@ const mockDentists = [
   },
   {
     id_user: 2,
-    first_name: "Carlos",
+    first_name: "Javier",
     last_name: "Rodríguez",
-    email: "carlos.rodriguez@clinica.com",
+    email: "javier.rodriguez@clinica.com",
     license_number: "MN-67890",
     status: "active",
     created_at: "2024-02-10",
