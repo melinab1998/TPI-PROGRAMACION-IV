@@ -60,7 +60,7 @@ public class AuthenticationController : ControllerBase
         var dto = PatientDto.RegisterPatient(patient);
 
         return Ok(dto);
-       
+    
     }
 
     [HttpPost("create-dentist")]
