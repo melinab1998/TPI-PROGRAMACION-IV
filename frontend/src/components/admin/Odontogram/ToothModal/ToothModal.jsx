@@ -168,7 +168,7 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
         <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-white rounded-t-2xl">
           <div>
             <h2 className="text-xl font-bold text-gray-800 font-sans">
-              Pieza Dental {toothNumber}
+              Pieza dental {toothNumber}
             </h2>
             <p className="text-sm text-gray-600 mt-1">
               Selecciona el estado de cada sección dental
@@ -185,7 +185,7 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
         {/* Sección de Estado de la Pieza Dental - CORREGIDA */}
         <div className="px-6 py-4 bg-blue-50 border-b border-gray-200">
           <h3 className="font-semibold text-gray-800 mb-3">
-            Estado de la Pieza Dental
+            Estado de la pieza dental
           </h3>
 
           {/* Preview del estado seleccionado */}
