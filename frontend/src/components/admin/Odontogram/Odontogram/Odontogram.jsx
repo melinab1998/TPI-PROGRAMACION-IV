@@ -25,17 +25,21 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
   };
 
   const handleSaveToothData = (toothNumber, data) => {
+    console.log("Recibiendo datos guardados:", toothNumber, data); //Para debug
     const newToothData = {
       ...toothData,
-      [toothNumber]: data,
+      [toothNumber]: {
+        ...toothData[toothNumber], // Mantener datos existentes de esta pieza
+        ...data, // Sobrescribir con nuevos datos
+      },
     };
 
     setToothData(newToothData);
-
+    console.log("📝 Estado actualizado:", newToothData); //para debug
     if (onSave) {
       setTimeout(() => {
         onSave(newToothData);
-      }, 0);
+      }, 100);
     }
 
     setSelectedTooth(null);
@@ -48,6 +52,7 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
   const getToothObservations = () => {
     const observations = [];
     Object.entries(toothData).forEach(([toothNumber, data]) => {
+      // Observaciones de secciones (existente)
       if (data && data.sections) {
         Object.entries(data.sections).forEach(([section, sectionData]) => {
           if (sectionData.color !== "white" && sectionData.observation) {
@@ -56,9 +61,34 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
               section,
               color: sectionData.color,
               observation: sectionData.observation,
+              type: "section",
             });
           }
         });
+      }
+
+      // Observaciones de estado de pieza (nuevo)
+      if (data && data.status) {
+        const statusInfo = {
+          ausente: "Pieza Ausente",
+          extraccion: "Extracción Necesaria",
+          corona: "Pieza con Corona",
+          necesitaCorona: "Pieza Necesita Corona",
+        };
+
+        if (statusInfo[data.status.type]) {
+          observations.push({
+            toothNumber,
+            section: "estado",
+            color:
+              data.status.type.includes("ausente") ||
+              data.status.type.includes("corona")
+                ? "red"
+                : "blue",
+            observation: statusInfo[data.status.type],
+            type: "status",
+          });
+        }
       }
     });
     return observations;
@@ -89,7 +119,11 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
 
       <div className="w-full max-w-full overflow-x-auto">
         <div className="min-w-max mx-auto px-2">
-          <div className={`flex justify-center mb-3 sm:mb-4 ${readOnly ? 'opacity-80' : ''}`}>
+          <div
+            className={`flex justify-center mb-3 sm:mb-4 ${
+              readOnly ? "opacity-80" : ""
+            }`}
+          >
             {topRowRight.map((t) => (
               <Tooth
                 key={t}
@@ -110,7 +144,11 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
               />
             ))}
           </div>
-          <div className={`flex justify-center mb-6 sm:mb-8 ${readOnly ? 'opacity-80' : ''}`}>
+          <div
+            className={`flex justify-center mb-6 sm:mb-8 ${
+              readOnly ? "opacity-80" : ""
+            }`}
+          >
             {bottomRowRight.map((t) => (
               <Tooth
                 key={t}
@@ -131,7 +169,11 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
               />
             ))}
           </div>
-          <div className={`flex justify-center mb-3 sm:mb-4 ${readOnly ? 'opacity-80' : ''}`}>
+          <div
+            className={`flex justify-center mb-3 sm:mb-4 ${
+              readOnly ? "opacity-80" : ""
+            }`}
+          >
             {topChildRight.map((t) => (
               <Tooth
                 key={t}
@@ -152,7 +194,11 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
               />
             ))}
           </div>
-          <div className={`flex justify-center mb-6 sm:mb-8 ${readOnly ? 'opacity-80' : ''}`}>
+          <div
+            className={`flex justify-center mb-6 sm:mb-8 ${
+              readOnly ? "opacity-80" : ""
+            }`}
+          >
             {bottomChildRight.map((t) => (
               <Tooth
                 key={t}
@@ -178,7 +224,9 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
 
       {observations.length > 0 && (
         <div className="flex flex-col gap-3 sm:gap-4 w-full max-w-3xl px-2 sm:px-0">
-          <h3 className="font-semibold text-base sm:text-lg mb-1 sm:mb-2">Observaciones:</h3>
+          <h3 className="font-semibold text-base sm:text-lg mb-1 sm:mb-2">
+            Observaciones:
+          </h3>
           {observations.map((obs, index) => (
             <div
               key={index}
@@ -192,14 +240,15 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
                       obs.color === "blue"
                         ? "#1E3A8A"
                         : obs.color === "red"
-                          ? "#B22222"
-                          : obs.color === "green"
-                            ? "#2E7D32"
-                            : "white"
+                        ? "#B22222"
+                        : obs.color === "green"
+                        ? "#2E7D32"
+                        : "white",
                   }}
                 />
                 <span className="font-semibold text-gray-700 text-sm sm:text-base">
-                  Pieza {obs.toothNumber} - {sectionLabels[obs.section] || obs.section}
+                  Pieza {obs.toothNumber} -{" "}
+                  {sectionLabels[obs.section] || obs.section}
                 </span>
               </div>
               <p className="text-gray-600 break-words whitespace-pre-wrap text-sm sm:text-base">

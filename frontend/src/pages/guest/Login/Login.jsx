@@ -10,16 +10,22 @@ import { loginUser } from "@/services/api.services";
 import { useContext, useState } from "react";
 import { AuthContext } from "@/services/auth/AuthContextProvider";
 import { jwtDecode } from "jwt-decode";
+import { Eye, EyeOff, Lock } from "lucide-react";
 
 export default function Login() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
-    
+
     loginUser(
       data.email,
       data.password,
@@ -30,7 +36,12 @@ export default function Login() {
             const decoded = jwtDecode(response.token);
             const userRole = decoded.role;
 
-            console.log("✅ Login exitoso - Rol:", userRole, "Token:", response.token);
+            console.log(
+              "✅ Login exitoso - Rol:",
+              userRole,
+              "Token:",
+              response.token
+            );
 
             // Primero actualizamos el contexto
             login(response.token);
@@ -56,7 +67,6 @@ export default function Login() {
                   navigate("/", { replace: true });
               }
             }, 100);
-            
           } catch (error) {
             console.error("❌ Error decodificando token:", error);
             alert("Error en la autenticación");
@@ -129,21 +139,45 @@ export default function Login() {
                   className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
                   {...register("email", loginValidations.email)}
                 />
-                {errors.email && <p className="text-red-500 text-sm mt-1.5">{errors.email.message}</p>}
+                {errors.email && (
+                  <p className="text-red-500 text-sm mt-1.5">
+                    {errors.email.message}
+                  </p>
+                )}
               </motion.div>
 
               <motion.div variants={itemVariants}>
                 <Label htmlFor="password" className="mb-2">
                   Contraseña
                 </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Ingrese la contraseña..."
-                  className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
-                  {...register("password", loginValidations.password)}
-                />
-                {errors.password && <p className="text-red-500 text-sm mt-1.5">{errors.password.message}</p>}
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Ingrese la contraseña..."
+                    className="pl-10 pr-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
+                    {...register("password", loginValidations.password)}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+                {errors.password && (
+                  <p className="text-red-500 text-sm mt-1.5">
+                    {errors.password.message}
+                  </p>
+                )}
               </motion.div>
 
               <motion.div
@@ -160,10 +194,7 @@ export default function Login() {
                     Recordar contraseña
                   </label>
                 </div>
-                <Link
-                  to="/forgot-password"
-                  className="text-sm hover:underline"
-                >
+                <Link to="/forgot-password" className="text-sm hover:underline">
                   ¿Olvidaste tu contraseña?
                 </Link>
               </motion.div>

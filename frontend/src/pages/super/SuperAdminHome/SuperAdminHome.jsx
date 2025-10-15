@@ -18,7 +18,7 @@ const mockDentists = [
     email: "maria.lopez@clinica.com",
     license_number: "MN-12345",
     status: "active",
-    created_at: "2024-01-15"
+    created_at: "2024-01-15",
   },
   {
     id_user: 2,
@@ -27,7 +27,7 @@ const mockDentists = [
     email: "carlos.rodriguez@clinica.com",
     license_number: "MN-67890",
     status: "active",
-    created_at: "2024-02-10"
+    created_at: "2024-02-10",
   },
   {
     id_user: 3,
@@ -36,7 +36,7 @@ const mockDentists = [
     email: "ana.martinez@clinica.com",
     license_number: "MN-54321",
     status: "inactive",
-    created_at: "2024-01-20"
+    created_at: "2024-01-20",
   },
   {
     id_user: 4,
@@ -45,7 +45,7 @@ const mockDentists = [
     email: "pedro.gomez@clinica.com",
     license_number: "MN-98765",
     status: "active",
-    created_at: "2024-03-05"
+    created_at: "2024-03-05",
   },
   {
     id_user: 5,
@@ -54,7 +54,7 @@ const mockDentists = [
     email: "laura.fernandez@clinica.com",
     license_number: "MN-13579",
     status: "active",
-    created_at: "2024-03-10"
+    created_at: "2024-03-10",
   },
   {
     id_user: 6,
@@ -63,9 +63,9 @@ const mockDentists = [
     email: "diego.sanchez@clinica.com",
     license_number: "MN-24680",
     status: "inactive",
-    created_at: "2024-03-15"
-  }
-]
+    created_at: "2024-03-15",
+  },
+];
 
 export default function SuperAdminPage() {
   const { token } = useContext(AuthContext);
@@ -82,13 +82,16 @@ export default function SuperAdminPage() {
     first_name: "",
     last_name: "",
     email: "",
-    license_number: ""
+    license_number: "",
   });
 
-  const filteredDentists = dentists.filter(dentist =>
-    `${dentist.first_name} ${dentist.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    dentist.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    dentist.license_number.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredDentists = dentists.filter(
+    (dentist) =>
+      `${dentist.first_name} ${dentist.last_name}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      dentist.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      dentist.license_number.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   useEffect(() => {
@@ -97,7 +100,12 @@ export default function SuperAdminPage() {
 
   const handleCreateDentist = () => {
     setEditingDentist(null);
-    setFormData({ first_name: "", last_name: "", email: "", license_number: "" });
+    setFormData({
+      first_name: "",
+      last_name: "",
+      email: "",
+      license_number: "",
+    });
     setIsFormOpen(true);
   };
 
@@ -107,7 +115,7 @@ export default function SuperAdminPage() {
       first_name: dentist.first_name,
       last_name: dentist.last_name,
       email: dentist.email,
-      license_number: dentist.license_number
+      license_number: dentist.license_number,
     });
     setIsFormOpen(true);
   };
@@ -116,37 +124,57 @@ export default function SuperAdminPage() {
     try {
       if (editingDentist) {
         successToast("Edición no implementada en backend por ahora");
-      } else {
-        const payload = {
-          firstName: data.first_name,
-          lastName: data.last_name,
-          email: data.email,
-          licenseNumber: data.license_number
-        };
-
-        const newDentist = await createDentist(payload, token);
-
-        setDentists(prev => [
-          ...prev,
-          {
-            id_user: newDentist.id_user,
-            first_name: newDentist.firstName,
-            last_name: newDentist.lastName,
-            email: newDentist.email,
-            license_number: newDentist.licenseNumber,
-            status: "active",
-            created_at: new Date().toISOString().split("T")[0]
-          }
-        ]);
-
-        successToast("Dentista creado exitosamente");
+        // ❌ ELIMINAR: setIsFormOpen(false); - que lo haga el form
+        setEditingDentist(null);
+        return;
       }
 
-      setIsFormOpen(false);
+      const payload = {
+        firstName: data.first_name,
+        lastName: data.last_name,
+        email: data.email,
+        licenseNumber: data.license_number,
+      };
+
+      console.log("📤 Enviando payload:", payload);
+
+      const response = await createDentist(payload, token);
+      console.log("🔍 Respuesta COMPLETA:", response);
+
+      // ✅ ACTUALIZAR estado
+      setDentists((prev) => [
+        ...prev,
+        {
+          id_user: response.id_user || response.id,
+          first_name: response.firstName || response.first_name,
+          last_name: response.lastName || response.last_name,
+          email: response.email,
+          license_number: response.licenseNumber || response.license_number,
+          status: "active",
+          created_at: new Date().toISOString().split("T")[0],
+        },
+      ]);
+
+      // ✅ MOSTRAR TOAST DE ÉXITO (solo aquí)
+      successToast("Dentista creado exitosamente");
+
+      // ❌ ELIMINAR: setIsFormOpen(false); - que lo haga el form
       setEditingDentist(null);
     } catch (err) {
-      console.error("Error al crear dentista:", err);
-      errorToast(err?.message || "Error al crear dentista");
+      console.error("❌ Error completo:", err);
+
+      const errorMessage = err?.message || "";
+
+      if (errorMessage.includes("ya está registrado") || err?.status === 400) {
+        errorToast(
+          err.data?.message || "El dentista ya está registrado en el sistema"
+        );
+      } else {
+        errorToast(errorMessage || "Error al crear dentista");
+      }
+
+      setEditingDentist(null);
+      // ❌ NO cerrar el modal en error - que el usuario pueda corregir
     }
   };
 
@@ -156,20 +184,27 @@ export default function SuperAdminPage() {
 
   const handleConfirmToggle = () => {
     if (deleteConfirm) {
-      setDentists(prev => prev.map(dentist =>
-        dentist.id_user === deleteConfirm.id_user
-          ? { ...dentist, status: dentist.status === "active" ? "inactive" : "active" }
-          : dentist
-      ));
+      setDentists((prev) =>
+        prev.map((dentist) =>
+          dentist.id_user === deleteConfirm.id_user
+            ? {
+                ...dentist,
+                status: dentist.status === "active" ? "inactive" : "active",
+              }
+            : dentist
+        )
+      );
       setDeleteConfirm(null);
     }
   };
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const activeDentists = dentists.filter(dentist => dentist.status === "active").length;
+  const activeDentists = dentists.filter(
+    (dentist) => dentist.status === "active"
+  ).length;
   const totalDentists = dentists.length;
 
   return (

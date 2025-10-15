@@ -4,10 +4,18 @@ const handleResponse = async (res) => {
 
     if (res.status === 204) return;
     let data;
+    
     try {
-        data = await res.json();
-    } catch {
-        throw { message: "Respuesta inválida del servidor" };
+        // Intentar parsear como JSON solo si el texto parece JSON
+        if (responseText.trim().startsWith('{') || responseText.trim().startsWith('[')) {
+            data = JSON.parse(responseText);
+        } else {
+            // Si no es JSON, usar el texto como mensaje
+            data = { message: responseText };
+        }
+    } catch (error) {
+        console.warn("⚠️ No se pudo parsear como JSON, usando texto plano");
+        data = { message: responseText };
     }
     if (!res.ok) {
         throw { message: data?.message || "Error en la solicitud" };
