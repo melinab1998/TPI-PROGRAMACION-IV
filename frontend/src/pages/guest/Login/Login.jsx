@@ -11,6 +11,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "@/services/auth/AuthContextProvider";
 import { jwtDecode } from "jwt-decode";
 import { Eye, EyeOff, Lock } from "lucide-react";
+import { errorToast } from "@/utils/notifications";
 
 export default function Login() {
   const {
@@ -32,55 +33,40 @@ export default function Login() {
       (response) => {
         if (response.token) {
           try {
-            // Decodificamos el token para obtener el rol
             const decoded = jwtDecode(response.token);
             const userRole = decoded.role;
 
-            console.log(
-              "✅ Login exitoso - Rol:",
-              userRole,
-              "Token:",
-              response.token
-            );
-
-            // Primero actualizamos el contexto
             login(response.token);
 
-            // Pequeño delay para asegurar que el contexto se actualice
             setTimeout(() => {
-              // Redirigimos según el rol con rutas específicas
               switch (userRole) {
                 case "Patient":
-                  console.log("🔄 Redirigiendo Patient a /");
                   navigate("/", { replace: true });
                   break;
                 case "Dentist":
-                  console.log("🔄 Redirigiendo Dentist a /schedule");
                   navigate("/schedule", { replace: true });
                   break;
                 case "SuperAdmin":
-                  console.log("🔄 Redirigiendo SuperAdmin a /");
                   navigate("/", { replace: true });
                   break;
                 default:
-                  console.log("🔄 Rol no reconocido, redirigiendo a /");
                   navigate("/", { replace: true });
               }
             }, 100);
           } catch (error) {
             console.error("❌ Error decodificando token:", error);
-            alert("Error en la autenticación");
+            errorToast("Error en la autenticación");
             setIsSubmitting(false);
           }
         } else {
           console.error("❌ No se recibió token del servidor");
-          alert("No se recibió token del servidor");
+          errorToast("Error del servidor");
           setIsSubmitting(false);
         }
       },
       (err) => {
         console.error("❌ Error en login:", err);
-        alert(err?.message || "Error al iniciar sesión");
+        errorToast(err.message); // <-- muestra directamente lo que viene del backend
         setIsSubmitting(false);
       }
     );

@@ -1,28 +1,23 @@
 const baseUrl = import.meta.env.VITE_BASE_SERVER_URL;
 
 const handleResponse = async (res) => {
-    if (res.status === 204) return;
+    let data = null;
     
-    let data;
     try {
-        data = await res.json();
+        data = await res.json(); // intenta parsear el JSON
     } catch {
-        throw { 
-            message: "Respuesta inválida del servidor",
-            status: res.status 
-        };
+        // si no es JSON, simplemente ignoramos
     }
 
     if (!res.ok) {
-        const message = data?.detail || data?.title || data?.message || "Error en la solicitud";
-        
+        const message = data?.detail || data?.title || data?.message || `Error ${res.status}`;
         throw { 
-            message: message,
-            status: res.status, 
+            message,
+            status: res.status,
             details: data
         };
     }
-    
+
     return data;
 };
 

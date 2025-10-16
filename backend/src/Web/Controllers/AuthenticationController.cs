@@ -28,13 +28,7 @@ public class AuthenticationController : ControllerBase
     {
         var user = _authService.Authenticate(dto.Email, dto.Password);
 
-        var responseDto = new AuthenticationResponseDto(
-        user.Token,
-        user.GetType().Name
-    );
-
-
-        return Ok(responseDto);
+        return Ok(new AuthenticationResponseDto(user.Token, user.GetType().Name));
     }
 
     [HttpPost("register-patient")]
@@ -60,7 +54,7 @@ public class AuthenticationController : ControllerBase
         var dto = PatientDto.RegisterPatient(patient);
 
         return Ok(dto);
-    
+
     }
 
     [HttpPost("create-dentist")]
@@ -85,7 +79,7 @@ public class AuthenticationController : ControllerBase
         return NoContent();
     }
 
-    [HttpGet("dentist/{id}", Name ="GetDentistById")]
+    [HttpGet("dentist/{id}", Name = "GetDentistById")]
     public ActionResult<DentistDto> GetDentistById([FromRoute] int id)
     {
         var dentist = _dentistService.GetDentistById(id);
@@ -93,7 +87,7 @@ public class AuthenticationController : ControllerBase
         var dto = DentistDto.Create(dentist);
 
         return Ok(dto);
-       
+
     }
 
 

@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
+using Domain.Exceptions;
 
 
 namespace Application.Services;
@@ -21,21 +22,26 @@ public class AuthenticationService
         _jwtService = jwtService;
     }
 
-    public User Authenticate(string Email, string Password)
-    {
-        // Buscamos el usuario directamente por email
-        var user = _userRepository.GetByEmail(Email);
-        if (user == null || (user is Dentist d && !d.IsActive))
-            return null!;
+  public User Authenticate(string Email, string Password)
+{
+    if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
+        throw new AppValidationException("Email y contraseña son obligatorios.");
 
-        if (!_hasher.VerifyPassword(Password, user.Password))
-            return null!;
+    var user = _userRepository.GetByEmail(Email);
 
-        // Generamos el token
-         user.Token = _jwtService.GenerateToken(user.Id, user.GetType().Name, TimeSpan.FromHours(1));
+    if (user == null)
+        throw new AppValidationException("Email y/o contraseña incorrectos.");
 
-        return user;
-    }
+    if (user is Dentist dentist && !dentist.IsActive)
+        throw new AppValidationException("El dentista aún no está activado.");
+
+    if (!_hasher.VerifyPassword(Password, user.Password))
+        throw new AppValidationException("Email y/o contraseña incorrectos.");
+
+    user.Token = _jwtService.GenerateToken(user.Id, user.GetType().Name, TimeSpan.FromHours(1));
+
+    return user;
+}
 
    public void CreateSuperAdminOnce(string FirstName, string LastName, string Email, string Password)
 {
