@@ -1,12 +1,12 @@
 const baseUrl = import.meta.env.VITE_BASE_SERVER_URL;
 
 const handleResponse = async (res) => {
+    
     let data = null;
     
     try {
-        data = await res.json(); // intenta parsear el JSON
+        data = await res.json(); 
     } catch {
-        // si no es JSON, simplemente ignoramos
     }
 
     if (!res.ok) {
@@ -75,7 +75,5 @@ export const createDentist = async (payload, token) => {
         },
         body: JSON.stringify(payload),
     });
-    
-    // ✅ Asegúrate de que handleResponse se ejecute
     return handleResponse(response);
 };

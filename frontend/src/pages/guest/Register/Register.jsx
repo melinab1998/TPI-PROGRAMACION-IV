@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, User, Mail, CreditCard, Lock } from "lucide-react";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { successToast, errorToast } from "@/utils/notifications";
 import { registerPatient } from "@/services/api.services.js";
@@ -13,9 +13,9 @@ import { registerPatient } from "@/services/api.services.js";
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const navigate = useNavigate(); 
 
     const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
-
     const password = watch("password");
 
     const fieldVariants = {
@@ -37,6 +37,7 @@ export default function Register() {
             (response) => {
                 successToast("¡Registro exitoso! Ahora puedes iniciar sesión.");
                 reset();
+                setTimeout(() => navigate("/login"), 1500); 
             },
             (err) => {
                 const message = err?.message?.toLowerCase();
