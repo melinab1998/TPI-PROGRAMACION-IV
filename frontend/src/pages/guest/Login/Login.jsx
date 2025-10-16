@@ -25,52 +25,54 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data) => {
-    setIsSubmitting(true);
+  setIsSubmitting(true);
 
-    loginUser(
-      data.email,
-      data.password,
-      (response) => {
-        if (response.token) {
-          try {
-            const decoded = jwtDecode(response.token);
-            const userRole = decoded.role;
+  loginUser(
+    data.email,
+    data.password,
+    (response) => {
+      if (response.token) {
+        try {
+          const decoded = jwtDecode(response.token);
+          const userRole = decoded.role;
 
-            login(response.token);
+          login(response.token);
 
-            setTimeout(() => {
-              switch (userRole) {
-                case "Patient":
-                  navigate("/", { replace: true });
-                  break;
-                case "Dentist":
-                  navigate("/schedule", { replace: true });
-                  break;
-                case "SuperAdmin":
-                  navigate("/", { replace: true });
-                  break;
-                default:
-                  navigate("/", { replace: true });
-              }
-            }, 100);
-          } catch (error) {
-            console.error("❌ Error decodificando token:", error);
-            errorToast("Error en la autenticación");
-            setIsSubmitting(false);
-          }
-        } else {
-          console.error("❌ No se recibió token del servidor");
-          errorToast("Error del servidor");
+          setTimeout(() => {
+            switch (userRole) {
+              case "Patient":
+                navigate("/", { replace: true });
+                break;
+              case "Dentist":
+                navigate("/schedule", { replace: true });
+                break;
+              case "SuperAdmin":
+                navigate("/", { replace: true });
+                break;
+              default:
+                navigate("/", { replace: true });
+            }
+          }, 100);
+        } catch {
+          errorToast("Error en la autenticación");
           setIsSubmitting(false);
         }
-      },
-      (err) => {
-        console.error("❌ Error en login:", err);
-        errorToast(err.message); // <-- muestra directamente lo que viene del backend
+      } else {
+        errorToast("Error del servidor");
         setIsSubmitting(false);
       }
-    );
-  };
+    },
+    (err) => {
+      const message =
+        err?.message?.toLowerCase().includes("contraseña") ||
+        err?.message?.toLowerCase().includes("email")
+          ? err.message
+          : "Error del servidor";
+      errorToast(message);
+      setIsSubmitting(false);
+    }
+  );
+};
 
   const containerVariants = {
     hidden: { opacity: 0 },
