@@ -7,7 +7,7 @@ using Web.Models;
 using Web.Models.Responses;
 using Domain.Entities;
 
-[Route("api/authentication")]
+[Route("api/auth")]
 [ApiController]
 public class AuthenticationController : ControllerBase
 {
@@ -29,7 +29,6 @@ public class AuthenticationController : ControllerBase
     public ActionResult<AuthenticationResponseDto> Login([FromBody] AuthenticationRequest dto)
     {
         var user = _userService.Authenticate(dto.Email, dto.Password);
-
         return Ok(new AuthenticationResponseDto(user.Token, user.GetType().Name));
     }
 
@@ -43,20 +42,7 @@ public class AuthenticationController : ControllerBase
             patientDto.Password,
             patientDto.Dni
         );
-
-        return CreatedAtAction(nameof(GetPatientById), new { id = newPatient.Id }, PatientDto.RegisterPatient(newPatient));
-    }
-
-
-    [HttpGet("patient/{id}", Name = "GetPatientById")]
-    public ActionResult<PatientDto> GetPatientById([FromRoute] int id)
-    {
-        var patient = _patientService.GetPatientById(id);
-
-        var dto = PatientDto.RegisterPatient(patient);
-
-        return Ok(dto);
-
+        return CreatedAtAction(nameof(PatientController.GetPatientById), "Patient", new { id = newPatient.Id }, PatientDto.RegisterPatient(newPatient));
     }
 
     [HttpPost("create-dentist")]
@@ -68,30 +54,14 @@ public class AuthenticationController : ControllerBase
             dentistDto.LastName,
             dentistDto.Email,
             dentistDto.LicenseNumber
-            );
-
-        return CreatedAtAction(nameof(GetDentistById), new { id = newDentist.Id }, DentistDto.Create(newDentist));
+        );
+        return CreatedAtAction(nameof(DentistController.GetDentistById), "Dentist", new { id = newDentist.Id }, DentistDto.Create(newDentist));
     }
 
     [HttpPost("activate-dentist")]
     public ActionResult ActivateDentist([FromBody] ActivateDentistRequest dto)
     {
         _dentistService.ActivateDentist(dto.Token, dto.Password);
-
         return NoContent();
     }
-
-    [HttpGet("dentist/{id}", Name = "GetDentistById")]
-    public ActionResult<DentistDto> GetDentistById([FromRoute] int id)
-    {
-        var dentist = _dentistService.GetDentistById(id);
-
-        var dto = DentistDto.Create(dentist);
-
-        return Ok(dto);
-
-    }
-
-
-
 }
