@@ -93,7 +93,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDentistRepository, DentistRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
-builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddHttpClient<IEmailService, EmailService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasherService>();
 builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
