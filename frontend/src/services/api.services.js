@@ -64,16 +64,21 @@ export const registerPatient = (payload, onSuccess, onError) => {
         .catch(onError);
 };
 
-export const createDentist = async (payload, token) => {
-    if (!token) throw { message: "Token no proporcionado" };
+export const createDentist = (payload, token, onSuccess, onError) => {
+    if (!token) {
+        onError({ message: "Token no proporcionado" });
+        return;
+    }
 
-    const response = await fetch(`${baseUrl}/api/authentication/create-dentist`, {
+    fetch(`${baseUrl}/api/authentication/create-dentist`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
-    });
-    return handleResponse(response);
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
 };

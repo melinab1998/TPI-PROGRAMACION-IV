@@ -120,35 +120,24 @@ export default function SuperAdminPage() {
     setIsFormOpen(true);
   };
 
-const handleSaveDentist = async (data) => {
-    try {
-      if (editingDentist) {
-        successToast("Edición no implementada en backend por ahora");
-        setEditingDentist(null);
-        return;
-      }
+  const handleSaveDentist = (data) => {
+  if (editingDentist) {
+    successToast("Edición no implementada en backend por ahora");
+    setEditingDentist(null);
+    return;
+  }
 
-      const payload = {
-        firstName: data.first_name,
-        lastName: data.last_name,
-        email: data.email,
-        licenseNumber: data.license_number,
-      };
+  const payload = {
+    firstName: data.first_name,
+    lastName: data.last_name,
+    email: data.email,
+    licenseNumber: data.license_number,
+  };
 
-      console.log("📤 Enviando payload:", payload);
-
-      const response = await createDentist(payload, token);
-      console.log("🔍 Respuesta COMPLETA:", response);
-
-      // ✅ VERIFICAR MANUALMENTE si la respuesta contiene error
-      if (response && response.status >= 400) {
-        throw { 
-          message: response.detail || "Error del servidor",
-          status: response.status
-        };
-      }
-
-      // ✅ Solo si llegamos aquí, fue realmente exitoso
+  createDentist(
+    payload,
+    token,
+    (response) => {
       setDentists((prev) => [
         ...prev,
         {
@@ -164,19 +153,21 @@ const handleSaveDentist = async (data) => {
 
       successToast("Dentista creado exitosamente");
       setEditingDentist(null);
+    },
+    (err) => {
+      const message = err?.message?.toLowerCase();
 
-    } catch (err) {
-      console.error("❌ Error completo:", err);
-      
-      // ✅ Ahora sí debería mostrar el mensaje correcto
-      errorToast(err.message || "Error al crear dentista");
-      
-      // ❌ NO cerrar el formulario en error
-      // setEditingDentist(null);
+      if (message?.includes("email")) {
+        errorToast("El email ya está registrado");
+      } else if (message?.includes("matrícula") || message?.includes("license")) {
+        errorToast("La matrícula ya está registrada");
+      } else {
+        errorToast("Error del servidor");
+      }
     }
-  };
+  );
+};
 
-  
   const handleToggleStatus = (dentist) => {
     setDeleteConfirm(dentist);
   };
@@ -187,9 +178,9 @@ const handleSaveDentist = async (data) => {
         prev.map((dentist) =>
           dentist.id_user === deleteConfirm.id_user
             ? {
-                ...dentist,
-                status: dentist.status === "active" ? "inactive" : "active",
-              }
+              ...dentist,
+              status: dentist.status === "active" ? "inactive" : "active",
+            }
             : dentist
         )
       );
