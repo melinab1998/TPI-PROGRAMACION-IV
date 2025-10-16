@@ -1,25 +1,28 @@
 const baseUrl = import.meta.env.VITE_BASE_SERVER_URL;
 
 const handleResponse = async (res) => {
-
     if (res.status === 204) return;
-    let data;
     
+    let data;
     try {
-        // Intentar parsear como JSON solo si el texto parece JSON
-        if (responseText.trim().startsWith('{') || responseText.trim().startsWith('[')) {
-            data = JSON.parse(responseText);
-        } else {
-            // Si no es JSON, usar el texto como mensaje
-            data = { message: responseText };
-        }
-    } catch (error) {
-        console.warn("⚠️ No se pudo parsear como JSON, usando texto plano");
-        data = { message: responseText };
+        data = await res.json();
+    } catch {
+        throw { 
+            message: "Respuesta inválida del servidor",
+            status: res.status 
+        };
     }
+
     if (!res.ok) {
-        throw { message: data?.message || "Error en la solicitud" };
+        const message = data?.detail || data?.title || data?.message || "Error en la solicitud";
+        
+        throw { 
+            message: message,
+            status: res.status, 
+            details: data
+        };
     }
+    
     return data;
 };
 
@@ -69,12 +72,15 @@ export const registerPatient = (payload, onSuccess, onError) => {
 export const createDentist = async (payload, token) => {
     if (!token) throw { message: "Token no proporcionado" };
 
-    return fetch(`${baseUrl}/api/authentication/create-dentist`, {
+    const response = await fetch(`${baseUrl}/api/authentication/create-dentist`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
-    }).then(handleResponse);
+    });
+    
+    // ✅ Asegúrate de que handleResponse se ejecute
+    return handleResponse(response);
 };

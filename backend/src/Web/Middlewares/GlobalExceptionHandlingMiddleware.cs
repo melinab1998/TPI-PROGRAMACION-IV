@@ -37,8 +37,10 @@ public class GlobalExceptionHandlingMiddleware : IMiddleware
 
             string json = JsonSerializer.Serialize(problem);
 
+            // ✅ CORREGIR: Establece el status code en la respuesta
+            context.Response.StatusCode = statusCode; // ¡Esta línea falta!
             context.Response.ContentType = "application/json";
-            
+
             await context.Response.WriteAsync(json);
         }
         catch (Exception ex)

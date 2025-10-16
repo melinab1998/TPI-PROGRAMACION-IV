@@ -120,11 +120,10 @@ export default function SuperAdminPage() {
     setIsFormOpen(true);
   };
 
-  const handleSaveDentist = async (data) => {
+const handleSaveDentist = async (data) => {
     try {
       if (editingDentist) {
         successToast("Edición no implementada en backend por ahora");
-        // ❌ ELIMINAR: setIsFormOpen(false); - que lo haga el form
         setEditingDentist(null);
         return;
       }
@@ -141,7 +140,15 @@ export default function SuperAdminPage() {
       const response = await createDentist(payload, token);
       console.log("🔍 Respuesta COMPLETA:", response);
 
-      // ✅ ACTUALIZAR estado
+      // ✅ VERIFICAR MANUALMENTE si la respuesta contiene error
+      if (response && response.status >= 400) {
+        throw { 
+          message: response.detail || "Error del servidor",
+          status: response.status
+        };
+      }
+
+      // ✅ Solo si llegamos aquí, fue realmente exitoso
       setDentists((prev) => [
         ...prev,
         {
@@ -155,29 +162,21 @@ export default function SuperAdminPage() {
         },
       ]);
 
-      // ✅ MOSTRAR TOAST DE ÉXITO (solo aquí)
       successToast("Dentista creado exitosamente");
-
-      // ❌ ELIMINAR: setIsFormOpen(false); - que lo haga el form
       setEditingDentist(null);
+
     } catch (err) {
       console.error("❌ Error completo:", err);
-
-      const errorMessage = err?.message || "";
-
-      if (errorMessage.includes("ya está registrado") || err?.status === 400) {
-        errorToast(
-          err.data?.message || "El dentista ya está registrado en el sistema"
-        );
-      } else {
-        errorToast(errorMessage || "Error al crear dentista");
-      }
-
-      setEditingDentist(null);
-      // ❌ NO cerrar el modal en error - que el usuario pueda corregir
+      
+      // ✅ Ahora sí debería mostrar el mensaje correcto
+      errorToast(err.message || "Error al crear dentista");
+      
+      // ❌ NO cerrar el formulario en error
+      // setEditingDentist(null);
     }
   };
 
+  
   const handleToggleStatus = (dentist) => {
     setDeleteConfirm(dentist);
   };
