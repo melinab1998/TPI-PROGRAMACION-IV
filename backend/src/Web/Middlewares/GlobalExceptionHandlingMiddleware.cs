@@ -37,8 +37,9 @@ public class GlobalExceptionHandlingMiddleware : IMiddleware
 
             string json = JsonSerializer.Serialize(problem);
 
+            context.Response.StatusCode = statusCode; 
             context.Response.ContentType = "application/json";
-            
+
             await context.Response.WriteAsync(json);
         }
         catch (Exception ex)

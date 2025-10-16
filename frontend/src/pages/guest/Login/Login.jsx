@@ -11,6 +11,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "@/services/auth/AuthContextProvider";
 import { jwtDecode } from "jwt-decode";
 import { Eye, EyeOff, Lock } from "lucide-react";
+import { errorToast } from "@/utils/notifications";
 
 export default function Login() {
   const {
@@ -24,67 +25,54 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data) => {
-    setIsSubmitting(true);
+  setIsSubmitting(true);
 
-    loginUser(
-      data.email,
-      data.password,
-      (response) => {
-        if (response.token) {
-          try {
-            // Decodificamos el token para obtener el rol
-            const decoded = jwtDecode(response.token);
-            const userRole = decoded.role;
+  loginUser(
+    data.email,
+    data.password,
+    (response) => {
+      if (response.token) {
+        try {
+          const decoded = jwtDecode(response.token);
+          const userRole = decoded.role;
 
-            console.log(
-              "✅ Login exitoso - Rol:",
-              userRole,
-              "Token:",
-              response.token
-            );
+          login(response.token);
 
-            // Primero actualizamos el contexto
-            login(response.token);
-
-            // Pequeño delay para asegurar que el contexto se actualice
-            setTimeout(() => {
-              // Redirigimos según el rol con rutas específicas
-              switch (userRole) {
-                case "Patient":
-                  console.log("🔄 Redirigiendo Patient a /");
-                  navigate("/", { replace: true });
-                  break;
-                case "Dentist":
-                  console.log("🔄 Redirigiendo Dentist a /schedule");
-                  navigate("/schedule", { replace: true });
-                  break;
-                case "SuperAdmin":
-                  console.log("🔄 Redirigiendo SuperAdmin a /");
-                  navigate("/", { replace: true });
-                  break;
-                default:
-                  console.log("🔄 Rol no reconocido, redirigiendo a /");
-                  navigate("/", { replace: true });
-              }
-            }, 100);
-          } catch (error) {
-            console.error("❌ Error decodificando token:", error);
-            alert("Error en la autenticación");
-            setIsSubmitting(false);
-          }
-        } else {
-          console.error("❌ No se recibió token del servidor");
-          alert("No se recibió token del servidor");
+          setTimeout(() => {
+            switch (userRole) {
+              case "Patient":
+                navigate("/", { replace: true });
+                break;
+              case "Dentist":
+                navigate("/schedule", { replace: true });
+                break;
+              case "SuperAdmin":
+                navigate("/", { replace: true });
+                break;
+              default:
+                navigate("/", { replace: true });
+            }
+          }, 100);
+        } catch {
+          errorToast("Error en la autenticación");
           setIsSubmitting(false);
         }
-      },
-      (err) => {
-        console.error("❌ Error en login:", err);
-        alert(err?.message || "Error al iniciar sesión");
+      } else {
+        errorToast("Error del servidor");
         setIsSubmitting(false);
       }
-    );
-  };
+    },
+    (err) => {
+      const message =
+        err?.message?.toLowerCase().includes("contraseña") ||
+        err?.message?.toLowerCase().includes("email")
+          ? err.message
+          : "Error del servidor";
+      errorToast(message);
+      setIsSubmitting(false);
+    }
+  );
+};
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -151,12 +139,11 @@ export default function Login() {
                   Contraseña
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Ingrese la contraseña..."
-                    className="pl-10 pr-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
+                    className="pr-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
                     {...register("password", loginValidations.password)}
                   />
                   <Button

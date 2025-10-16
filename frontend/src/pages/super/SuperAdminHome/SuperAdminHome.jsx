@@ -120,28 +120,24 @@ export default function SuperAdminPage() {
     setIsFormOpen(true);
   };
 
-  const handleSaveDentist = async (data) => {
-    try {
-      if (editingDentist) {
-        successToast("Edición no implementada en backend por ahora");
-        // ❌ ELIMINAR: setIsFormOpen(false); - que lo haga el form
-        setEditingDentist(null);
-        return;
-      }
+  const handleSaveDentist = (data) => {
+  if (editingDentist) {
+    successToast("Edición no implementada en backend por ahora");
+    setEditingDentist(null);
+    return;
+  }
 
-      const payload = {
-        firstName: data.first_name,
-        lastName: data.last_name,
-        email: data.email,
-        licenseNumber: data.license_number,
-      };
+  const payload = {
+    firstName: data.first_name,
+    lastName: data.last_name,
+    email: data.email,
+    licenseNumber: data.license_number,
+  };
 
-      console.log("📤 Enviando payload:", payload);
-
-      const response = await createDentist(payload, token);
-      console.log("🔍 Respuesta COMPLETA:", response);
-
-      // ✅ ACTUALIZAR estado
+  createDentist(
+    payload,
+    token,
+    (response) => {
       setDentists((prev) => [
         ...prev,
         {
@@ -155,28 +151,22 @@ export default function SuperAdminPage() {
         },
       ]);
 
-      // ✅ MOSTRAR TOAST DE ÉXITO (solo aquí)
       successToast("Dentista creado exitosamente");
-
-      // ❌ ELIMINAR: setIsFormOpen(false); - que lo haga el form
       setEditingDentist(null);
-    } catch (err) {
-      console.error("❌ Error completo:", err);
+    },
+    (err) => {
+      const message = err?.message?.toLowerCase();
 
-      const errorMessage = err?.message || "";
-
-      if (errorMessage.includes("ya está registrado") || err?.status === 400) {
-        errorToast(
-          err.data?.message || "El dentista ya está registrado en el sistema"
-        );
+      if (message?.includes("email")) {
+        errorToast("El email ya está registrado");
+      } else if (message?.includes("matrícula") || message?.includes("license")) {
+        errorToast("La matrícula ya está registrada");
       } else {
-        errorToast(errorMessage || "Error al crear dentista");
+        errorToast("Error del servidor");
       }
-
-      setEditingDentist(null);
-      // ❌ NO cerrar el modal en error - que el usuario pueda corregir
     }
-  };
+  );
+};
 
   const handleToggleStatus = (dentist) => {
     setDeleteConfirm(dentist);
@@ -188,9 +178,9 @@ export default function SuperAdminPage() {
         prev.map((dentist) =>
           dentist.id_user === deleteConfirm.id_user
             ? {
-                ...dentist,
-                status: dentist.status === "active" ? "inactive" : "active",
-              }
+              ...dentist,
+              status: dentist.status === "active" ? "inactive" : "active",
+            }
             : dentist
         )
       );

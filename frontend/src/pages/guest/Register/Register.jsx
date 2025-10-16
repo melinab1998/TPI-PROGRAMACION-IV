@@ -1,51 +1,56 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, User, Mail, CreditCard, Lock } from "lucide-react";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { successToast } from "@/utils/notifications";
+import { successToast, errorToast } from "@/utils/notifications";
 import { registerPatient } from "@/services/api.services.js";
 
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const navigate = useNavigate(); 
 
     const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
-
     const password = watch("password");
 
     const fieldVariants = {
         hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0 }
+        visible: { opacity: 1, y: 0 },
     };
 
     const onSubmit = (data) => {
-    // Armar payload según lo que tu backend espera
-    const payload = {
-        firstName: data.nombre,
-        lastName: data.apellido,
-        dni: data.dni,
-        email: data.email,
-        password: data.password,
-    };
+        const payload = {
+            firstName: data.nombre,
+            lastName: data.apellido,
+            dni: data.dni,
+            email: data.email,
+            password: data.password,
+        };
 
-    registerPatient(
-        payload,
-        (response) => {
-            console.log("✅ Registro exitoso:", response);
-            successToast("¡Registro exitoso! Ahora puedes iniciar sesión.");
-            reset(); // limpiar formulario
-        },
-        (err) => {
-            console.error("❌ Error en registro:", err);
-            alert(err?.message || "Error al registrarse");
-        }
-    );
-};
+        registerPatient(
+            payload,
+            (response) => {
+                successToast("¡Registro exitoso! Ahora puedes iniciar sesión.");
+                reset();
+                setTimeout(() => navigate("/login"), 1500); 
+            },
+            (err) => {
+                const message = err?.message?.toLowerCase();
+                if (message?.includes("email")) {
+                    errorToast("Email ya registrado");
+                } else if (message?.includes("dni")) {
+                    errorToast("DNI ya registrado");
+                } else {
+                    errorToast("Error del servidor");
+                }
+            }
+        );
+    };
 
     return (
         <motion.div
@@ -64,7 +69,10 @@ export default function Register() {
                 </CardHeader>
 
                 <CardContent>
-                    <form className="grid grid-cols-1 md:grid-cols-2 gap-5" onSubmit={handleSubmit(onSubmit)}>
+                    <form
+                        className="grid grid-cols-1 md:grid-cols-2 gap-5"
+                        onSubmit={handleSubmit(onSubmit)}
+                    >
                         <motion.div
                             className="space-y-4"
                             initial="hidden"
@@ -72,7 +80,9 @@ export default function Register() {
                             transition={{ staggerChildren: 0.1 }}
                         >
                             <motion.div variants={fieldVariants} className="space-y-2">
-                                <Label htmlFor="nombre" className="text-sm font-medium">Nombre</Label>
+                                <Label htmlFor="nombre" className="text-sm font-medium">
+                                    Nombre
+                                </Label>
                                 <div className="relative">
                                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
@@ -83,10 +93,15 @@ export default function Register() {
                                         className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
                                     />
                                 </div>
-                                {errors.nombre && <p className="text-red-500 text-sm">{errors.nombre.message}</p>}
+                                {errors.nombre && (
+                                    <p className="text-red-500 text-sm">{errors.nombre.message}</p>
+                                )}
                             </motion.div>
+
                             <motion.div variants={fieldVariants} className="space-y-2">
-                                <Label htmlFor="apellido" className="text-sm font-medium">Apellido</Label>
+                                <Label htmlFor="apellido" className="text-sm font-medium">
+                                    Apellido
+                                </Label>
                                 <div className="relative">
                                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
@@ -97,16 +112,21 @@ export default function Register() {
                                         className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
                                     />
                                 </div>
-                                {errors.apellido && <p className="text-red-500 text-sm">{errors.apellido.message}</p>}
+                                {errors.apellido && (
+                                    <p className="text-red-500 text-sm">{errors.apellido.message}</p>
+                                )}
                             </motion.div>
+
                             <motion.div variants={fieldVariants} className="space-y-2">
-                                <Label htmlFor="dni" className="text-sm font-medium">DNI</Label>
+                                <Label htmlFor="dni" className="text-sm font-medium">
+                                    DNI
+                                </Label>
                                 <div className="relative">
                                     <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
                                         {...register("dni", {
                                             required: "El DNI es obligatorio",
-                                            pattern: { value: /^\d{7,8}$/, message: "DNI inválido" }
+                                            pattern: { value: /^\d{7,8}$/, message: "DNI inválido" },
                                         })}
                                         id="dni"
                                         type="text"
@@ -114,7 +134,9 @@ export default function Register() {
                                         className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
                                     />
                                 </div>
-                                {errors.dni && <p className="text-red-500 text-sm">{errors.dni.message}</p>}
+                                {errors.dni && (
+                                    <p className="text-red-500 text-sm">{errors.dni.message}</p>
+                                )}
                             </motion.div>
                         </motion.div>
 
@@ -125,13 +147,15 @@ export default function Register() {
                             transition={{ staggerChildren: 0.1, delayChildren: 0.2 }}
                         >
                             <motion.div variants={fieldVariants} className="space-y-2">
-                                <Label htmlFor="email" className="text-sm font-medium">Email</Label>
+                                <Label htmlFor="email" className="text-sm font-medium">
+                                    Email
+                                </Label>
                                 <div className="relative">
                                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
                                         {...register("email", {
                                             required: "El email es obligatorio",
-                                            pattern: { value: /^\S+@\S+$/i, message: "Email inválido" }
+                                            pattern: { value: /^\S+@\S+$/i, message: "Email inválido" },
                                         })}
                                         id="email"
                                         type="email"
@@ -139,17 +163,22 @@ export default function Register() {
                                         className="pl-10 py-2.5 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
                                     />
                                 </div>
-                                {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+                                {errors.email && (
+                                    <p className="text-red-500 text-sm">{errors.email.message}</p>
+                                )}
                             </motion.div>
+
                             <motion.div variants={fieldVariants} className="space-y-2">
-                                <Label htmlFor="password" className="text-sm font-medium">Contraseña</Label>
+                                <Label htmlFor="password" className="text-sm font-medium">
+                                    Contraseña
+                                </Label>
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
                                         {...register("password", {
                                             required: "La contraseña es obligatoria",
                                             minLength: { value: 8, message: "Debe tener al menos 8 caracteres" },
-                                            validate: value => /[A-Z]/.test(value) || "Debe contener una mayúscula"
+                                            validate: (value) => /[A-Z]/.test(value) || "Debe contener una mayúscula",
                                         })}
                                         id="password"
                                         type={showPassword ? "text" : "password"}
@@ -166,16 +195,21 @@ export default function Register() {
                                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                     </Button>
                                 </div>
-                                {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+                                {errors.password && (
+                                    <p className="text-red-500 text-sm">{errors.password.message}</p>
+                                )}
                             </motion.div>
+
                             <motion.div variants={fieldVariants} className="space-y-2">
-                                <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirmar contraseña</Label>
+                                <Label htmlFor="confirmPassword" className="text-sm font-medium">
+                                    Confirmar contraseña
+                                </Label>
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
                                         {...register("confirmPassword", {
                                             required: "Confirma tu contraseña",
-                                            validate: value => value === password || "Las contraseñas no coinciden"
+                                            validate: (value) => value === password || "Las contraseñas no coinciden",
                                         })}
                                         id="confirmPassword"
                                         type={showConfirmPassword ? "text" : "password"}
@@ -192,7 +226,9 @@ export default function Register() {
                                         {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                     </Button>
                                 </div>
-                                {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>}
+                                {errors.confirmPassword && (
+                                    <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>
+                                )}
                             </motion.div>
                         </motion.div>
 
