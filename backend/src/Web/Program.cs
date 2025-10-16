@@ -1,7 +1,6 @@
 using Infrastructure.Data;
 using Infrastructure.Services;
 using Application.Interfaces;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -9,7 +8,6 @@ using System.Text;
 using Application.Services;
 using Domain.Interfaces;
 using Web.Middleware;
-using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,7 +84,7 @@ builder.Services.AddAuthentication("Bearer")
     });
 
 // Inyección de dependencias
-builder.Services.AddScoped<AuthenticationService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<DentistService>();
 builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -104,7 +102,7 @@ var app = builder.Build();
 // Crear SuperAdmin una sola vez al iniciar la app
 using (var scope = app.Services.CreateScope())
 {
-    var authService = scope.ServiceProvider.GetRequiredService<AuthenticationService>();
+    var authService = scope.ServiceProvider.GetRequiredService<UserService>();
     var superAdminConfig = new
     {
         FirstName = builder.Configuration["SuperAdmin:FirstName"]!,

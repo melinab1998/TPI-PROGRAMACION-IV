@@ -11,14 +11,14 @@ using Domain.Entities;
 [ApiController]
 public class AuthenticationController : ControllerBase
 {
-    private readonly AuthenticationService _authService;
+    private readonly UserService _userService;
     private readonly DentistService _dentistService;
 
     private readonly PatientService _patientService;
 
-    public AuthenticationController(AuthenticationService authService, DentistService dentistService, PatientService patientService)
+    public AuthenticationController(UserService authService, DentistService dentistService, PatientService patientService)
     {
-        _authService = authService;
+        _userService = authService;
         _dentistService = dentistService;
         _patientService = patientService;
     }
@@ -26,7 +26,7 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public ActionResult<AuthenticationResponseDto> Login([FromBody] AuthenticationRequest dto)
     {
-        var user = _authService.Authenticate(dto.Email, dto.Password);
+        var user = _userService.Authenticate(dto.Email, dto.Password);
 
         return Ok(new AuthenticationResponseDto(user.Token, user.GetType().Name));
     }
