@@ -11,22 +11,21 @@ using Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddControllers();
 
-// Configuración CORS
+// ---------------- CORS ----------------
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173") 
+            policy.WithOrigins("http://localhost:5173")
             .AllowAnyHeader()
             .AllowAnyMethod();
         });
 });
 
-// Swagger + configuración para JWT
+// ---------------- Swagger + JWT ----------------
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setup =>
 {
@@ -54,20 +53,18 @@ builder.Services.AddSwaggerGen(setup =>
     });
 });
 
-// Configuración SQLServer usando appsettings.json
+// ---------------- Base de datos ----------------
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
 if (string.IsNullOrEmpty(connectionString))
     throw new Exception("La cadena de conexión 'DefaultConnection' no está configurada en appsettings.json");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-
-// Configuración JWT
+// ---------------- JWT ----------------
 var secretKey = builder.Configuration["Authentication:SecretForKey"];
 if (string.IsNullOrEmpty(secretKey))
-    throw new Exception("La clave de autenticación no está configurada en appsettings.");
+    throw new Exception("La clave de autenticación no está configurada en appsettings.json");
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
@@ -83,43 +80,50 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
-// Inyección de dependencias
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<DentistService>();
-builder.Services.AddScoped<PatientService>();
+// ---------------- Inyección de dependencias ----------------
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IDentistService, DentistService>();
+builder.Services.AddScoped<IPatientService, PatientService>();
+
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDentistRepository, DentistRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+
 builder.Services.AddHttpClient<IEmailService, EmailService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasherService>();
-builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 
+builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 
 var app = builder.Build();
 
-// Crear SuperAdmin una sola vez al iniciar la app
+// ---------------- Crear SuperAdmin al iniciar ----------------
 using (var scope = app.Services.CreateScope())
 {
-    var authService = scope.ServiceProvider.GetRequiredService<UserService>();
-    var superAdminConfig = new
+    var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+    var config = builder.Configuration.GetSection("SuperAdmin");
+
+    if (!config.Exists())
+        throw new Exception("No se encontró la sección 'SuperAdmin' en appsettings.json.");
+
+    var superAdmin = new
     {
-        FirstName = builder.Configuration["SuperAdmin:FirstName"]!,
-        LastName  = builder.Configuration["SuperAdmin:LastName"]!,
-        Email     = builder.Configuration["SuperAdmin:Email"]!,
-        Password  = builder.Configuration["SuperAdmin:Password"] ?? "SuperAdmin123!"
+        FirstName = config["FirstName"] ?? throw new Exception("Falta SuperAdmin:FirstName"),
+        LastName = config["LastName"] ?? throw new Exception("Falta SuperAdmin:LastName"),
+        Email = config["Email"] ?? throw new Exception("Falta SuperAdmin:Email"),
+        Password = config["Password"] ?? "SuperAdmin123!"
     };
 
-    authService.CreateSuperAdminOnce(
-        superAdminConfig.FirstName,
-        superAdminConfig.LastName,
-        superAdminConfig.Email,
-        superAdminConfig.Password
+    userService.CreateSuperAdminOnce(
+        superAdmin.FirstName,
+        superAdmin.LastName,
+        superAdmin.Email,
+        superAdmin.Password
     );
 }
 
-
+// ---------------- Pipeline ----------------
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -128,12 +132,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Usar CORS antes de Authentication/Authorization
+// Middleware global de manejo de errores primero
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+
+// CORS antes de Auth
 app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.MapControllers();
 app.Run();

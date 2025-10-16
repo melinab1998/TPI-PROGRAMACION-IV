@@ -5,7 +5,7 @@ using Domain.Interfaces;
 
 namespace Application.Services;
 
-public class PatientService
+public class PatientService : IPatientService
 {
     private readonly IPatientRepository _patientRepository;
     private readonly IUserRepository _userRepository;

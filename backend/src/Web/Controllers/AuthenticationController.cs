@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Application.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
-using Application.Services;
+using Application.Interfaces;
 using Web.Models.Requests;
 using Web.Models;
 using Web.Models.Responses;
@@ -11,14 +11,16 @@ using Domain.Entities;
 [ApiController]
 public class AuthenticationController : ControllerBase
 {
-    private readonly UserService _userService;
-    private readonly DentistService _dentistService;
+    private readonly IUserService _userService;
+    private readonly IDentistService _dentistService;
+    private readonly IPatientService _patientService;
 
-    private readonly PatientService _patientService;
-
-    public AuthenticationController(UserService authService, DentistService dentistService, PatientService patientService)
+    public AuthenticationController(
+        IUserService userService,
+        IDentistService dentistService,
+        IPatientService patientService)
     {
-        _userService = authService;
+        _userService = userService;
         _dentistService = dentistService;
         _patientService = patientService;
     }

@@ -6,8 +6,8 @@ using Domain.Exceptions;
 
 namespace Application.Services;
 
-public class UserService
-{
+public class UserService : IUserService
+{ 
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _hasher;
     private readonly IJwtService _jwtService;

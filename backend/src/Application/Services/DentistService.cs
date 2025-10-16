@@ -6,7 +6,7 @@ using Domain.Interfaces;
 
 namespace Application.Services;
 
-public class DentistService
+public class DentistService : IDentistService
 {
     private readonly IDentistRepository _dentistRepository;
      private readonly IUserRepository _userRepository;
