@@ -56,12 +56,11 @@ builder.Services.AddSwaggerGen(setup =>
     });
 });
 
-// Configuración SQLServer
-Env.Load("../../.env"); // Carga el .env
-var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION");
+// Configuración SQLServer usando appsettings.json
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 if (string.IsNullOrEmpty(connectionString))
-    throw new Exception("DB_CONNECTION no se cargó. Revisá el archivo .env");
+    throw new Exception("La cadena de conexión 'DefaultConnection' no está configurada en appsettings.json");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
