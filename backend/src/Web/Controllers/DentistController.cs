@@ -3,6 +3,8 @@ using Application.Interfaces;
 using Web.Models;
 using Web.Models.Requests;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+
 
 [Route("api/dentists")]
 [ApiController]
@@ -32,6 +34,7 @@ public class DentistController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "SuperAdmin")]
     public ActionResult<DentistDto> UpdateDentist([FromRoute] int id, [FromBody] UpdateDentistRequest request)
     {
         var updatedDentist = _dentistService.UpdateDentist(
@@ -50,6 +53,7 @@ public class DentistController : ControllerBase
     // de "activar dentista" donde le llegaba un email y activaba su cuenta creando una contraseña.
 
     [HttpPatch("{id}/activate")]
+    [Authorize(Roles = "SuperAdmin")]
     public ActionResult<DentistDto> ActivateDentistByAdmin([FromRoute] int id, [FromBody] AdminActivateDentistRequest request)
     {
         var dentist = _dentistService.SetActiveStatusByAdmin(id, request.IsActive!.Value);

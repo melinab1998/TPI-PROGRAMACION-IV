@@ -3,6 +3,7 @@ using Application.Interfaces;
 using Web.Models;
 using Web.Models.Requests;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 [Route("api/patients")]
 [ApiController]
@@ -31,7 +32,10 @@ public class PatientController : ControllerBase
         return Ok(dto);
     }
 
+    //Puede actualizar paciente completo. Desde dentista.
+
     [HttpPut("{id}")]
+    [Authorize(Roles = "SuperAdmin, Admin")]
     public ActionResult<PatientDtoFull> UpdatePatient([FromRoute] int id, [FromBody] UpdatePatientRequest request)
     {
         var updatedPatient = _patientService.UpdatePatient(
@@ -48,6 +52,25 @@ public class PatientController : ControllerBase
 
         var dto = PatientDtoFull.Create(updatedPatient);
         return Ok(dto);
+    }
+
+    //Actualiza sólo email. Desde perfil de paciente.
+
+    [HttpPut("{id}/email")]
+    public ActionResult<PatientDtoFull> UpdatePatientEmail([FromRoute] int id, [FromBody] UpdatePatientEmailRequest request)
+    {
+        var updatedPatient = _patientService.UpdatePatientEmail(id, request.Email);
+        var dto = PatientDtoFull.Create(updatedPatient);
+        return Ok(dto);
+    }
+
+    //Actualiza sólo contraseña. Desde perfil de paciente.
+
+    [HttpPut("{id}/password")]
+    public IActionResult UpdatePatientPassword([FromRoute] int id, [FromBody] UpdatePatientPasswordRequest request)
+    {
+        _patientService.UpdatePatientPassword(id, request.CurrentPassword, request.NewPassword);
+        return NoContent(); 
     }
 
 }

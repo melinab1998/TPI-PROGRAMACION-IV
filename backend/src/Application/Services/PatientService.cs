@@ -89,4 +89,32 @@ public class PatientService : IPatientService
 
         return patient;
     }
+
+    public Patient UpdatePatientEmail(int id, string newEmail)
+    {
+        var patient = _patientRepository.GetById(id);
+        if (patient == null)
+            throw new AppValidationException("Paciente no encontrado");
+
+        if (_userRepository.GetByEmail(newEmail) != null && newEmail != patient.Email)
+            throw new AppValidationException($"El email {newEmail} ya está registrado");
+
+        patient.Email = newEmail;
+        _patientRepository.Update(patient);
+
+        return patient;
+    }
+
+    public void UpdatePatientPassword(int id, string currentPassword, string newPassword)
+    {
+        var patient = _patientRepository.GetById(id);
+        if (patient == null)
+            throw new AppValidationException("Paciente no encontrado");
+
+        if (!_hasher.VerifyPassword(currentPassword, patient.Password!))
+            throw new AppValidationException("La contraseña actual es incorrecta");
+
+        patient.SetPassword(_hasher.HashPassword(newPassword));
+        _patientRepository.Update(patient);
+    }
 }
