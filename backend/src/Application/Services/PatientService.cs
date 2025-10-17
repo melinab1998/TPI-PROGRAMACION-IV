@@ -5,7 +5,7 @@ using Domain.Interfaces;
 
 namespace Application.Services;
 
-public class PatientService
+public class PatientService : IPatientService
 {
     private readonly IPatientRepository _patientRepository;
     private readonly IUserRepository _userRepository;
@@ -42,11 +42,19 @@ public class PatientService
 
         return patient;
     }
-    
+
     public Patient GetPatientById(int id)
     {
         var patient = _patientRepository.GetById(id);
         if (patient == null) throw new AppValidationException("Paciente no encontrado");
         return patient;
+    }
+    
+    public IEnumerable<Patient> GetAllPatients()
+    {
+        var patients = _patientRepository.List();
+        if (patients == null || !patients.Any())
+            throw new AppValidationException("No se encontraron pacientes registrados.");
+        return patients;
     }
 }

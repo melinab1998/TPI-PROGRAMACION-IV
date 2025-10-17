@@ -6,10 +6,10 @@ using Domain.Interfaces;
 
 namespace Application.Services;
 
-public class DentistService
+public class DentistService : IDentistService
 {
     private readonly IDentistRepository _dentistRepository;
-     private readonly IUserRepository _userRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _hasher;
     private readonly IEmailService _emailService;
     private readonly IJwtService _jwtService;
@@ -83,5 +83,46 @@ public class DentistService
         return dentist;
     }
 
+    public IEnumerable<Dentist> GetAllDentists()
+    {
+        var dentists = _dentistRepository.List();
+        if (dentists == null || !dentists.Any())
+            throw new AppValidationException("No se encontraron dentistas registrados.");
+        return dentists;
+    }
+
+    public Dentist UpdateDentist(int id, string? firstName, string? lastName, string? email, string? licenseNumber)
+    {
+        var dentist = _dentistRepository.GetById(id);
+        if (dentist == null)
+            throw new AppValidationException("Dentista no encontrado");
+
+        if (!string.IsNullOrEmpty(email) && _userRepository.GetByEmail(email) != null && email != dentist.Email)
+            throw new AppValidationException($"El email {email} ya está registrado");
+
+        if (!string.IsNullOrEmpty(licenseNumber) && _dentistRepository.LicenseExists(licenseNumber) && licenseNumber != dentist.LicenseNumber)
+            throw new AppValidationException($"La matrícula {licenseNumber} ya está registrada");
+
+        if (!string.IsNullOrEmpty(firstName)) dentist.FirstName = firstName;
+        if (!string.IsNullOrEmpty(lastName)) dentist.LastName = lastName;
+        if (!string.IsNullOrEmpty(email)) dentist.Email = email;
+        if (!string.IsNullOrEmpty(licenseNumber)) dentist.LicenseNumber = licenseNumber;
+
+        _dentistRepository.Update(dentist);
+
+        return dentist;
+    }
+
+    public Dentist SetActiveStatusByAdmin(int id, bool isActive)
+    {
+        var dentist = _dentistRepository.GetById(id);
+        if (dentist == null)
+            throw new AppValidationException("Dentista no encontrado");
+
+        dentist.IsActive = isActive; 
+        _dentistRepository.Update(dentist);
+
+        return dentist;
+    }
 }
 

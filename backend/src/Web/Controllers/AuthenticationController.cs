@@ -1,24 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
 using Application.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
-using Application.Services;
+using Application.Interfaces;
 using Web.Models.Requests;
 using Web.Models;
 using Web.Models.Responses;
 using Domain.Entities;
 
-[Route("api/authentication")]
+[Route("api/auth")]
 [ApiController]
 public class AuthenticationController : ControllerBase
 {
-    private readonly AuthenticationService _authService;
-    private readonly DentistService _dentistService;
+    private readonly IUserService _userService;
+    private readonly IDentistService _dentistService;
+    private readonly IPatientService _patientService;
 
-    private readonly PatientService _patientService;
-
-    public AuthenticationController(AuthenticationService authService, DentistService dentistService, PatientService patientService)
+    public AuthenticationController(
+        IUserService userService,
+        IDentistService dentistService,
+        IPatientService patientService)
     {
-        _authService = authService;
+        _userService = userService;
         _dentistService = dentistService;
         _patientService = patientService;
     }
@@ -26,8 +28,7 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public ActionResult<AuthenticationResponseDto> Login([FromBody] AuthenticationRequest dto)
     {
-        var user = _authService.Authenticate(dto.Email, dto.Password);
-
+        var user = _userService.Authenticate(dto.Email, dto.Password);
         return Ok(new AuthenticationResponseDto(user.Token, user.GetType().Name));
     }
 
@@ -41,20 +42,7 @@ public class AuthenticationController : ControllerBase
             patientDto.Password,
             patientDto.Dni
         );
-
-        return CreatedAtAction(nameof(GetPatientById), new { id = newPatient.Id }, PatientDto.RegisterPatient(newPatient));
-    }
-
-
-    [HttpGet("patient/{id}", Name = "GetPatientById")]
-    public ActionResult<PatientDto> GetPatientById([FromRoute] int id)
-    {
-        var patient = _patientService.GetPatientById(id);
-
-        var dto = PatientDto.RegisterPatient(patient);
-
-        return Ok(dto);
-
+        return CreatedAtAction(nameof(PatientController.GetPatientById), "Patient", new { id = newPatient.Id }, PatientDto.RegisterPatient(newPatient));
     }
 
     [HttpPost("create-dentist")]
@@ -66,30 +54,14 @@ public class AuthenticationController : ControllerBase
             dentistDto.LastName,
             dentistDto.Email,
             dentistDto.LicenseNumber
-            );
-
-        return CreatedAtAction(nameof(GetDentistById), new { id = newDentist.Id }, DentistDto.Create(newDentist));
+        );
+        return CreatedAtAction(nameof(DentistController.GetDentistById), "Dentist", new { id = newDentist.Id }, DentistDto.Create(newDentist));
     }
 
     [HttpPost("activate-dentist")]
     public ActionResult ActivateDentist([FromBody] ActivateDentistRequest dto)
     {
         _dentistService.ActivateDentist(dto.Token, dto.Password);
-
         return NoContent();
     }
-
-    [HttpGet("dentist/{id}", Name = "GetDentistById")]
-    public ActionResult<DentistDto> GetDentistById([FromRoute] int id)
-    {
-        var dentist = _dentistService.GetDentistById(id);
-
-        var dto = DentistDto.Create(dentist);
-
-        return Ok(dto);
-
-    }
-
-
-
 }
