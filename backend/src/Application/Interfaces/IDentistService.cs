@@ -8,6 +8,7 @@ public interface IDentistService
     void ActivateDentist(string token, string password);
     Dentist GetDentistById(int id);
     IEnumerable<Dentist> GetAllDentists();
-    Dentist UpdateDentist(int id, string? firstName, string? lastName, string? email, string? licenseNumber); // 👈 nuevo
+    Dentist UpdateDentist(int id, string? firstName, string? lastName, string? email, string? licenseNumber); 
+    Dentist SetActiveStatusByAdmin(int id, bool isActive);
 
 }

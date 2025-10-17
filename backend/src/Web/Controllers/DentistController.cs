@@ -46,4 +46,14 @@ public class DentistController : ControllerBase
         return Ok(dto);
     }
 
+    // Este endpoint es para cuando el superadmin activa o desactiva un dentista, no tiene relación con la lógica 
+    // de "activar dentista" donde le llegaba un email y activaba su cuenta creando una contraseña.
+
+    [HttpPatch("{id}/activate")]
+    public ActionResult<DentistDto> ActivateDentistByAdmin([FromRoute] int id, [FromBody] AdminActivateDentistRequest request)
+    {
+        var dentist = _dentistService.SetActiveStatusByAdmin(id, request.IsActive!.Value);
+        var dto = DentistDto.Create(dentist);
+        return Ok(dto);
+    }
 }

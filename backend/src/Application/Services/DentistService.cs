@@ -112,5 +112,17 @@ public class DentistService : IDentistService
 
         return dentist;
     }
+
+    public Dentist SetActiveStatusByAdmin(int id, bool isActive)
+    {
+        var dentist = _dentistRepository.GetById(id);
+        if (dentist == null)
+            throw new AppValidationException("Dentista no encontrado");
+
+        dentist.IsActive = isActive; 
+        _dentistRepository.Update(dentist);
+
+        return dentist;
+    }
 }
 
