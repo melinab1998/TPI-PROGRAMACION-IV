@@ -91,5 +91,26 @@ public class DentistService : IDentistService
         return dentists;
     }
 
+    public Dentist UpdateDentist(int id, string? firstName, string? lastName, string? email, string? licenseNumber)
+    {
+        var dentist = _dentistRepository.GetById(id);
+        if (dentist == null)
+            throw new AppValidationException("Dentista no encontrado");
+
+        if (!string.IsNullOrEmpty(email) && _userRepository.GetByEmail(email) != null && email != dentist.Email)
+            throw new AppValidationException($"El email {email} ya está registrado");
+
+        if (!string.IsNullOrEmpty(licenseNumber) && _dentistRepository.LicenseExists(licenseNumber) && licenseNumber != dentist.LicenseNumber)
+            throw new AppValidationException($"La matrícula {licenseNumber} ya está registrada");
+
+        if (!string.IsNullOrEmpty(firstName)) dentist.FirstName = firstName;
+        if (!string.IsNullOrEmpty(lastName)) dentist.LastName = lastName;
+        if (!string.IsNullOrEmpty(email)) dentist.Email = email;
+        if (!string.IsNullOrEmpty(licenseNumber)) dentist.LicenseNumber = licenseNumber;
+
+        _dentistRepository.Update(dentist);
+
+        return dentist;
+    }
 }
 

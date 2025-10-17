@@ -2,7 +2,7 @@ namespace Domain.Entities
 {
     public class Dentist : User
     {
-        public string LicenseNumber { get; private set; }
+        public string LicenseNumber { get; set; }
         public bool IsActive { get; private set; } = false;
 
         public Dentist() : base() { }

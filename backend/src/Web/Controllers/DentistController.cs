@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Application.Interfaces;
 using Web.Models;
+using Web.Models.Requests;
 using Domain.Entities;
 
 [Route("api/dentists")]
@@ -29,4 +30,20 @@ public class DentistController : ControllerBase
         var dto = DentistDto.Create(dentist);
         return Ok(dto);
     }
+
+    [HttpPut("{id}")]
+    public ActionResult<DentistDto> UpdateDentist([FromRoute] int id, [FromBody] UpdateDentistRequest request)
+    {
+        var updatedDentist = _dentistService.UpdateDentist(
+            id,
+            request.FirstName,
+            request.LastName,
+            request.Email,
+            request.LicenseNumber
+        );
+
+        var dto = DentistDto.Create(updatedDentist);
+        return Ok(dto);
+    }
+
 }
