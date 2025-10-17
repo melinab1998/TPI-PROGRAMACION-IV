@@ -9,7 +9,7 @@ namespace Application.Services;
 public class DentistService : IDentistService
 {
     private readonly IDentistRepository _dentistRepository;
-     private readonly IUserRepository _userRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _hasher;
     private readonly IEmailService _emailService;
     private readonly IJwtService _jwtService;
@@ -81,6 +81,14 @@ public class DentistService : IDentistService
         var dentist = _dentistRepository.GetById(id);
         if (dentist == null) throw new AppValidationException("Dentista no encontrado");
         return dentist;
+    }
+
+    public IEnumerable<Dentist> GetAllDentists()
+    {
+        var dentists = _dentistRepository.List();
+        if (dentists == null || !dentists.Any())
+            throw new AppValidationException("No se encontraron dentistas registrados.");
+        return dentists;
     }
 
 }

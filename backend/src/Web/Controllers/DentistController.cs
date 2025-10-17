@@ -14,6 +14,14 @@ public class DentistController : ControllerBase
         _dentistService = dentistService;
     }
 
+    [HttpGet]
+    public ActionResult<IEnumerable<DentistDto>> GetAllDentists()
+    {
+        var dentists = _dentistService.GetAllDentists();
+        var dtoList = dentists.Select(DentistDto.Create).ToList();
+        return Ok(dtoList);
+    }
+
     [HttpGet("{id}")]
     public ActionResult<DentistDto> GetDentistById([FromRoute] int id)
     {
