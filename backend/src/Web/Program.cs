@@ -112,7 +112,7 @@ using (var scope = app.Services.CreateScope())
         FirstName = config["FirstName"] ?? throw new Exception("Falta SuperAdmin:FirstName"),
         LastName = config["LastName"] ?? throw new Exception("Falta SuperAdmin:LastName"),
         Email = config["Email"] ?? throw new Exception("Falta SuperAdmin:Email"),
-        Password = config["Password"] ?? "SuperAdmin123!"
+        Password  = config["Password"]  ?? throw new Exception("Falta SuperAdmin:Password")
     };
 
     userService.CreateSuperAdminOnce(
