@@ -49,12 +49,44 @@ public class PatientService : IPatientService
         if (patient == null) throw new AppValidationException("Paciente no encontrado");
         return patient;
     }
-    
+
     public IEnumerable<Patient> GetAllPatients()
     {
         var patients = _patientRepository.List();
         if (patients == null || !patients.Any())
             throw new AppValidationException("No se encontraron pacientes registrados.");
         return patients;
+    }
+
+    public Patient UpdatePatient(
+            int id,
+            string? firstName,
+            string? lastName,
+            string? email,
+            string? address,
+            string? phoneNumber,
+            string? city,
+            string? membershipNumber,
+            DateOnly? birthDate)
+    {
+        var patient = _patientRepository.GetById(id);
+        if (patient == null)
+            throw new AppValidationException("Paciente no encontrado");
+
+        if (!string.IsNullOrEmpty(email) && _userRepository.GetByEmail(email) != null && email != patient.Email)
+            throw new AppValidationException($"El email {email} ya está registrado");
+
+        if (!string.IsNullOrEmpty(firstName)) patient.FirstName = firstName;
+        if (!string.IsNullOrEmpty(lastName)) patient.LastName = lastName;
+        if (!string.IsNullOrEmpty(email)) patient.Email = email;
+        if (!string.IsNullOrEmpty(address)) patient.Address = address;
+        if (!string.IsNullOrEmpty(phoneNumber)) patient.PhoneNumber = phoneNumber;
+        if (!string.IsNullOrEmpty(city)) patient.City = city;
+        if (!string.IsNullOrEmpty(membershipNumber)) patient.MembershipNumber = membershipNumber;
+        if (birthDate.HasValue) patient.BirthDate = birthDate;
+
+        _patientRepository.Update(patient);
+
+        return patient;
     }
 }
