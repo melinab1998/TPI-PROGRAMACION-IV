@@ -46,7 +46,7 @@ export default function DentistList({ dentists, onEdit, onToggleStatus, searchTe
               <div className="divide-y divide-border/50">
                 {currentDentists.map((dentist, index) => (
                   <DentistItem
-                    key={dentist.id_user}
+                    key={dentist.id}
                     dentist={dentist}
                     index={index}
                     onEdit={onEdit}

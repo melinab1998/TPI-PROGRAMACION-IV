@@ -17,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { successToast } from "@/utils/notifications";
 import { patientValidations } from "@/utils/validations";
 
 export default function PatientFormModal({

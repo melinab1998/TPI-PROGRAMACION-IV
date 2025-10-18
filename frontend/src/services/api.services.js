@@ -76,6 +76,33 @@ export const createDentist = (payload, token, onSuccess, onError) => {
         .catch(onError);
 };
 
+export const updateDentistBySuperAdmin = (id, payload, token, onSuccess, onError) => {
+    if (!token) {
+        onError({ message: "Token no proporcionado" });
+        return;
+    }
+
+    if (!id) {
+        onError({ message: "ID de paciente no proporcionado" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/dentists/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
+
+
+
+
 export const activateDentist = (token, password, onSuccess, onError) => {
     if (!token || !password) {
         onError({ message: "Token o contraseña faltante" });
