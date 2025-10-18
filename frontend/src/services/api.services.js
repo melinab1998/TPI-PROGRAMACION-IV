@@ -141,3 +141,26 @@ export const getAllPatients = (token, onSuccess, onError) => {
         .catch(onError);
 };
 
+export const updatePatientByDentist = (id, payload, token, onSuccess, onError) => {
+    if (!token) {
+        onError({ message: "Token no proporcionado" });
+        return;
+    }
+
+    if (!id) {
+        onError({ message: "ID de paciente no proporcionado" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/patients/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};

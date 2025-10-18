@@ -14,7 +14,7 @@ import { useEffect } from "react";
 import SearchBar from "@/components/common/SearchBar/SearchBar"
 import Header from "@/components/common/Header/Header"
 import { AuthContext } from "@/services/auth/AuthContextProvider";
-import { CreatePatientByDentist, getAllPatients } from "@/services/api.services.js";
+import { CreatePatientByDentist, getAllPatients, updatePatientByDentist } from "@/services/api.services.js";
 import { successToast, errorToast } from "@/utils/notifications.js";
 
 
@@ -98,10 +98,36 @@ export default function PatientsPage() {
 
   const handleSavePatient = (patientData) => {
     if (editingPatient) {
-      // Lógica de edición (por ahora solo console.log)
-      console.log("Actualizando paciente:", patientData);
-      setEditingPatient(null);
-      setIsFormModalOpen(false);
+      const payload = {
+        firstName: patientData.firstName,
+        lastName: patientData.lastName,
+        email: patientData.email,
+        address: patientData.address || null,
+        phoneNumber: patientData.phoneNumber || null,
+        city: patientData.city || null,
+        membershipNumber: patientData.membershipNumber || null,
+        birthDate: patientData.birthDate || null,
+      };
+  
+      updatePatientByDentist(
+        editingPatient.id_user || editingPatient.id,
+        payload,
+        token,
+        (updated) => {
+          setPatients((prev) =>
+            prev.map((p) =>
+              p.id_user === updated.id_user || p.id === updated.id ? updated : p
+            )
+          );
+          successToast("Paciente actualizado exitosamente");
+          setEditingPatient(null);
+          setIsFormModalOpen(false);
+        },
+        (err) => {
+          console.error(err);
+          errorToast("Error al actualizar el paciente");
+        }
+      );
       return;
     }
 

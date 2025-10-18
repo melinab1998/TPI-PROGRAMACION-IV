@@ -51,8 +51,6 @@ export default function PatientFormModal({
     },
   });
 
-  const watchBirthDate = watch("birth_date");
-
   useEffect(() => {
     if (patient) {
       reset({
@@ -103,7 +101,7 @@ export default function PatientFormModal({
                 {...register("firstName", patientValidations.firstName)}
                 className={errors.firstName ? "border-red-500" : ""}
               />
-              {errors.first_name && (
+              {errors.firstName && (
                 <p className="text-red-500 text-xs">
                   {errors.firstName.message}
                 </p>
@@ -145,7 +143,7 @@ export default function PatientFormModal({
               <Input
                 id="birthDate"
                 type="date"
-                {...register("birthDate", patientValidations.birth_date)}
+                {...register("birthDate", patientValidations.birthDate)}
                 className={errors.birthDate ? "border-red-500" : ""}
               />
               {errors.birthDate && (
@@ -176,7 +174,7 @@ export default function PatientFormModal({
               <Input
                 id="phoneNumber"
                 placeholder="+54 11 1234-5678"
-                {...register("phone_number", patientValidations.phoneNumber)}
+                {...register("phoneNumber", patientValidations.phoneNumber)}
                 className={errors.phoneNumber ? "border-red-500" : ""}
               />
               {errors.phoneNumber && (
