@@ -44,7 +44,7 @@ export default function PatientsList({ patients, onView, onEdit, onViewVisits })
                                 <div className="min-w-0 flex-1">
                                     <h3 className="font-semibold truncate">{patient.first_name} {patient.last_name}</h3>
                                     <p className="text-sm text-muted-foreground truncate">
-                                        DNI: {patient.dni} • {patient.email} • {patient.phone_number}
+                                        DNI: {patient.dni} • {patient.email} • {patient.phoneNumber}
                                     </p>
                                 </div>
                             </div>

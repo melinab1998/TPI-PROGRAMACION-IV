@@ -38,16 +38,16 @@ export default function PatientFormModal({
     watch,
   } = useForm({
     defaultValues: {
-      first_name: "",
-      last_name: "",
+      firstName: "",
+      lastName: "",
       email: "",
-      birth_date: "",
+      birthDate: "",
       dni: "",
       address: "",
-      phone_number: "",
+      phoneNumber: "",
       city: "",
-      membership_number: "",
-      id_health_plan: "",
+      membershipNumber: "",
+      idHealthPlan: "",
     },
   });
 
@@ -56,16 +56,16 @@ export default function PatientFormModal({
   useEffect(() => {
     if (patient) {
       reset({
-        first_name: patient.first_name || "",
-        last_name: patient.last_name || "",
+        firstName: patient.firstName || "",
+        lastName: patient.lastName || "",
         email: patient.email || "",
-        birth_date: patient.birth_date || "",
+        birthDate: patient.birthDate || "",
         dni: patient.dni || "",
         address: patient.address || "",
-        phone_number: patient.phone_number || "",
+        phoneNumber: patient.phoneNumber || "",
         city: patient.city || "",
-        membership_number: patient.membership_number || "",
-        id_health_plan: patient.id_health_plan || "",
+        membershipNumber: patient.membershipNumber || "",
+        idHealthPlan: patient.idHealthPlan || "",
       });
     } else {
       reset();
@@ -73,7 +73,7 @@ export default function PatientFormModal({
   }, [patient, open, reset]);
 
   const onSubmit = (data) => {
-    const patientData = { ...data, id_user: patient?.id_user };
+    const patientData = { ...data, id: patient?.id };
 
     onSave(patientData);
     successToast(
@@ -96,31 +96,31 @@ export default function PatientFormModal({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="first_name">Nombre *</Label>
+              <Label htmlFor="firstName">Nombre *</Label>
               <Input
-                id="first_name"
+                id="firstName"
                 placeholder="Ingrese el nombre"
-                {...register("first_name", patientValidations.first_name)}
-                className={errors.first_name ? "border-red-500" : ""}
+                {...register("firstName", patientValidations.firstName)}
+                className={errors.firstName ? "border-red-500" : ""}
               />
               {errors.first_name && (
                 <p className="text-red-500 text-xs">
-                  {errors.first_name.message}
+                  {errors.firstName.message}
                 </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="last_name">Apellido *</Label>
+              <Label htmlFor="lastName">Apellido *</Label>
               <Input
-                id="last_name"
+                id="lastName"
                 placeholder="Ingrese el apellido"
-                {...register("last_name", patientValidations.last_name)}
-                className={errors.last_name ? "border-red-500" : ""}
+                {...register("lastName", patientValidations.lastName)}
+                className={errors.lastName ? "border-red-500" : ""}
               />
-              {errors.last_name && (
+              {errors.lastName && (
                 <p className="text-red-500 text-xs">
-                  {errors.last_name.message}
+                  {errors.lastName.message}
                 </p>
               )}
             </div>
@@ -141,16 +141,16 @@ export default function PatientFormModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="birth_date">Fecha de nacimiento</Label>
+              <Label htmlFor="birthDate">Fecha de nacimiento</Label>
               <Input
-                id="birth_date"
+                id="birthDate"
                 type="date"
-                {...register("birth_date", patientValidations.birth_date)}
-                className={errors.birth_date ? "border-red-500" : ""}
+                {...register("birthDate", patientValidations.birth_date)}
+                className={errors.birthDate ? "border-red-500" : ""}
               />
-              {errors.birth_date && (
+              {errors.birthDate && (
                 <p className="text-red-500 text-xs">
-                  {errors.birth_date.message}
+                  {errors.birthDate.message}
                 </p>
               )}
             </div>
@@ -172,16 +172,16 @@ export default function PatientFormModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="phone_number">Teléfono</Label>
+              <Label htmlFor="phoneNumber">Teléfono</Label>
               <Input
-                id="phone_number"
+                id="phoneNumber"
                 placeholder="+54 11 1234-5678"
-                {...register("phone_number", patientValidations.phone_number)}
-                className={errors.phone_number ? "border-red-500" : ""}
+                {...register("phone_number", patientValidations.phoneNumber)}
+                className={errors.phoneNumber ? "border-red-500" : ""}
               />
-              {errors.phone_number && (
+              {errors.phoneNumber && (
                 <p className="text-red-500 text-xs">
-                  {errors.phone_number.message}
+                  {errors.phoneNumber.message}
                 </p>
               )}
             </div>
@@ -215,10 +215,10 @@ export default function PatientFormModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="id_health_plan">Plan de salud</Label>
+              <Label htmlFor="idHealthPlan">Plan de salud</Label>
               <Select
-                onValueChange={(value) => setValue("id_health_plan", value)}
-                defaultValue={watch("id_health_plan")}
+                onValueChange={(value) => setValue("idHealthPlan", value)}
+                defaultValue={watch("idHealthPlan")}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccione un plan" />
@@ -226,31 +226,31 @@ export default function PatientFormModal({
                 <SelectContent>
                   {healthPlans.map((plan) => (
                     <SelectItem
-                      key={plan.id_health_plan}
-                      value={plan.id_health_plan.toString()}
+                      key={plan.idHealthPlan}
+                      value={plan.idHealthPlan.toString()}
                     >
-                      {plan.health_insurance.name} - {plan.name}
+                      {plan.healthInsurance.name} - {plan.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <input type="hidden" {...register("id_health_plan")} />
+              <input type="hidden" {...register("idHealthPlan")} />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="membership_number">Número de afiliado</Label>
+              <Label htmlFor="membershipNumber">Número de afiliado</Label>
               <Input
-                id="membership_number"
+                id="membershipNumber"
                 placeholder="Número de afiliado"
                 {...register(
-                  "membership_number",
-                  patientValidations.membership_number
+                  "membershipNumber",
+                  patientValidations.membershipNumber
                 )}
-                className={errors.membership_number ? "border-red-500" : ""}
+                className={errors.membershipNumber ? "border-red-500" : ""}
               />
-              {errors.membership_number && (
+              {errors.membershipNumber && (
                 <p className="text-red-500 text-xs">
-                  {errors.membership_number.message}
+                  {errors.membershipNumber.message}
                 </p>
               )}
             </div>
