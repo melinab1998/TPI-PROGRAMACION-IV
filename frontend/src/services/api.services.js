@@ -39,6 +39,27 @@ export const loginUser = (email, password, onSuccess, onError) => {
         .catch(onError);
 };
 
+/* DENTIST */
+
+export const createDentist = (payload, token, onSuccess, onError) => {
+    if (!token) {
+        onError({ message: "Token no proporcionado" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/auth/create-dentist`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
+
 export const activateDentist = (token, password, onSuccess, onError) => {
     if (!token || !password) {
         onError({ message: "Token o contraseña faltante" });
@@ -68,21 +89,3 @@ export const registerPatient = (payload, onSuccess, onError) => {
         .catch(onError);
 };
 
-export const createDentist = (payload, token, onSuccess, onError) => {
-    if (!token) {
-        onError({ message: "Token no proporcionado" });
-        return;
-    }
-
-    fetch(`${baseUrl}/api/auth/create-dentist`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-    })
-        .then(handleResponse)
-        .then(onSuccess)
-        .catch(onError);
-};
