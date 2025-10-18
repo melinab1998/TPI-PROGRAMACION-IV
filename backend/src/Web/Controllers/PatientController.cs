@@ -35,7 +35,7 @@ public class PatientController : ControllerBase
     //Puede actualizar paciente completo. Desde dentista.
 
     [HttpPut("{id}")]
-    [Authorize(Roles = "SuperAdmin, Admin")]
+    [Authorize(Roles = "SuperAdmin, Dentist")]
     public ActionResult<PatientDtoFull> UpdatePatient([FromRoute] int id, [FromBody] UpdatePatientRequest request)
     {
         var updatedPatient = _patientService.UpdatePatient(
