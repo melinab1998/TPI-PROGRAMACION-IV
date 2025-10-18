@@ -124,3 +124,20 @@ export const registerPatient = (payload, onSuccess, onError) => {
         .catch(onError);
 };
 
+export const getAllPatients = (token, onSuccess, onError) => {
+    if (!token) {
+        onError({ message: "Token no proporcionado" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/patients/`, {
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
+

@@ -33,12 +33,12 @@ export default function PatientsList({ patients, onView, onEdit, onViewVisits })
         <div className="space-y-4">
             <div className="space-y-3">
                 {currentPatients.map((patient) => (
-                    <div key={patient.id_user} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg hover:bg-muted/20 gap-3">
+                    <div key={patient.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg hover:bg-muted/20 gap-3">
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
                                     <span className="text-sm font-medium text-primary">
-                                        {patient.first_name[0]}{patient.last_name[0]}
+                                        {patient.firstName?.[0]}{patient.lastName?.[0]}
                                     </span>
                                 </div>
                                 <div className="min-w-0 flex-1">
