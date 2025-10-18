@@ -2,6 +2,7 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
+using System.Linq;
 
 namespace Application.Services;
 
@@ -10,37 +11,97 @@ public class PatientService : IPatientService
     private readonly IPatientRepository _patientRepository;
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _hasher;
+    private readonly IEmailService _emailService;
+    private readonly IJwtService _jwtService;
 
     public PatientService(
         IPatientRepository patientRepository,
         IUserRepository userRepository,
-        IPasswordHasher hasher)
+        IPasswordHasher hasher,
+        IEmailService emailService,
+        IJwtService jwtService)
     {
         _patientRepository = patientRepository;
         _userRepository = userRepository;
         _hasher = hasher;
+        _emailService = emailService;
+        _jwtService = jwtService;
     }
 
-    public Patient RegisterPatient(string FirstName, string LastName, string Email, string Password, string Dni)
+    public Patient RegisterPatient(string firstName, string lastName, string email, string password, string dni)
     {
-        if (_userRepository.GetByEmail(Email) != null)
-            throw new AppValidationException($"El email {Email} ya está registrado");
+        if (_userRepository.GetByEmail(email) != null)
+            throw new AppValidationException($"El email {email} ya está registrado");
 
-        if (_patientRepository.GetByDni(Dni) != null)
-            throw new AppValidationException($"El DNI {Dni} ya está registrado");
+        if (_patientRepository.GetByDni(dni) != null)
+            throw new AppValidationException($"El DNI {dni} ya está registrado");
 
-        var patient = new Patient(
-            FirstName,
-            LastName,
-            Email,
-            Dni
-        );
-
-        patient.SetPassword(_hasher.HashPassword(Password));
+        var patient = new Patient(firstName, lastName, email, dni);
+        patient.SetPassword(_hasher.HashPassword(password));
 
         _patientRepository.Add(patient);
 
         return patient;
+    }
+
+    // CREAR PACIENTE DESDE DENTISTA
+    public Patient CreatePatientByDentist(
+    string firstName,
+    string lastName,
+    string email,
+    string dni,
+    string? address = null,
+    string? phoneNumber = null,
+    string? city = null,
+    string? membershipNumber = null,
+    DateOnly? birthDate = null
+)
+    {
+        if (_userRepository.GetByEmail(email) != null)
+            throw new AppValidationException($"El email {email} ya está registrado");
+
+        if (_patientRepository.GetByDni(dni) != null)
+            throw new AppValidationException($"El DNI {dni} ya está registrado");
+
+        var patient = new Patient(firstName, lastName, email, dni)
+        {
+            Address = address,
+            PhoneNumber = phoneNumber,
+            City = city,
+            MembershipNumber = membershipNumber,
+            BirthDate = birthDate
+        };
+
+        var tempPassword = GenerateTemporaryPassword();
+        patient.SetPassword(_hasher.HashPassword(tempPassword));
+
+        _patientRepository.Add(patient);
+
+        var activationToken = _jwtService.GenerateActivationTokenForPatient(patient.Id);
+        _emailService.SendActivationEmailAsync(patient.Email, activationToken);
+
+        return patient;
+    }
+
+    private string GenerateTemporaryPassword()
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var random = new Random();
+        return "Tmp-" + new string(Enumerable.Repeat(chars, 10).Select(s => s[random.Next(s.Length)]).ToArray());
+    }
+    public void ActivatePatient(string token, string password)
+    {
+        var principal = _jwtService.ValidateToken(token);
+        var patientIdClaim = principal.FindFirst("patientId"); 
+        if (patientIdClaim == null)
+            throw new AppValidationException("Token inválido o patientId no encontrado.");
+
+        int patientId = int.Parse(patientIdClaim.Value);
+        var patient = _patientRepository.GetById(patientId);
+        if (patient == null) throw new AppValidationException("Paciente no encontrado");
+
+        patient.SetPassword(_hasher.HashPassword(password));
+        _patientRepository.Update(patient);
     }
 
     public Patient GetPatientById(int id)
@@ -59,15 +120,15 @@ public class PatientService : IPatientService
     }
 
     public Patient UpdatePatient(
-            int id,
-            string? firstName,
-            string? lastName,
-            string? email,
-            string? address,
-            string? phoneNumber,
-            string? city,
-            string? membershipNumber,
-            DateOnly? birthDate)
+        int id,
+        string? firstName,
+        string? lastName,
+        string? email,
+        string? address,
+        string? phoneNumber,
+        string? city,
+        string? membershipNumber,
+        DateOnly? birthDate)
     {
         var patient = _patientRepository.GetById(id);
         if (patient == null)

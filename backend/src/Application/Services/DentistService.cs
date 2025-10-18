@@ -39,7 +39,8 @@ public class DentistService : IDentistService
         _dentistRepository.Add(dentist);
 
 
-        var activationToken = _jwtService.GenerateActivationToken(dentist.Id);
+        var activationToken = _jwtService.GenerateActivationTokenForDentist(dentist.Id);
+
         _emailService.SendActivationEmailAsync(dentist.Email, activationToken);
 
         return dentist;

@@ -25,6 +25,7 @@ public class AuthenticationController : ControllerBase
         _patientService = patientService;
     }
 
+    // -------------------- LOGIN --------------------
     [HttpPost("login")]
     public ActionResult<AuthenticationResponseDto> Login([FromBody] AuthenticationRequest dto)
     {
@@ -32,6 +33,9 @@ public class AuthenticationController : ControllerBase
         return Ok(new AuthenticationResponseDto(user.Token, user.GetType().Name));
     }
 
+    // -------------------- PACIENTES --------------------
+    
+    // Registro directo (público)
     [HttpPost("register-patient")]
     public ActionResult<PatientDto> RegisterPatient([FromBody] RegisterPatientRequest patientDto)
     {
@@ -42,9 +46,53 @@ public class AuthenticationController : ControllerBase
             patientDto.Password,
             patientDto.Dni
         );
-        return CreatedAtAction(nameof(PatientController.GetPatientById), "Patient", new { id = newPatient.Id }, PatientDto.RegisterPatient(newPatient));
+
+        return CreatedAtAction(
+            nameof(PatientController.GetPatientById),
+            "Patient",
+            new { id = newPatient.Id },
+            PatientDto.RegisterPatient(newPatient)
+        );
     }
 
+    // Creación por parte del dentista o admin
+    [HttpPost("create-patient")]
+    [Authorize(Roles = "Dentist, SuperAdmin")]
+    public ActionResult<PatientDtoFull> CreatePatientByDentist([FromBody] CreatePatientByDentistRequest request)
+    {
+        var newPatient = _patientService.CreatePatientByDentist(
+            request.FirstName,
+            request.LastName,
+            request.Email,
+            request.Dni,
+            request.Address,
+            request.PhoneNumber,
+            request.City,
+            request.MembershipNumber,
+            request.BirthDate
+        );
+
+        var dto = PatientDtoFull.Create(newPatient);
+
+        return CreatedAtAction(
+            nameof(PatientController.GetPatientById),
+            "Patient",
+            new { id = newPatient.Id },
+            dto
+        );
+    }
+
+    // Activación del paciente creado por un dentista
+    [HttpPost("activate-patient")]
+    public IActionResult ActivatePatient([FromBody] ActivatePatientRequest dto)
+    {
+        _patientService.ActivatePatient(dto.Token, dto.Password);
+        return NoContent();
+    }
+
+    // -------------------- DENTISTAS --------------------
+    
+    // Creación por parte del superadmin
     [HttpPost("create-dentist")]
     [Authorize(Roles = "SuperAdmin")]
     public ActionResult<DentistDto> CreateDentist([FromBody] CreateDentistRequest dentistDto)
@@ -55,7 +103,13 @@ public class AuthenticationController : ControllerBase
             dentistDto.Email,
             dentistDto.LicenseNumber
         );
-        return CreatedAtAction(nameof(DentistController.GetDentistById), "Dentist", new { id = newDentist.Id }, DentistDto.Create(newDentist));
+
+        return CreatedAtAction(
+            nameof(DentistController.GetDentistById),
+            "Dentist",
+            new { id = newDentist.Id },
+            DentistDto.Create(newDentist)
+        );
     }
 
     [HttpPost("activate-dentist")]

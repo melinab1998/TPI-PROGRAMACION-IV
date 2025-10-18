@@ -17,6 +17,7 @@ namespace Infrastructure.Services
             _config = config;
         }
 
+        // Token normal de autenticación
         public string GenerateToken(int userId, string role, TimeSpan? expires = null)
         {
             var claims = new List<Claim>
@@ -39,7 +40,8 @@ namespace Infrastructure.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public string GenerateActivationToken(int dentistId, TimeSpan? expires = null)
+        // Token de activación para dentistas
+        public string GenerateActivationTokenForDentist(int dentistId, TimeSpan? expires = null)
         {
             var claims = new List<Claim>
             {
@@ -47,6 +49,24 @@ namespace Infrastructure.Services
                 new Claim("purpose", "activation")
             };
 
+            return GenerateActivationTokenInternal(claims, expires);
+        }
+
+        // Token de activación para pacientes
+        public string GenerateActivationTokenForPatient(int patientId, TimeSpan? expires = null)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim("patientId", patientId.ToString()),
+                new Claim("purpose", "activation")
+            };
+
+            return GenerateActivationTokenInternal(claims, expires);
+        }
+
+        // Método privado reutilizable
+        private string GenerateActivationTokenInternal(IEnumerable<Claim> claims, TimeSpan? expires = null)
+        {
             var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_config["Authentication:SecretForKey"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -61,6 +81,7 @@ namespace Infrastructure.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        //  Validación del token
         public ClaimsPrincipal ValidateToken(string token)
         {
             var key = Encoding.ASCII.GetBytes(_config["Authentication:SecretForKey"]!);
@@ -78,18 +99,14 @@ namespace Infrastructure.Services
                 var handler = new JwtSecurityTokenHandler();
                 var principal = handler.ValidateToken(token, parameters, out SecurityToken validatedToken);
 
-                // Validamos propósito
                 var purpose = principal.Claims.FirstOrDefault(c => c.Type == "purpose")?.Value;
                 if (purpose != "activation")
-                {
                     throw new AppValidationException("Token no válido para activación.");
-                }
 
                 return principal;
             }
             catch (AppValidationException)
             {
-                // Relanzamos excepciones de validación para que el middleware capture como 400
                 throw;
             }
             catch (Exception ex)

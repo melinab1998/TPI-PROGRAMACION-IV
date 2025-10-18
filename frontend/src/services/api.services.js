@@ -27,7 +27,7 @@ export const activateDentist = (token, password, onSuccess, onError) => {
         return;
     }
 
-    fetch(`${baseUrl}/api/authentication/activate-dentist`, {
+    fetch(`${baseUrl}/api/auth/activate-dentist`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password }),
@@ -43,7 +43,7 @@ export const loginUser = (email, password, onSuccess, onError) => {
         return;
     }
 
-    fetch(`${baseUrl}/api/authentication/login`, {
+    fetch(`${baseUrl}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -54,7 +54,7 @@ export const loginUser = (email, password, onSuccess, onError) => {
 };
 
 export const registerPatient = (payload, onSuccess, onError) => {
-    fetch(`${baseUrl}/api/authentication/register-patient`, {
+    fetch(`${baseUrl}/api/auth/register-patient`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -70,7 +70,7 @@ export const createDentist = (payload, token, onSuccess, onError) => {
         return;
     }
 
-    fetch(`${baseUrl}/api/authentication/create-dentist`, {
+    fetch(`${baseUrl}/api/auth/create-dentist`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
