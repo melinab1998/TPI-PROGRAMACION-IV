@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { successToast, errorToast } from "@/utils/notifications";
 import { resetPasswordValidations } from "@/utils/validations";
-import { activateDentist } from "@/services/api.services";
+import { activateDentist, activatePatient } from "@/services/api.services";
 
 export default function ResetPassword() {
     const navigate = useNavigate();
@@ -22,7 +22,10 @@ export default function ResetPassword() {
     } = useForm();
 
     const password = watch("password");
-    const token = new URLSearchParams(window.location.search).get("token");
+    const searchParams = new URLSearchParams(window.location.search);
+    const token = searchParams.get("token");
+    const userType = searchParams.get("type") || "patient";
+    
 
     const onSubmit = (data) => {
         if (!token) {
@@ -35,16 +38,21 @@ export default function ResetPassword() {
             return;
         }
 
-        activateDentist(
+        const activateFn = userType === "dentist" ? activateDentist : activatePatient;
+
+        activateFn(
             token,
             data.password,
             () => {
-                successToast("Cuenta activada correctamente 🎉");
+                const successMessage =
+                    userType === "dentist"
+                        ? "Cuenta de dentista activada correctamente 🎉"
+                        : "Cuenta de paciente activada correctamente 🎉";
+                successToast(successMessage);
                 reset();
                 setTimeout(() => navigate("/login"), 1200);
             },
             (err) => {
-                // err puede ser objeto con message o un string
                 const msg = err?.message || "Error al activar la cuenta";
                 errorToast(msg);
             }

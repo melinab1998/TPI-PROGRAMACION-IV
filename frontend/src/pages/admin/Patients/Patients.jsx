@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useContext } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,6 +13,10 @@ import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import SearchBar from "@/components/common/SearchBar/SearchBar"
 import Header from "@/components/common/Header/Header"
+import { AuthContext } from "@/services/auth/AuthContextProvider";
+import { CreatePatientByDentist } from "@/services/api.services.js";
+import { successToast, errorToast } from "@/utils/notifications.js";
+
 
 const mockPatients = [
   {
@@ -551,6 +555,8 @@ const mockHealthPlans = [
 ]
 
 export default function PatientsPage() {
+  const { token } = useContext(AuthContext);
+  const [patients, setPatients] = useState(mockPatients);
   const [searchTerm, setSearchTerm] = useState("")
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
@@ -593,14 +599,62 @@ export default function PatientsPage() {
   }
 
   const handleSavePatient = (patientData) => {
-    if (patientData.id_user) {
-      console.log("Actualizando paciente:", patientData)
-    } else {
-      console.log("Creando nuevo paciente:", patientData)
+    if (editingPatient) {
+      // Lógica de edición (por ahora solo console.log)
+      console.log("Actualizando paciente:", patientData);
+      setEditingPatient(null);
+      setIsFormModalOpen(false);
+      return;
     }
-    setIsFormModalOpen(false)
-    setEditingPatient(null)
-  }
+
+  const payload = {
+    FirstName: patientData.first_name,
+    LastName: patientData.last_name,
+    Email: patientData.email,
+    Dni: patientData.dni,
+    Address: patientData.address || null,
+    PhoneNumber: patientData.phone_number || null,
+    City: patientData.city || null,
+    MembershipNumber: patientData.membership_number || null,
+    BirthDate: patientData.birth_date || null,
+  };
+
+  CreatePatientByDentist(
+    payload,
+    token,
+    (response) => {
+      setPatients((prev) => [
+        ...prev,
+        {
+          id_user: response.id_user || response.id,
+          first_name: response.FirstName || response.first_name,
+          last_name: response.LastName || response.last_name,
+          email: response.Email || response.email,
+          dni: response.Dni || response.dni,
+          address: response.Address || response.address,
+          phone_number: response.PhoneNumber || response.phone_number,
+          city: response.City || response.city,
+          membership_number: response.MembershipNumber || response.membership_number,
+          birth_date: response.BirthDate || response.birth_date,
+        },
+      ]);
+
+      successToast("Paciente creado exitosamente");
+      setEditingPatient(null);
+      setIsFormModalOpen(false);
+    },
+    (err) => {
+      const message = err?.message?.toLowerCase();
+      if (message?.includes("email")) {
+        errorToast("El email ya está registrado");
+      } else if (message?.includes("dni")) {
+        errorToast("El DNI ya está registrado");
+      } else {
+        errorToast("Error del servidor");
+      }
+    }
+  );
+};
 
   const fadeSlideDown = { hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }
   const fadeSlideUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }

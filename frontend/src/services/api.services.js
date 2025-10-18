@@ -76,6 +76,41 @@ export const activateDentist = (token, password, onSuccess, onError) => {
         .catch(onError);
 };
 
+export const CreatePatientByDentist = (payload, token, onSuccess, onError) => {
+    if (!token) {
+        onError({ message: "Token no proporcionado" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/auth/create-patient`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
+
+export const activatePatient = (token, password, onSuccess, onError) => {
+    if (!token || !password) {
+        onError({ message: "Token o contraseña faltante" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/auth/activate-patient`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password }),
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
+
 
 /* PATIENT */
 export const registerPatient = (payload, onSuccess, onError) => {
