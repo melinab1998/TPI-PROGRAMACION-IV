@@ -21,21 +21,7 @@ const handleResponse = async (res) => {
     return data;
 };
 
-export const activateDentist = (token, password, onSuccess, onError) => {
-    if (!token || !password) {
-        onError({ message: "Token o contraseña faltante" });
-        return;
-    }
-
-    fetch(`${baseUrl}/api/auth/activate-dentist`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
-    })
-        .then(handleResponse)
-        .then(onSuccess)
-        .catch(onError);
-};
+/* LOGIN */
 
 export const loginUser = (email, password, onSuccess, onError) => {
     if (!email || !password) {
@@ -52,6 +38,24 @@ export const loginUser = (email, password, onSuccess, onError) => {
         .then(onSuccess)
         .catch(onError);
 };
+
+export const activateDentist = (token, password, onSuccess, onError) => {
+    if (!token || !password) {
+        onError({ message: "Token o contraseña faltante" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/auth/activate-dentist`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password }),
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
+
+
 
 export const registerPatient = (payload, onSuccess, onError) => {
     fetch(`${baseUrl}/api/auth/register-patient`, {
