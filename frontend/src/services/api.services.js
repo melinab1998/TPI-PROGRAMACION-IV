@@ -40,6 +40,22 @@ export const loginUser = (email, password, onSuccess, onError) => {
 };
 
 /* DENTIST */
+export const getAllDentists = (token, onSuccess, onError) => {
+    if (!token) {
+        onError({ message: "Token no proporcionado" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/dentists/`, {
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
 
 export const createDentist = (payload, token, onSuccess, onError) => {
     if (!token) {

@@ -6,71 +6,15 @@ import DentistList from "@/components/super/SuperAdmin/DentistList/DentistList";
 import DentistForm from "@/components/super/SuperAdmin/DentistForm/DentistForm";
 import ConfirmDialog from "@/components/super/SuperAdmin/ConfirmDialog/ConfirmDialog";
 import { Plus } from "lucide-react";
-import { createDentist } from "@/services/api.services.js";
+import { createDentist, getAllDentists } from "@/services/api.services.js";
 import { AuthContext } from "@/services/auth/AuthContextProvider";
 import { successToast, errorToast } from "@/utils/notifications.js";
 
-const mockDentists = [
-  {
-    id_user: 1,
-    first_name: "María",
-    last_name: "López",
-    email: "maria.lopez@clinica.com",
-    license_number: "MN-12345",
-    status: "active",
-    created_at: "2024-01-15",
-  },
-  {
-    id_user: 2,
-    first_name: "Javier",
-    last_name: "Rodríguez",
-    email: "javier.rodriguez@clinica.com",
-    license_number: "MN-67890",
-    status: "active",
-    created_at: "2024-02-10",
-  },
-  {
-    id_user: 3,
-    first_name: "Ana",
-    last_name: "Martínez",
-    email: "ana.martinez@clinica.com",
-    license_number: "MN-54321",
-    status: "inactive",
-    created_at: "2024-01-20",
-  },
-  {
-    id_user: 4,
-    first_name: "Pedro",
-    last_name: "Gómez",
-    email: "pedro.gomez@clinica.com",
-    license_number: "MN-98765",
-    status: "active",
-    created_at: "2024-03-05",
-  },
-  {
-    id_user: 5,
-    first_name: "Laura",
-    last_name: "Fernández",
-    email: "laura.fernandez@clinica.com",
-    license_number: "MN-13579",
-    status: "active",
-    created_at: "2024-03-10",
-  },
-  {
-    id_user: 6,
-    first_name: "Diego",
-    last_name: "Sánchez",
-    email: "diego.sanchez@clinica.com",
-    license_number: "MN-24680",
-    status: "inactive",
-    created_at: "2024-03-15",
-  },
-];
 
 export default function SuperAdminPage() {
   const { token } = useContext(AuthContext);
 
-  const [dentists, setDentists] = useState(mockDentists);
+  const [dentists, setDentists] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingDentist, setEditingDentist] = useState(null);
@@ -84,6 +28,32 @@ export default function SuperAdminPage() {
     email: "",
     license_number: "",
   });
+
+  useEffect(() => {
+    if (token) {
+      getAllDentists(
+        token,
+        (response) => {
+          console.log(response)
+          setDentists(
+            response.map((d) => ({
+              id_user: d.id_user || d.id,
+              first_name: d.firstName || d.first_name,
+              last_name: d.lastName || d.last_name,
+              email: d.email || d.Email,
+              license_number: d.licenseNumber || d.license_number,
+              status: d.status || "active",
+              created_at: d.createdAt || d.created_at || new Date().toISOString().split("T")[0],
+            }))
+          );
+        },
+        (err) => {
+          console.error(err);
+          errorToast("Error al cargar los dentistas");
+        }
+      );
+    }
+  }, [token]);
 
   const filteredDentists = dentists.filter(
     (dentist) =>
