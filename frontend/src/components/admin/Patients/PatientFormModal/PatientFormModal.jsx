@@ -74,11 +74,6 @@ export default function PatientFormModal({
     const patientData = { ...data, id: patient?.id };
 
     onSave(patientData);
-    successToast(
-      isEditing
-        ? "Paciente actualizado exitosamente"
-        : "Paciente creado exitosamente"
-    );
     onClose();
   };
 
