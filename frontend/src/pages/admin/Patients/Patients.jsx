@@ -97,18 +97,20 @@ export default function PatientsPage() {
   }
 
   const handleSavePatient = (patientData) => {
-    if (editingPatient) {
-      const payload = {
-        firstName: patientData.firstName,
-        lastName: patientData.lastName,
-        email: patientData.email,
-        address: patientData.address || null,
-        phoneNumber: patientData.phoneNumber || null,
-        city: patientData.city || null,
-        membershipNumber: patientData.membershipNumber || null,
-        birthDate: patientData.birthDate || null,
-      };
+    const payload = {
+      firstName: patientData.firstName || patientData.first_name,
+      lastName: patientData.lastName || patientData.last_name,
+      email: patientData.email,
+      dni: patientData.dni || patientData.Dni,
+      address: patientData.address || patientData.Address || null,
+      phoneNumber: patientData.phoneNumber || patientData.phone_number || null,
+      city: patientData.city || patientData.City || null,
+      membershipNumber: patientData.membershipNumber || patientData.membership_number || null,
+      birthDate: patientData.birthDate || patientData.birth_date || null,
+    };
   
+    if (editingPatient) {
+      // Edición
       updatePatientByDentist(
         editingPatient.id_user || editingPatient.id,
         payload,
@@ -124,61 +126,56 @@ export default function PatientsPage() {
           setIsFormModalOpen(false);
         },
         (err) => {
-          console.error(err);
-          errorToast("Error al actualizar el paciente");
+          const message = err?.message?.toLowerCase();
+          if (message?.includes("email")) {
+            errorToast("El email ya está registrado");
+          } else if (message?.includes("dni")) {
+            errorToast("El DNI ya está registrado");
+          } else {
+            errorToast("Error al actualizar el paciente");
+          }
         }
       );
       return;
     }
-
-  const payload = {
-    FirstName: patientData.first_name,
-    LastName: patientData.last_name,
-    Email: patientData.email,
-    Dni: patientData.dni,
-    Address: patientData.address || null,
-    PhoneNumber: patientData.phone_number || null,
-    City: patientData.city || null,
-    MembershipNumber: patientData.membership_number || null,
-    BirthDate: patientData.birth_date || null,
-  };
-
-  CreatePatientByDentist(
-    payload,
-    token,
-    (response) => {
-      setPatients((prev) => [
-        ...prev,
-        {
-          id_user: response.id_user || response.id,
-          first_name: response.FirstName || response.first_name,
-          last_name: response.LastName || response.last_name,
-          email: response.Email || response.email,
-          dni: response.Dni || response.dni,
-          address: response.Address || response.address,
-          phone_number: response.PhoneNumber || response.phone_number,
-          city: response.City || response.city,
-          membership_number: response.MembershipNumber || response.membership_number,
-          birth_date: response.BirthDate || response.birth_date,
-        },
-      ]);
-
-      successToast("Paciente creado exitosamente");
-      setEditingPatient(null);
-      setIsFormModalOpen(false);
-    },
-    (err) => {
-      const message = err?.message?.toLowerCase();
-      if (message?.includes("email")) {
-        errorToast("El email ya está registrado");
-      } else if (message?.includes("dni")) {
-        errorToast("El DNI ya está registrado");
-      } else {
-        errorToast("Error del servidor");
+  
+    // Creación
+    CreatePatientByDentist(
+      payload,
+      token,
+      (response) => {
+        setPatients((prev) => [
+          ...prev,
+          {
+            id_user: response.id_user || response.id,
+            first_name: response.firstName || response.first_name,
+            last_name: response.lastName || response.last_name,
+            email: response.email || response.Email,
+            dni: response.dni || response.Dni,
+            address: response.address || response.Address || null,
+            phone_number: response.phoneNumber || response.PhoneNumber || null,
+            city: response.city || response.City || null,
+            membership_number: response.membershipNumber || response.MembershipNumber || null,
+            birth_date: response.birthDate || response.BirthDate || null,
+          },
+        ]);
+        successToast("Paciente creado exitosamente");
+        setEditingPatient(null);
+        setIsFormModalOpen(false);
+      },
+      (err) => {
+        const message = err?.message?.toLowerCase();
+        if (message?.includes("email")) {
+          errorToast("El email ya está registrado");
+        } else if (message?.includes("dni")) {
+          errorToast("El DNI ya está registrado");
+        } else {
+          errorToast("Error al crear el paciente");
+        }
       }
-    }
-  );
-};
+    );
+  };
+  
 
   const fadeSlideDown = { hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }
   const fadeSlideUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }
