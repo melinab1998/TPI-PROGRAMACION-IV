@@ -77,7 +77,7 @@ export const activateDentist = (token, password, onSuccess, onError) => {
 };
 
 
-
+/* PATIENT */
 export const registerPatient = (payload, onSuccess, onError) => {
     fetch(`${baseUrl}/api/auth/register-patient`, {
         method: "POST",
