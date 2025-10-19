@@ -221,15 +221,33 @@ export const updatePatientByDentist = (id, payload, token, onSuccess, onError) =
         .catch(onError);
 };
 
-export const UpdatePatientEmail = (id, token, onSuccess, onError) => {
+export const UpdatePatientEmail = (id, token, data, onSuccess, onError) => {
     fetch(`${baseUrl}/api/patients/${id}/email`, {
       method: "PUT",
       headers: {
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({ email: data.email }), 
     })
       .then(handleResponse)
       .then(onSuccess)
       .catch(onError);
-  };
+};
+
+  export const UpdatePatientPassword = (id, token, data, onSuccess, onError) => {
+    fetch(`${baseUrl}/api/patients/${id}/password`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword
+      }),
+    })
+      .then(handleResponse)
+      .then(onSuccess)
+      .catch(onError);
+};
