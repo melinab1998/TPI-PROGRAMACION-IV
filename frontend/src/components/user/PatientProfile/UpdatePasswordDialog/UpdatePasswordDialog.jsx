@@ -36,8 +36,12 @@ export default function UpdatePasswordDialog() {
         reset();
       },
       (err) => {
-        console.error(err);
-        errorToast("Error al actualizar la contraseña");
+        if (err?.message) {
+          errorToast(err.message);
+        } else {
+          errorToast("Error al actualizar el correo electrónico");
+        }
+    
       }
     );
   };
