@@ -1,9 +1,13 @@
 import React from "react";
+import { useEffect, useState, useContext } from "react";
+import { AuthContext } from "@/services/auth/AuthContextProvider";
 import Header from "@/components/user/UserHome/Header/Header";
 import NextAppointmentCard from "@/components/user/UserHome/NextAppointmentCard/NextAppointmentCard";
 import QuickActions from "@/components/user/UserHome/QuickActions/QuickActions";
 import { Sparkles, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
+import { getPatientById } from "@/services/api.services";
+import { errorToast } from "@/utils/notifications";
 
 const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -11,20 +15,38 @@ const fadeInUp = {
 };
 
 export default function UserHome() {
-    const userData = {
-        name: "María Gomez",
-        nextAppointment: {
-            date: "15 de Septiembre, 2024",
-            time: "10:30 AM",
-            dentist: "Dr. Juan Pérez"
-        }
-    };
+    const { userId, token } = useContext(AuthContext);
+    const [patientData, setPatientData] = useState(null);
+    useEffect(() => {
+        if (!userId || !token) return;
+    
+    
+        getPatientById(
+            userId,
+          token,
+          (data) => {
+            console.log("🩺 Datos del paciente:", data); 
+            setPatientData(data);
+            
+          },
+          (err) => {
+            console.error(err);
+            errorToast("Error al cargar los datos del paciente");
+          }
+        );
+      }, [userId, token]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
             <div className="max-w-6xl mx-auto px-4 py-12 space-y-16 relative z-10">
                 <motion.div initial="hidden" animate="show" variants={fadeInUp}>
-                    <Header userName={userData.name} />
+                <Header
+            userName={
+              patientData
+                ? `${patientData.firstName} ${patientData.lastName}`
+                : "Paciente"
+            }
+          />
                 </motion.div>
                 <motion.section
                     className="space-y-6"
@@ -47,7 +69,6 @@ export default function UserHome() {
                     </div>
 
                     <motion.div initial="hidden" animate="show" variants={fadeInUp}>
-                        <NextAppointmentCard appointment={userData.nextAppointment} />
                     </motion.div>
                 </motion.section>
                 <motion.section

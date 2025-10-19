@@ -11,10 +11,10 @@ export default function PersonalInfoCard({ patientData }) {
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {["name", "lastName", "dni", "email"].map((field) => (
+                    {["firstName", "lastName", "dni", "email"].map((field) => (
                         <div key={field} className="space-y-2">
                             <Label className="text-sm font-medium text-foreground">
-                                {field === "name" ? "Nombre" : field === "lastName" ? "Apellido" : field === "dni" ? "DNI" : "Email"}
+                                {field === "firstName" ? "Nombre" : field === "lastName" ? "Apellido" : field === "dni" ? "DNI" : "Email"}
                             </Label>
                             <Input
                                 value={patientData[field]}
