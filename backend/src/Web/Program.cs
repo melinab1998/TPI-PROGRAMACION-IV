@@ -84,11 +84,15 @@ builder.Services.AddAuthentication("Bearer")
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDentistService, DentistService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IHealthInsuranceService, HealthInsuranceService>();
+builder.Services.AddScoped<IHealthPlanService, HealthPlanService>();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDentistRepository, DentistRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IHealthInsuranceRepository, HealthInsuranceRepository>();
+builder.Services.AddScoped<IHealthPlanRepository, HealthPlanRepository>();
 
 builder.Services.AddHttpClient<IEmailService, EmailService>();
 builder.Services.AddScoped<IJwtService, JwtService>();

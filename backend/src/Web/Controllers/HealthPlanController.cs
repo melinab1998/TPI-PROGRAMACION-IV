@@ -20,7 +20,7 @@ namespace Web.Controllers
         public ActionResult<IEnumerable<HealthPlanResponseDto>> GetAll()
         {
             var plans = _healthPlanService.GetAll();
-            var result = plans.Select(p => new HealthPlanResponseDto(p.Id, p.Name, p.HealthInsuranceId));
+            var result = plans.Select(p => new HealthPlanResponseDto(p.Id, p.Name));
             return Ok(result);
         }
 
@@ -28,7 +28,7 @@ namespace Web.Controllers
         public ActionResult<IEnumerable<HealthPlanResponseDto>> GetByInsuranceId(int insuranceId)
         {
             var plans = _healthPlanService.GetByInsuranceId(insuranceId);
-            var result = plans.Select(p => new HealthPlanResponseDto(p.Id, p.Name, p.HealthInsuranceId));
+            var result = plans.Select(p => new HealthPlanResponseDto(p.Id, p.Name));
             return Ok(result);
         }
 

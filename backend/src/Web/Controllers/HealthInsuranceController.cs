@@ -24,7 +24,7 @@ namespace Web.Controllers
             var result = insurances.Select(h => new HealthInsuranceResponseDto(
                 h.Id,
                 h.Name,
-                h.Plans.Select(p => new HealthPlanResponseDto(p.Id, p.Name, p.HealthInsuranceId))
+                h.Plans.Select(p => new HealthPlanResponseDto(p.Id, p.Name))
             ));
             return Ok(result);
         }
@@ -38,7 +38,7 @@ namespace Web.Controllers
             var response = new HealthInsuranceResponseDto(
                 insurance.Id,
                 insurance.Name,
-                insurance.Plans.Select(p => new HealthPlanResponseDto(p.Id, p.Name, p.HealthInsuranceId))
+                insurance.Plans.Select(p => new HealthPlanResponseDto(p.Id, p.Name))
             );
 
             return Ok(response);
