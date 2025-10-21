@@ -2,8 +2,11 @@ using Domain.Entities;
 
 namespace Domain.Interfaces
 {
-    public interface IUserRepository : IRepository<User>;
+    public interface IUserRepository : IRepository<User>
+    {
+         User? GetByEmail(string email);
+    }
     
-        // Si en el futuro necesitamos métodos específicos de User, los agregamos acá
+        
     
 }

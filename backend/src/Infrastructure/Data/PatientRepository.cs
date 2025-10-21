@@ -13,5 +13,10 @@ namespace Infrastructure.Data
         {
             return _dbSet.FirstOrDefault(p => p.Dni == dni);
         }
+
+         public Patient? GetByEmail(string email)
+        {
+            return _dbSet.FirstOrDefault(p => p.Email == email);
+        }
     }
 }

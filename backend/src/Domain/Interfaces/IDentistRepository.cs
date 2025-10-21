@@ -5,5 +5,6 @@ namespace Domain.Interfaces
     public interface IDentistRepository : IRepository<Dentist>
     {
         bool LicenseExists(string licenseNumber);
+        Dentist? GetByEmail(string email);
     }
 }

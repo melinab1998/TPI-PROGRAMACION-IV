@@ -9,15 +9,13 @@ namespace Application.Services;
 public class DentistService : IDentistService
 {
     private readonly IDentistRepository _dentistRepository;
-    private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _hasher;
     private readonly IEmailService _emailService;
     private readonly IJwtService _jwtService;
 
-    public DentistService(IDentistRepository dentistRepository, IUserRepository userRepository, IPasswordHasher hasher, IEmailService emailService, IJwtService jwtService)
+    public DentistService(IDentistRepository dentistRepository, IPasswordHasher hasher, IEmailService emailService, IJwtService jwtService)
     {
         _dentistRepository = dentistRepository;
-        _userRepository = userRepository;
         _hasher = hasher;
         _emailService = emailService;
         _jwtService = jwtService;
@@ -25,7 +23,7 @@ public class DentistService : IDentistService
 
     public Dentist CreateDentist(string FirstName, string LastName, string Email, string LicenseNumber)
     {
-        if (_userRepository.GetByEmail(Email) != null)
+        if (_dentistRepository.GetByEmail(Email) != null)
             throw new AppValidationException($"El email {Email} ya está registrado");
 
         if (_dentistRepository.LicenseExists(LicenseNumber))
@@ -98,7 +96,7 @@ public class DentistService : IDentistService
         if (dentist == null)
             throw new AppValidationException("Dentista no encontrado");
 
-        if (!string.IsNullOrEmpty(email) && _userRepository.GetByEmail(email) != null && email != dentist.Email)
+        if (!string.IsNullOrEmpty(email) && _dentistRepository.GetByEmail(email) != null && email != dentist.Email)
             throw new AppValidationException($"El email {email} ya está registrado");
 
         if (!string.IsNullOrEmpty(licenseNumber) && _dentistRepository.LicenseExists(licenseNumber) && licenseNumber != dentist.LicenseNumber)
