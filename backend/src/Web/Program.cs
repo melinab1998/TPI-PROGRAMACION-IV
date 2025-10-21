@@ -8,8 +8,21 @@ using System.Text;
 using Application.Services;
 using Domain.Interfaces;
 using Web.Middleware;
+using System.Text.Json.Serialization;
+using Web.JsonConverters;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Permite que los enums se lean/escriban como strings
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+
+        // Converter para TimeOnly
+        options.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
+    });
 
 builder.Services.AddControllers();
 
@@ -86,6 +99,7 @@ builder.Services.AddScoped<IDentistService, DentistService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IHealthInsuranceService, HealthInsuranceService>();
 builder.Services.AddScoped<IHealthPlanService, HealthPlanService>();
+builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -93,6 +107,8 @@ builder.Services.AddScoped<IDentistRepository, DentistRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IHealthInsuranceRepository, HealthInsuranceRepository>();
 builder.Services.AddScoped<IHealthPlanRepository, HealthPlanRepository>();
+builder.Services.AddScoped<IAvailabilityRepository, AvailabilityRepository>();
+
 
 builder.Services.AddHttpClient<IEmailService, EmailService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
@@ -147,3 +163,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.Run();
+
