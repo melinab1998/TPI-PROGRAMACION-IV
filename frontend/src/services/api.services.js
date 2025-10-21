@@ -254,7 +254,7 @@ export const UpdatePatientEmail = (id, token, data, onSuccess, onError) => {
 
 
 /* Obra social */
-export const GetAllHealthInsurances = (token, onSuccess, onError) => {
+export const getAllHealthInsurances = (token, onSuccess, onError) => {
     fetch(`${baseUrl}/api/healthinsurances`, {
       method: "GET",
       headers: {
@@ -268,7 +268,7 @@ export const GetAllHealthInsurances = (token, onSuccess, onError) => {
 };
 
 
-export const GetHealthInsuranceById = (token, id, onSuccess, onError) => {
+export const getHealthInsuranceById = (token, id, onSuccess, onError) => {
    
     fetch(`${baseUrl}/api/healthinsurances/${id}`, {
         headers: {
@@ -283,7 +283,7 @@ export const GetHealthInsuranceById = (token, id, onSuccess, onError) => {
 
 /* Planes */
 
-export const GetAllHealthPlans = (token, onSuccess, onError) => {
+export const getAllHealthPlans = (token, onSuccess, onError) => {
     fetch(`${baseUrl}/api/healthplans`, {
         headers: {
             "Content-Type": "application/json",

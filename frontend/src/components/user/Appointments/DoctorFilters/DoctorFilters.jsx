@@ -3,40 +3,67 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Button } from "@/components/ui/button";
 
 export default function DoctorFilters({
-    doctorsData,
-    selectedProfessional,
-    selectedSocial,
-    setSelectedProfessional,
-    setSelectedSocial,
-    handleSearch,
+  selectedProfessional,
+  selectedSocial,
+  selectedPlan,
+  setSelectedProfessional,
+  setSelectedSocial,
+  setSelectedPlan,
+  handleSearch,
+  dentists,
+  healthInsurances,
+  plans,
 }) {
-    return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <Select onValueChange={(value) => setSelectedProfessional(value)} value={selectedProfessional}>
-                <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
-                    <SelectValue placeholder="Buscar por Profesional..." />
-                </SelectTrigger>
-                <SelectContent>
-                    {doctorsData.map((doc) => (
-                        <SelectItem key={doc.id} value={doc.name}>{doc.name}</SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      {/* Profesional */}
+      <Select value={selectedProfessional || ""} onValueChange={setSelectedProfessional}>
+        <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
+          <SelectValue placeholder="Buscar por Profesional..." />
+        </SelectTrigger>
+        <SelectContent>
+          {dentists.map((doc) => (
+             <SelectItem key={doc.id} value={`${doc.firstName} ${doc.lastName}`}>
+             {doc.firstName} {doc.lastName}
+           </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-            <Select onValueChange={(value) => setSelectedSocial(value)} value={selectedSocial}>
-                <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
-                    <SelectValue placeholder="Buscar por Obra Social o Particular..." />
-                </SelectTrigger>
-                <SelectContent>
-                    {[...new Set(doctorsData.map((d) => d.social))].map((s) => (
-                        <SelectItem key={s} value={s}>{s}</SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
+      {/* Obra Social */}
+      <Select value={selectedSocial || ""} onValueChange={setSelectedSocial}>
+        <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
+          <SelectValue placeholder="Buscar por Obra Social..." />
+        </SelectTrigger>
+        <SelectContent>
+          {healthInsurances.map((ins) => (
+            <SelectItem key={ins.id} value={ins.id.toString()}>
+              {ins.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-            <div className="flex items-end">
-                <Button className="w-full" onClick={handleSearch}>Buscar</Button>
-            </div>
-        </div>
-    );
+      {/* Plan */}
+      <Select value={selectedPlan || ""} onValueChange={setSelectedPlan} disabled={!selectedSocial}>
+        <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
+          <SelectValue placeholder="Seleccionar Plan..." />
+        </SelectTrigger>
+        <SelectContent>
+          {plans.map((plan) => (
+            <SelectItem key={plan.id} value={plan.id.toString()}>
+              {plan.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {/* Botón */}
+      <div className="flex items-end">
+        <Button className="w-full" onClick={handleSearch}>
+          Buscar
+        </Button>
+      </div>
+    </div>
+  );
 }
