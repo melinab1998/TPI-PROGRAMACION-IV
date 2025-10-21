@@ -251,3 +251,59 @@ export const UpdatePatientEmail = (id, token, data, onSuccess, onError) => {
       .then(onSuccess)
       .catch(onError);
 };
+
+
+/* Obra social */
+export const GetAllHealthInsurances = (token, onSuccess, onError) => {
+    fetch(`${baseUrl}/api/healthinsurances`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then(handleResponse)
+      .then(onSuccess)
+      .catch(onError);
+};
+
+
+export const GetHealthInsuranceById = (token, id, onSuccess, onError) => {
+   
+    fetch(`${baseUrl}/api/healthinsurances/${id}`, {
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
+
+/* Planes */
+
+export const GetAllHealthPlans = (token, onSuccess, onError) => {
+    fetch(`${baseUrl}/api/healthplans`, {
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
+
+export const getHealthPlansByInsurance = (token, insuranceId, onSuccess, onError) => {
+
+    fetch(`${baseUrl}/api/healthplans/byInsurance/${insuranceId}`, {
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
