@@ -2,8 +2,8 @@ using Domain.Entities;
 
 namespace Domain.Interfaces;
 
-public interface IHealthPlanRepository
+public interface IHealthInsuranceRepository
 {
-    IEnumerable<HealthPlan> GetAll();
-    IEnumerable<HealthPlan> GetByInsuranceId(int healthInsuranceId);
+    IEnumerable<HealthInsurance> GetAll();
+    HealthInsurance? GetById(int id);
 }
