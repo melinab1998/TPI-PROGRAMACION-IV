@@ -5,7 +5,7 @@ using Domain.Interfaces;
 
 namespace Application.Services;
 
-public class HealthPlanService : IHealthPlan
+public class HealthPlanService : IHealthPlanService
 {
     private readonly IHealthPlanRepository _healthPlanRepository;
 
@@ -28,8 +28,6 @@ public class HealthPlanService : IHealthPlan
     public IEnumerable<HealthPlan> GetByInsuranceId(int healthInsuranceId)
     {
         
-        if (healthInsuranceId <= 0)
-            throw new AppValidationException("Id de obra social inválido.");
 
         var plans = _healthPlanRepository.GetByInsuranceId(healthInsuranceId);
 

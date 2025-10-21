@@ -2,7 +2,7 @@ using Domain.Entities;
 
 namespace Application.Interfaces;
 
-public interface IHealthInsurance
+public interface IHealthInsuranceService
 {
     IEnumerable<HealthInsurance> GetAll();
     HealthInsurance GetById(int id);
