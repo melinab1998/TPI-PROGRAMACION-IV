@@ -6,7 +6,7 @@ using Web.Models;
 namespace Web.Controllers
 {
     [ApiController]
-    [Route("api/healhplans")]
+    [Route("api/healthplans")]
     public class HealthPlanController : ControllerBase
     {
         private readonly IHealthPlanService _healthPlanService;
