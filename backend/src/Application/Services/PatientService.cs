@@ -9,17 +9,21 @@ namespace Application.Services;
 public class PatientService : IPatientService
 {
     private readonly IPatientRepository _patientRepository;
+
+    private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _hasher;
     private readonly IEmailService _emailService;
     private readonly IJwtService _jwtService;
 
     public PatientService(
         IPatientRepository patientRepository,
+        IUserRepository userRepository,
         IPasswordHasher hasher,
         IEmailService emailService,
         IJwtService jwtService)
     {
         _patientRepository = patientRepository;
+        _userRepository = userRepository;
         _hasher = hasher;
         _emailService = emailService;
         _jwtService = jwtService;
@@ -27,7 +31,7 @@ public class PatientService : IPatientService
 
     public Patient RegisterPatient(string firstName, string lastName, string email, string password, string dni)
     {
-        if (_patientRepository.GetByEmail(email) != null)
+        if (_userRepository.GetByEmail(email) != null)
             throw new AppValidationException($"El email {email} ya está registrado");
 
         if (_patientRepository.GetByDni(dni) != null)
@@ -54,7 +58,7 @@ public class PatientService : IPatientService
     DateOnly? birthDate = null
 )
     {
-        if (_patientRepository.GetByEmail(email) != null)
+        if (_userRepository.GetByEmail(email) != null)
             throw new AppValidationException($"El email {email} ya está registrado");
 
         if (_patientRepository.GetByDni(dni) != null)
@@ -131,7 +135,7 @@ public class PatientService : IPatientService
         if (patient == null)
             throw new AppValidationException("Paciente no encontrado");
 
-        if (!string.IsNullOrEmpty(email) && _patientRepository.GetByEmail(email) != null && email != patient.Email)
+        if (!string.IsNullOrEmpty(email) && _userRepository.GetByEmail(email) != null && email != patient.Email)
             throw new AppValidationException($"El email {email} ya está registrado");
 
         if (!string.IsNullOrEmpty(firstName)) patient.FirstName = firstName;
@@ -154,7 +158,7 @@ public class PatientService : IPatientService
         if (patient == null)
             throw new AppValidationException("Paciente no encontrado");
 
-        if (_patientRepository.GetByEmail(newEmail) != null && newEmail != patient.Email)
+        if (_userRepository.GetByEmail(newEmail) != null && newEmail != patient.Email)
             throw new AppValidationException($"El email {newEmail} ya está registrado");
 
         patient.Email = newEmail;

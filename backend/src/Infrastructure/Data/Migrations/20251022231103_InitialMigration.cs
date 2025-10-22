@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
@@ -12,7 +14,7 @@ namespace Infrastructure.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "HealthInsurance",
+                name: "HealthInsurances",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -21,7 +23,7 @@ namespace Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_HealthInsurance", x => x.Id);
+                    table.PrimaryKey("PK_HealthInsurances", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -41,7 +43,7 @@ namespace Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "HealthPlan",
+                name: "HealthPlans",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -51,11 +53,11 @@ namespace Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_HealthPlan", x => x.Id);
+                    table.PrimaryKey("PK_HealthPlans", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_HealthPlan_HealthInsurance_HealthInsuranceId",
+                        name: "FK_HealthPlans_HealthInsurances_HealthInsuranceId",
                         column: x => x.HealthInsuranceId,
-                        principalTable: "HealthInsurance",
+                        principalTable: "HealthInsurances",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -113,9 +115,9 @@ namespace Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_Patients", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Patients_HealthPlan_HealthPlanId",
+                        name: "FK_Patients_HealthPlans_HealthPlanId",
                         column: x => x.HealthPlanId,
-                        principalTable: "HealthPlan",
+                        principalTable: "HealthPlans",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Patients_Users_Id",
@@ -132,8 +134,8 @@ namespace Infrastructure.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DayOfWeek = table.Column<int>(type: "int", nullable: false),
-                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    StartTime = table.Column<TimeSpan>(type: "time(0)", nullable: false),
+                    EndTime = table.Column<TimeSpan>(type: "time(0)", nullable: false),
                     DentistId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -147,14 +149,39 @@ namespace Infrastructure.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "HealthInsurances",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "OSDE" },
+                    { 2, "Swiss Medical" },
+                    { 3, "Galeno" },
+                    { 4, "Particular" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "HealthPlans",
+                columns: new[] { "Id", "HealthInsuranceId", "Name" },
+                values: new object[,]
+                {
+                    { 1, 1, "210" },
+                    { 2, 1, "310" },
+                    { 3, 1, "410" },
+                    { 4, 2, "SMG01" },
+                    { 5, 2, "SMG02" },
+                    { 6, 3, "220" },
+                    { 7, 3, "330" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Availabilities_DentistId",
                 table: "Availabilities",
                 column: "DentistId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_HealthPlan_HealthInsuranceId",
-                table: "HealthPlan",
+                name: "IX_HealthPlans_HealthInsuranceId",
+                table: "HealthPlans",
                 column: "HealthInsuranceId");
 
             migrationBuilder.CreateIndex(
@@ -179,13 +206,13 @@ namespace Infrastructure.Data.Migrations
                 name: "Dentists");
 
             migrationBuilder.DropTable(
-                name: "HealthPlan");
+                name: "HealthPlans");
 
             migrationBuilder.DropTable(
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "HealthInsurance");
+                name: "HealthInsurances");
         }
     }
 }
