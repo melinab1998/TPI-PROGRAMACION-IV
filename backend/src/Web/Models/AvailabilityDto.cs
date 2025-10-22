@@ -3,11 +3,12 @@ using Domain.Enums;
 
 namespace Web.Models
 {
-    public record AvailabilityDto(int Id, WorkDay DayOfWeek, TimeOnly StartTime, TimeOnly EndTime)
+    public record AvailabilityDto(int Id, DayOfWeek DayOfWeek, string StartTime, string EndTime)
     {
         public static AvailabilityDto Create(Availability entity)
         {
-            return new AvailabilityDto(entity.Id, entity.DayOfWeek, entity.StartTime, entity.EndTime);
+            return new AvailabilityDto(entity.Id, entity.DayOfWeek,  entity.StartTime.ToString(@"hh\:mm"),
+                entity.EndTime.ToString(@"hh\:mm"));
         }
     }
 }

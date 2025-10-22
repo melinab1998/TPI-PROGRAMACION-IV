@@ -8,21 +8,10 @@ using System.Text;
 using Application.Services;
 using Domain.Interfaces;
 using Web.Middleware;
-using System.Text.Json.Serialization;
-using Web.JsonConverters;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        // Permite que los enums se lean/escriban como strings
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-
-        // Converter para TimeOnly
-        options.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
-    });
 
 builder.Services.AddControllers();
 

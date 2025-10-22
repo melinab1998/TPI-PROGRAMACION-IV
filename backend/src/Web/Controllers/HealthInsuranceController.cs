@@ -16,7 +16,7 @@ namespace Web.Controllers
             _healthInsuranceService = healthInsuranceService;
         }
 
-        // GET: api/HealthInsurance
+        
         [HttpGet]
         public ActionResult<IEnumerable<HealthInsuranceResponseDto>> GetAll()
         {
@@ -30,11 +30,10 @@ namespace Web.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<HealthInsuranceResponseDto> GetById(int id)
+        public ActionResult<HealthInsuranceResponseDto> GetByIdWithPlans(int id)
         {
             var insurance = _healthInsuranceService.GetById(id);
-            if (insurance == null) return NotFound();
-
+            
             var response = new HealthInsuranceResponseDto(
                 insurance.Id,
                 insurance.Name,

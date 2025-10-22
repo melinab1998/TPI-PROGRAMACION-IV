@@ -30,15 +30,15 @@ public class AvailabilityController : ControllerBase
     [HttpPost("{dentistId}")]
     public ActionResult SetAvailability([FromRoute] int dentistId, [FromBody] List<AvailabilityRequest> requests)
     {
-        var slots = requests.Select(r => new Availability(
-            r.DayOfWeek,
-            r.StartTime,
-            r.EndTime,
-            dentistId
-        )).ToList();
+         var slots = requests.Select(r => new Availability(
+                r.DayOfWeek,
+                TimeSpan.Parse(r.StartTime),
+                TimeSpan.Parse(r.EndTime),
+                dentistId
+            )).ToList();
 
         _availabilityService.SetAvailability(dentistId, slots);
 
-        return NoContent(); // No necesitamos devolver nada, los slots ya fueron guardados
+        return NoContent(); 
     }
 }

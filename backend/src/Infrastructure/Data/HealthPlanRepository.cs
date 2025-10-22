@@ -4,25 +4,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
 
-public class HealthPlanRepository : IHealthPlanRepository
+public class HealthPlanRepository : Repository<HealthPlan>, IHealthPlanRepository
 {
-    private readonly ApplicationDbContext _context;
-
-    public HealthPlanRepository(ApplicationDbContext context)
-    {
-        _context = context;
-    }
+    public HealthPlanRepository(ApplicationDbContext applicationDbcontext) : base(applicationDbcontext) { }
 
     public IEnumerable<HealthPlan> GetAll()
     {
-        return _context.HealthPlans
+        return _applicationDbcontext.HealthPlans
                        .Include(p => p.HealthInsurance) // Trae la obra social asociada
                        .ToList();
     }
 
     public IEnumerable<HealthPlan> GetByInsuranceId(int healthInsuranceId)
     {
-        return _context.HealthPlans
+        return _applicationDbcontext.HealthPlans
                        .Where(p => p.HealthInsuranceId == healthInsuranceId)
                        .Include(p => p.HealthInsurance) // Trae la obra social asociada
                        .ToList();

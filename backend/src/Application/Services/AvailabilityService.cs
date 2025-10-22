@@ -28,19 +28,29 @@ namespace Application.Services
             if (slots == null || !slots.Any())
                 throw new AppValidationException("Debe proporcionar al menos un horario.");
 
-            // Primero eliminamos las disponibilidades actuales de ese dentista
             var existingSlots = _availabilityRepository.GetByDentistId(dentistId).ToList();
-            foreach (var slot in existingSlots)
-            {
-                _availabilityRepository.Delete(slot);
-            }
 
-            // Agregamos las nuevas disponibilidades
             foreach (var slot in slots)
             {
-                // Aseguramos que la disponibilidad tenga el dentistId correcto
                 slot.DentistId = dentistId;
-                _availabilityRepository.Add(slot);
+
+                // Buscar si ya existe un slot con mismo día y hora de inicio
+                var existing = existingSlots.FirstOrDefault(s =>
+                    s.DayOfWeek == slot.DayOfWeek
+                );
+
+                if (existing != null)
+                {
+                    // Actualizar si cambió algo hora de fin o de inicio
+                    existing.StartTime = slot.StartTime;
+                    existing.EndTime = slot.EndTime;
+                    _availabilityRepository.Update(existing);
+                }
+                else
+                {
+                    // Crear nuevo
+                    _availabilityRepository.Add(slot);
+                }
             }
         }
     }

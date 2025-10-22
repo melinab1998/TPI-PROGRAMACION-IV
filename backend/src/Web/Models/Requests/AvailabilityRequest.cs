@@ -5,12 +5,12 @@ namespace Web.Models.Requests
 {
     public record AvailabilityRequest(
         [Required]
-        WorkDay DayOfWeek,
+        DayOfWeek DayOfWeek,
 
         [Required]
-        TimeOnly StartTime,
+        string  StartTime,
 
         [Required]
-        TimeOnly EndTime
+        string  EndTime
     );
 }

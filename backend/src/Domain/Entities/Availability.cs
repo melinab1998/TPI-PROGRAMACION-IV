@@ -1,13 +1,18 @@
-using Domain.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
+
 
 namespace Domain.Entities
 {
     public class Availability
     {
         public int Id { get; set; }
-        public WorkDay DayOfWeek { get; set; }
-        public TimeOnly StartTime { get; set; }
-        public TimeOnly EndTime { get; set; }
+        public DayOfWeek DayOfWeek { get; set; }
+
+        
+        [Column(TypeName = "time(0)")]
+        public TimeSpan StartTime { get; set; }
+        [Column(TypeName = "time(0)")]
+        public TimeSpan EndTime { get; set; }
 
         // Foreign Key
         public int DentistId { get; set; }
@@ -17,7 +22,7 @@ namespace Domain.Entities
 
         public Availability() { }
 
-        public Availability(WorkDay dayOfWeek, TimeOnly startTime, TimeOnly endTime, int dentistId)
+        public Availability(DayOfWeek dayOfWeek, TimeSpan startTime, TimeSpan endTime, int dentistId)
         {
             DayOfWeek = dayOfWeek;
             StartTime = startTime;

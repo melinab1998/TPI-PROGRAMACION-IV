@@ -27,8 +27,8 @@ public class HealthInsuranceService : IHealthInsuranceService
     
     public HealthInsurance GetById(int id)
     {
-       
-        var insurance = _healthInsuranceRepository.GetById(id);
+
+        var insurance = _healthInsuranceRepository.GetByIdWithPlans(id);
 
         if (insurance == null)
             throw new AppValidationException("Obra social no encontrada.");
