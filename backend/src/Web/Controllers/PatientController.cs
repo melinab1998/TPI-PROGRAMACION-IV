@@ -47,7 +47,8 @@ public class PatientController : ControllerBase
             request.PhoneNumber,
             request.City,
             request.MembershipNumber,
-            request.BirthDate
+            request.BirthDate,
+            request.HealthPlanId 
         );
 
         var dto = PatientDtoFull.Create(updatedPatient);
