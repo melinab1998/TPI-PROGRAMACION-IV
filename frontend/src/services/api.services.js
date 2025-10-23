@@ -307,3 +307,42 @@ export const getHealthPlansByInsurance = (token, insuranceId, onSuccess, onError
         .then(onSuccess)
         .catch(onError);
 };
+
+/* Disponibilidad */
+export const setAvailability = ( token, dentistId, data, onSuccess, onError) => {
+    if (!token) {
+        onError({ message: "Token no proporcionado" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/availabilities/${dentistId}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+    })
+    .then(handleResponse)
+    .then(onSuccess)
+    .catch(onError);
+};
+
+
+export const getAvailability = (token, dentistId, onSuccess, onError) => {
+    if (!token) {
+        onError({ message: "Token no proporcionado" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/availabilities/${dentistId}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    })
+    .then(handleResponse)
+    .then(onSuccess)
+    .catch(onError);
+};

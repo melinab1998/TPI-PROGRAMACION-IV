@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { successToast, errorToast } from "@/utils/notifications";
 import { resetPasswordValidations } from "@/utils/validations";
 import { activateDentist, activatePatient } from "@/services/api.services";
+import { jwtDecode } from "jwt-decode";
 
 export default function ResetPassword() {
     const navigate = useNavigate();
@@ -24,8 +25,18 @@ export default function ResetPassword() {
     const password = watch("password");
     const searchParams = new URLSearchParams(window.location.search);
     const token = searchParams.get("token");
-    const userType = searchParams.get("type") || "patient";
-    
+
+    // ✅ Detectar automáticamente tipo de usuario desde el token
+    let userType = "patient"; // default
+    try {
+        if (token) {
+            const decoded = jwtDecode(token);
+            if (decoded.dentistId) userType = "dentist";
+            else if (decoded.patientId) userType = "patient";
+        }
+    } catch (err) {
+        console.warn("Token inválido:", err);
+    }
 
     const onSubmit = (data) => {
         if (!token) {
@@ -124,5 +135,3 @@ export default function ResetPassword() {
         </div>
     );
 }
-
-
