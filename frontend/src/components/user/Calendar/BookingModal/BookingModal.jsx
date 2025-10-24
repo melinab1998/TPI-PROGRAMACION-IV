@@ -5,13 +5,21 @@ import { es } from "date-fns/locale"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Button } from "@/components/ui/button"
-import { successToast } from "@/utils/notifications";
+import { successToast } from "@/utils/notifications"
 
 export default function BookingModal({ time, date, doctor, formData, setFormData, handleSubmit, setTime }) {
     
     const handleConfirmSubmit = (e) => {
         e.preventDefault()
-        successToast("Turno confirmado con éxito")
+
+        console.log("Turno reservado:", {
+            doctor: `${doctor.firstName} ${doctor.lastName}`,
+            date: format(date, "yyyy-MM-dd"),
+            time,
+            ...formData,
+        })
+
+        successToast(`Turno confirmado con éxito.`)
         handleSubmit(e)
     }
 
@@ -36,7 +44,9 @@ export default function BookingModal({ time, date, doctor, formData, setFormData
                     ✕
                 </button>
 
-                <h3 className="text-xl font-bold mb-5">Reservar turno - {doctor.name}</h3>
+                <h3 className="text-xl font-bold mb-5">
+                    Reservar turno - {doctor.firstName} {doctor.lastName}
+                </h3>
 
                 <div className="mb-6 p-3 bg-muted rounded-lg">
                     <p className="font-medium">
@@ -48,7 +58,9 @@ export default function BookingModal({ time, date, doctor, formData, setFormData
                     <div className="space-y-5">
                         <Label className="text-base">Motivo del turno</Label>
                         <RadioGroup
-                            onValueChange={(value) => setFormData((prev) => ({ ...prev, motivoConsulta: value }))}
+                            onValueChange={(value) =>
+                                setFormData((prev) => ({ ...prev, motivoConsulta: value }))
+                            }
                             value={formData.motivoConsulta}
                             className="flex space-x-4"
                         >
