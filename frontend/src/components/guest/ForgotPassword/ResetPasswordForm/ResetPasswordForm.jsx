@@ -26,8 +26,7 @@ export default function ResetPassword() {
     const searchParams = new URLSearchParams(window.location.search);
     const token = searchParams.get("token");
 
-    // ✅ Detectar automáticamente tipo de usuario desde el token
-    let userType = "patient"; // default
+    let userType = "patient"; 
     try {
         if (token) {
             const decoded = jwtDecode(token);
@@ -55,11 +54,8 @@ export default function ResetPassword() {
             token,
             data.password,
             () => {
-                const successMessage =
-                    userType === "dentist"
-                        ? "Cuenta de dentista activada correctamente 🎉"
-                        : "Cuenta de paciente activada correctamente 🎉";
-                successToast(successMessage);
+                console.log(`Cuenta activada (${userType})`);
+                successToast("Cuenta activada correctamente 🎉");
                 reset();
                 setTimeout(() => navigate("/login"), 1200);
             },
