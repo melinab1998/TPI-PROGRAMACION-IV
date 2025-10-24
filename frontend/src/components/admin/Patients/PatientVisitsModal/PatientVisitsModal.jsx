@@ -33,7 +33,7 @@ export default function PatientVisitsModal({ open, onClose, patient }) {
                     <DialogHeader className="flex-shrink-0">
                         <DialogTitle className="flex items-center gap-2">
                             <FileText className="w-5 h-5" />
-                            Registros de Visitas - {patient.firstName} {patient.lastName}
+                            Registros de Visitas - {patient.first_name} {patient.last_name}
                         </DialogTitle>
                     </DialogHeader>
 

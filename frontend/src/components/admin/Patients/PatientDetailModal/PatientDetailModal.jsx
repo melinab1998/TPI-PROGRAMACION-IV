@@ -22,11 +22,13 @@ export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
               <span className="text-xl font-bold text-primary">
-              {patient.firstName?.[0]}{patient.lastName?.[0]}
+                {patient.first_name?.[0]}{patient.last_name?.[0]}
               </span>
             </div>
             <div>
-              <h2 className="text-2xl font-bold">{patient.firstName} {patient.lastName}</h2>
+              <h2 className="text-2xl font-bold">
+                {patient.first_name} {patient.last_name}
+              </h2>
               <p className="text-muted-foreground">DNI: {patient.dni}</p>
             </div>
           </div>
