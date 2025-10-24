@@ -35,6 +35,7 @@ export default function PatientsPage() {
   const [healthInsurances, setHealthInsurances] = useState([]);
   const [healthPlans, setHealthPlans] = useState([]);
 
+  // Cargar pacientes
   useEffect(() => {
     if (!token) return;
 
@@ -53,16 +54,14 @@ export default function PatientsPage() {
             city: p.city || "",
             membership_number: p.membershipNumber || p.membership_number || "",
             birth_date: p.birthDate || p.birth_date || "",
+            healthPlanId: p.healthPlanId || p.id_health_plan || null,
           }))
         );
       },
       (err) => {
         const message = err?.message?.toLowerCase();
-        if (message?.includes("paciente") || message?.includes("no se encontraron")) {
-          return;
-        } else {
-          errorToast("Error del servidor al cargar los pacientes");
-        }
+        if (message?.includes("paciente") || message?.includes("no se encontraron")) return;
+        errorToast("Error del servidor al cargar los pacientes");
       }
     );
   }, [token]);
@@ -84,7 +83,7 @@ export default function PatientsPage() {
     );
   }, [token]);
 
-  // Filtrar pacientes de manera segura
+  // Filtrar pacientes
   const filteredPatients = (patients || []).filter((p) => {
     const firstName = p.first_name || "";
     const lastName = p.last_name || "";
@@ -97,6 +96,7 @@ export default function PatientsPage() {
     );
   });
 
+  // Acciones
   const handleCreatePatient = () => {
     setEditingPatient(null);
     setIsFormModalOpen(true);
@@ -122,6 +122,7 @@ export default function PatientsPage() {
     setIsOdontogramModalOpen(true);
   };
 
+  // Guardar paciente (crear o actualizar)
   const handleSavePatient = (patientData) => {
     const payload = {
       firstName: patientData.first_name || patientData.firstName,
@@ -133,18 +134,34 @@ export default function PatientsPage() {
       phoneNumber: patientData.phone_number || patientData.phoneNumber || null,
       city: patientData.city || null,
       membershipNumber: patientData.membership_number || patientData.membershipNumber || null,
-      healthPlanId: patientData.id_health_plan || patientData.healthPlanId || null,
+      healthPlanId: patientData.healthPlanId || patientData.id_health_plan || null,
     };
 
     if (editingPatient) {
+      // Actualizar paciente
       updatePatientByDentist(
         editingPatient.id_user || editingPatient.id,
         payload,
         token,
         (updated) => {
+          const patientId = updated.id_user || updated.id;
           setPatients((prev) =>
             prev.map((p) =>
-              p.id_user === updated.id_user || p.id === updated.id ? updated : p
+              (p.id_user || p.id) === patientId
+                ? {
+                    ...p,
+                    first_name: updated.firstName || updated.first_name,
+                    last_name: updated.lastName || updated.last_name,
+                    email: updated.email,
+                    dni: updated.dni,
+                    phone_number: updated.phoneNumber || updated.phone_number,
+                    address: updated.address,
+                    city: updated.city,
+                    birth_date: updated.birthDate || updated.birth_date,
+                    membership_number: updated.membershipNumber || updated.membership_number,
+                    healthPlanId: updated.healthPlanId || updated.id_health_plan || null,
+                  }
+                : p
             )
           );
           successToast("Paciente actualizado exitosamente");
@@ -156,11 +173,27 @@ export default function PatientsPage() {
       return;
     }
 
+    // Crear paciente
     CreatePatientByDentist(
       payload,
       token,
       (response) => {
-        setPatients((prev) => [...prev, response]);
+        setPatients((prev) => [
+          ...prev,
+          {
+            id_user: response.id_user || response.id,
+            first_name: response.firstName || response.first_name || "",
+            last_name: response.lastName || response.last_name || "",
+            dni: response.dni || "",
+            email: response.email || "",
+            phone_number: response.phoneNumber || response.phone_number || "",
+            address: response.address || "",
+            city: response.city || "",
+            membership_number: response.membershipNumber || response.membership_number || "",
+            birth_date: response.birthDate || response.birth_date || "",
+            healthPlanId: response.healthPlanId || response.id_health_plan || null,
+          },
+        ]);
         successToast("Paciente creado exitosamente");
         setEditingPatient(null);
         setIsFormModalOpen(false);
@@ -168,16 +201,12 @@ export default function PatientsPage() {
       () => errorToast("Error al crear el paciente")
     );
   };
-  const fadeSlideDown = {
-    hidden: { opacity: 0, y: -20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-  };
 
-  const fadeSlideUp = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-  };
+  // Animaciones
+  const fadeSlideDown = { hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
+  const fadeSlideUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
 
+  // Abrir modal automáticamente si viene desde otra página
   const location = useLocation();
   useEffect(() => {
     if (location.state?.openNewPatientModal) {
@@ -199,11 +228,7 @@ export default function PatientsPage() {
       </motion.div>
 
       <motion.div variants={fadeSlideDown} initial="hidden" animate="visible" transition={{ delay: 0.1 }}>
-        <SearchBar
-          searchTerm={searchTerm}
-          onChange={setSearchTerm}
-          placeholder="Buscar por nombre, apellido o DNI..."
-        />
+        <SearchBar searchTerm={searchTerm} onChange={setSearchTerm} placeholder="Buscar por nombre, apellido o DNI..." />
       </motion.div>
 
       <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }}>

@@ -62,22 +62,20 @@ export default function PatientFormModal({
   // Cargar datos del paciente al abrir el modal
   useEffect(() => {
     if (patient) {
-      // Si estamos editando, cargamos los datos del paciente
       reset({
-        first_name: patient.firstName || "",
-        last_name: patient.lastName || "",
-        email: patient.email || "",
-        birth_date: patient.birthDate || "",
+        first_name: patient.first_name || patient.firstName || "",
+        last_name: patient.last_name || patient.lastName || "",
+        email: patient.email || patient.Email || "",
+        birth_date: patient.birth_date || patient.birthDate || "",
         dni: patient.dni || "",
         address: patient.address || "",
-        phone_number: patient.phoneNumber || "",
+        phone_number: patient.phone_number || patient.phoneNumber || "",
         city: patient.city || "",
-        membership_number: patient.membershipNumber || "",
+        membership_number: patient.membership_number || patient.membershipNumber || "",
         healthInsuranceId: patient.healthInsuranceId || "",
         healthPlanId: patient.healthPlanId || "",
       });
     } else {
-      // Si es un nuevo paciente, limpiamos todos los campos
       reset({
         first_name: "",
         last_name: "",
