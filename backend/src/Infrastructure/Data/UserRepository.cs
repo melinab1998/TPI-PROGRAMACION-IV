@@ -7,6 +7,9 @@ namespace Infrastructure.Data
     {
         public UserRepository(ApplicationDbContext applicationDbContext) : base(applicationDbContext) { }
 
-        // Acá podés agregar métodos específicos de User si aparecen más adelante
+        public User? GetByEmail(string email)
+        {
+            return _dbSet.FirstOrDefault(u => u.Email == email);
+        }
     }
 }

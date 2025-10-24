@@ -13,9 +13,10 @@ namespace Domain.Entities
 
         public HealthPlan() { }
 
-        public HealthPlan(string name)
+        public HealthPlan(string name, int healthInsuranceId)
         {
             Name = name;
+            HealthInsuranceId = healthInsuranceId;
         }
     }
 }

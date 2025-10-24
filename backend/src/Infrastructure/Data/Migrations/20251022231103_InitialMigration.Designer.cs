@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251015204333_InitialMigration")]
+    [Migration("20251022231103_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -39,11 +39,11 @@ namespace Infrastructure.Data.Migrations
                     b.Property<int>("DentistId")
                         .HasColumnType("int");
 
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time");
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time(0)");
 
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time");
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time(0)");
 
                     b.HasKey("Id");
 
@@ -66,7 +66,29 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HealthInsurance");
+                    b.ToTable("HealthInsurances");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "OSDE"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Swiss Medical"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Galeno"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Particular"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.HealthPlan", b =>
@@ -88,7 +110,51 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("HealthInsuranceId");
 
-                    b.ToTable("HealthPlan");
+                    b.ToTable("HealthPlans");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            HealthInsuranceId = 1,
+                            Name = "210"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            HealthInsuranceId = 1,
+                            Name = "310"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            HealthInsuranceId = 1,
+                            Name = "410"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            HealthInsuranceId = 2,
+                            Name = "SMG01"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            HealthInsuranceId = 2,
+                            Name = "SMG02"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            HealthInsuranceId = 3,
+                            Name = "220"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            HealthInsuranceId = 3,
+                            Name = "330"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>

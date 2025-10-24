@@ -5,5 +5,6 @@ namespace Domain.Interfaces
     public interface IPatientRepository : IRepository<Patient>
     {
         Patient? GetByDni(string dni);
+        Patient? GetByEmail(string email);
     }
 }

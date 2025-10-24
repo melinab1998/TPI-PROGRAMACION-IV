@@ -1,6 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { successToast } from "@/utils/notifications"
 
 export default function ConfirmDialog({
   isOpen,
@@ -19,7 +18,6 @@ export default function ConfirmDialog({
 
   const handleConfirm = () => {
     onConfirm();
-    successToast(`Dentista ${isActivating ? "activado" : "desactivado"} exitosamente`);
     onClose();
   };
 

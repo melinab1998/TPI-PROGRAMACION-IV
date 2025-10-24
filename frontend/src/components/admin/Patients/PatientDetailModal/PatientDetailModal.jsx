@@ -7,8 +7,8 @@ import { es } from "date-fns/locale"
 export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
   if (!patient) return null
 
-  const formattedBirthDate = patient.birth_date
-    ? format(parseISO(patient.birth_date), "dd/MM/yyyy")
+  const formattedBirthDate = patient.birthDate
+    ? format(parseISO(patient.birthDate), "dd/MM/yyyy")
     : "No especificada"
 
   return (
@@ -22,11 +22,13 @@ export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
               <span className="text-xl font-bold text-primary">
-                {patient.first_name[0]}{patient.last_name[0]}
+                {patient.first_name?.[0]}{patient.last_name?.[0]}
               </span>
             </div>
             <div>
-              <h2 className="text-2xl font-bold">{patient.first_name} {patient.last_name}</h2>
+              <h2 className="text-2xl font-bold">
+                {patient.first_name} {patient.last_name}
+              </h2>
               <p className="text-muted-foreground">DNI: {patient.dni}</p>
             </div>
           </div>
@@ -54,7 +56,7 @@ export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-muted-foreground">Teléfono:</span>
-                <p>{patient.phone_number || "No especificado"}</p>
+                <p>{patient.phoneNumber || "No especificado"}</p>
               </div>
               <div>
                 <span className="text-muted-foreground">Ciudad:</span>
@@ -75,16 +77,16 @@ export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
               <div>
                 <span className="text-muted-foreground">Plan:</span>
                 <p>
-                  {patient.health_plan
-                    ? `${patient.health_plan.health_insurance.name} - ${patient.health_plan.name}`
+                  {patient.healthPlan
+                    ? `${patient.healthPlan.healthInsurance.name} - ${patient.healthPlan.name}`
                     : "Particular"
                   }
                 </p>
               </div>
-              {patient.membership_number && (
+              {patient.membershipNumber && (
                 <div>
                   <span className="text-muted-foreground">N° de Afiliado:</span>
-                  <p>{patient.membership_number}</p>
+                  <p>{patient.membershipNumber}</p>
                 </div>
               )}
             </div>

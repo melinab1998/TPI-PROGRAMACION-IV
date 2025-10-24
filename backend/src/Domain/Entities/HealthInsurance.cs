@@ -4,7 +4,7 @@ namespace Domain.Entities
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<HealthPlan> Plans { get; set; } = new();
+        public ICollection<HealthPlan> Plans { get; set; } = new List<HealthPlan>();
         public HealthInsurance() { }
         public HealthInsurance(string name)
         {

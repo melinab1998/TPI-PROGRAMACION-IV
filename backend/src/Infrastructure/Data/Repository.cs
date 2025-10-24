@@ -15,10 +15,7 @@ public class Repository<T> : IRepository<T> where T : class
 
     public T GetById(int id) => _dbSet.Find(id)!;
 
-    public T? GetByEmail(string email) =>
-        _dbSet.FirstOrDefault(e => EF.Property<string>(e, "Email") == email);
-
-
+   
     public IEnumerable<T> List() => _dbSet.ToList();
 
     public T Add(T entity)

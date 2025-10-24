@@ -12,7 +12,7 @@ export default function DoctorCard({ doctor, navigate }) {
                     <AvatarImage src={`https://i.pravatar.cc/150?img=${doctor.id + 10}`} />
                     <AvatarFallback>👤</AvatarFallback>
                 </Avatar>
-                <CardTitle>{doctor.name}</CardTitle>
+                <CardTitle>{doctor.firstName} {doctor.lastName}</CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center">
                 <Button variant="outline" className="flex items-center justify-center gap-2" onClick={() => navigate(`/calendar/${doctor.id}`)}>

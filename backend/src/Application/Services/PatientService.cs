@@ -9,6 +9,7 @@ namespace Application.Services;
 public class PatientService : IPatientService
 {
     private readonly IPatientRepository _patientRepository;
+
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _hasher;
     private readonly IEmailService _emailService;
@@ -54,7 +55,8 @@ public class PatientService : IPatientService
     string? phoneNumber = null,
     string? city = null,
     string? membershipNumber = null,
-    DateOnly? birthDate = null
+    DateOnly? birthDate = null,
+    int? healthPlanId = null
 )
     {
         if (_userRepository.GetByEmail(email) != null)
@@ -69,7 +71,8 @@ public class PatientService : IPatientService
             PhoneNumber = phoneNumber,
             City = city,
             MembershipNumber = membershipNumber,
-            BirthDate = birthDate
+            BirthDate = birthDate,
+            HealthPlanId = healthPlanId
         };
 
         var tempPassword = GenerateTemporaryPassword();
@@ -128,7 +131,8 @@ public class PatientService : IPatientService
         string? phoneNumber,
         string? city,
         string? membershipNumber,
-        DateOnly? birthDate)
+        DateOnly? birthDate,
+        int? healthPlanId = null)
     {
         var patient = _patientRepository.GetById(id);
         if (patient == null)
@@ -145,6 +149,7 @@ public class PatientService : IPatientService
         if (!string.IsNullOrEmpty(city)) patient.City = city;
         if (!string.IsNullOrEmpty(membershipNumber)) patient.MembershipNumber = membershipNumber;
         if (birthDate.HasValue) patient.BirthDate = birthDate;
+         if (healthPlanId.HasValue) patient.HealthPlanId = healthPlanId.Value;
 
         _patientRepository.Update(patient);
 

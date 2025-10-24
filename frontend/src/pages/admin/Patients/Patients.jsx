@@ -1,619 +1,219 @@
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Search, Plus } from "lucide-react"
-import { motion } from "framer-motion"
-import PatientDetailModal from "@/components/admin/Patients/PatientDetailModal/PatientDetailModal"
-import PatientFormModal from "@/components/admin/Patients/PatientFormModal/PatientFormModal"
-import PatientsList from "@/components/admin/Patients/PatientsList/PatientsList"
-import PatientVisitsModal from "@/components/admin/Patients/PatientVisitsModal/PatientVisitsModal"
-import PatientOdontogramModal from "@/components/admin/Patients/PatientOdontogramModal/PatientOdontogramModal"
+import { useState, useContext, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import { Plus } from "lucide-react";
+import Header from "@/components/common/Header/Header";
+import SearchBar from "@/components/common/SearchBar/SearchBar";
+import PatientsList from "@/components/admin/Patients/PatientsList/PatientsList";
+import PatientDetailModal from "@/components/admin/Patients/PatientDetailModal/PatientDetailModal";
+import PatientFormModal from "@/components/admin/Patients/PatientFormModal/PatientFormModal";
+import PatientVisitsModal from "@/components/admin/Patients/PatientVisitsModal/PatientVisitsModal";
+import PatientOdontogramModal from "@/components/admin/Patients/PatientOdontogramModal/PatientOdontogramModal";
+import { AuthContext } from "@/services/auth/AuthContextProvider";
+import {
+  getAllPatients,
+  CreatePatientByDentist,
+  updatePatientByDentist,
+  getAllHealthInsurances,
+  getAllHealthPlans,
+} from "@/services/api.services.js";
+import { successToast, errorToast } from "@/utils/notifications.js";
 import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
-import SearchBar from "@/components/common/SearchBar/SearchBar"
-import Header from "@/components/common/Header/Header"
-
-const mockPatients = [
-  {
-    id_user: 1,
-    first_name: "María",
-    last_name: "López",
-    email: "maria@email.com",
-    birth_date: "1985-03-15",
-    dni: "41239736",
-    address: "Av. Siempre Viva 742",
-    phone_number: "1122334455",
-    city: "Buenos Aires",
-    membership_number: "MEM123456",
-    id_health_plan: 1,
-    health_plan: {
-      id_health_plan: 1,
-      name: "Plan Oro",
-      health_insurance: {
-        id_health_insurance: 1,
-        name: "OSDE"
-      }
-    }
-  },
-  {
-    id_user: 2,
-    first_name: "Juan",
-    last_name: "Pérez",
-    email: "juan@email.com",
-    birth_date: "1990-07-22",
-    dni: "38987654",
-    address: "Calle Falsa 123",
-    phone_number: "1166778899",
-    city: "Córdoba",
-    membership_number: "MEM789012",
-    id_health_plan: 3,
-    health_plan: {
-      id_health_plan: 3,
-      name: "Plan Básico",
-      health_insurance: {
-        id_health_insurance: 2,
-        name: "Swiss Medical"
-      }
-    }
-  },
-  {
-    id_user: 3,
-    first_name: "Ana",
-    last_name: "Gómez",
-    email: "ana@email.com",
-    birth_date: "1988-11-30",
-    dni: "35123456",
-    address: "Av. Libertador 1234",
-    phone_number: "1133445566",
-    city: "Mendoza",
-    membership_number: "MEM345678",
-    id_health_plan: 2,
-    health_plan: {
-      id_health_plan: 2,
-      name: "Plan Plata",
-      health_insurance: {
-        id_health_insurance: 1,
-        name: "OSDE"
-      }
-    }
-  },
-  {
-    id_user: 4,
-    first_name: "Carlos",
-    last_name: "Rodríguez",
-    email: "carlos@email.com",
-    birth_date: "1975-05-18",
-    dni: "28765432",
-    address: "Calle 45 #67-89",
-    phone_number: "1155667788",
-    city: "Rosario",
-    membership_number: "MEM901234",
-    id_health_plan: 4,
-    health_plan: {
-      id_health_plan: 4,
-      name: "Plan Premium",
-      health_insurance: {
-        id_health_insurance: 2,
-        name: "Swiss Medical"
-      }
-    }
-  },
-  {
-    id_user: 5,
-    first_name: "Laura",
-    last_name: "Martínez",
-    email: "laura@email.com",
-    birth_date: "1992-09-12",
-    dni: "40123456",
-    address: "Av. Corrientes 1234",
-    phone_number: "1144556677",
-    city: "Buenos Aires",
-    membership_number: "MEM567890",
-    id_health_plan: 1,
-    health_plan: {
-      id_health_plan: 1,
-      name: "Plan Oro",
-      health_insurance: {
-        id_health_insurance: 1,
-        name: "OSDE"
-      }
-    }
-  },
-  {
-    id_user: 6,
-    first_name: "Diego",
-    last_name: "Sánchez",
-    email: "diego@email.com",
-    birth_date: "1983-12-05",
-    dni: "36543210",
-    address: "Calle San Martín 567",
-    phone_number: "1177889900",
-    city: "La Plata",
-    membership_number: "MEM112233",
-    id_health_plan: 3,
-    health_plan: {
-      id_health_plan: 3,
-      name: "Plan Básico",
-      health_insurance: {
-        id_health_insurance: 2,
-        name: "Swiss Medical"
-      }
-    }
-  },
-  {
-    id_user: 7,
-    first_name: "Sofía",
-    last_name: "Fernández",
-    email: "sofia@email.com",
-    birth_date: "1995-02-28",
-    dni: "42123456",
-    address: "Av. Belgrano 789",
-    phone_number: "1199887766",
-    city: "Mar del Plata",
-    membership_number: "MEM445566",
-    id_health_plan: 2,
-    health_plan: {
-      id_health_plan: 2,
-      name: "Plan Plata",
-      health_insurance: {
-        id_health_insurance: 1,
-        name: "OSDE"
-      }
-    }
-  },
-  {
-    id_user: 8,
-    first_name: "Miguel",
-    last_name: "Torres",
-    email: "miguel@email.com",
-    birth_date: "1978-08-15",
-    dni: "30123456",
-    address: "Calle Rivadavia 234",
-    phone_number: "1122334455",
-    city: "Salta",
-    membership_number: "MEM778899",
-    id_health_plan: 5,
-    health_plan: {
-      id_health_plan: 5,
-      name: "Particular",
-      health_insurance: {
-        id_health_insurance: 3,
-        name: "Particular"
-      }
-    }
-  },
-  {
-    id_user: 9,
-    first_name: "Elena",
-    last_name: "Ramírez",
-    email: "elena@email.com",
-    birth_date: "1987-04-22",
-    dni: "37123456",
-    address: "Av. Santa Fe 1234",
-    phone_number: "1166554433",
-    city: "Buenos Aires",
-    membership_number: "MEM001122",
-    id_health_plan: 4,
-    health_plan: {
-      id_health_plan: 4,
-      name: "Plan Premium",
-      health_insurance: {
-        id_health_insurance: 2,
-        name: "Swiss Medical"
-      }
-    }
-  },
-  {
-    id_user: 10,
-    first_name: "Roberto",
-    last_name: "Díaz",
-    email: "roberto@email.com",
-    birth_date: "1965-11-08",
-    dni: "25123456",
-    address: "Calle Alvear 567",
-    phone_number: "1144778855",
-    city: "Tucumán",
-    membership_number: "MEM334455",
-    id_health_plan: 1,
-    health_plan: {
-      id_health_plan: 1,
-      name: "Plan Oro",
-      health_insurance: {
-        id_health_insurance: 1,
-        name: "OSDE"
-      }
-    }
-  },
-  {
-    id_user: 11,
-    first_name: "Carolina",
-    last_name: "Mendoza",
-    email: "carolina@email.com",
-    birth_date: "1991-06-14",
-    dni: "39123456",
-    address: "Av. Cabildo 2345",
-    phone_number: "1133669977",
-    city: "Buenos Aires",
-    membership_number: "MEM667788",
-    id_health_plan: 3,
-    health_plan: {
-      id_health_plan: 3,
-      name: "Plan Básico",
-      health_insurance: {
-        id_health_insurance: 2,
-        name: "Swiss Medical"
-      }
-    }
-  },
-  {
-    id_user: 12,
-    first_name: "Fernando",
-    last_name: "Castro",
-    email: "fernando@email.com",
-    birth_date: "1980-03-25",
-    dni: "32123456",
-    address: "Calle Uruguay 123",
-    phone_number: "1155996633",
-    city: "Córdoba",
-    membership_number: "MEM990011",
-    id_health_plan: 2,
-    health_plan: {
-      id_health_plan: 2,
-      name: "Plan Plata",
-      health_insurance: {
-        id_health_insurance: 1,
-        name: "OSDE"
-      }
-    }
-  },
-  {
-    id_user: 13,
-    first_name: "Patricia",
-    last_name: "Romero",
-    email: "patricia@email.com",
-    birth_date: "1972-09-03",
-    dni: "27123456",
-    address: "Av. Pueyrredón 678",
-    phone_number: "1122446688",
-    city: "Mendoza",
-    membership_number: "MEM223344",
-    id_health_plan: 5,
-    health_plan: {
-      id_health_plan: 5,
-      name: "Particular",
-      health_insurance: {
-        id_health_insurance: 3,
-        name: "Particular"
-      }
-    }
-  },
-  {
-    id_user: 14,
-    first_name: "Gabriel",
-    last_name: "Herrera",
-    email: "gabriel@email.com",
-    birth_date: "1986-12-19",
-    dni: "36123456",
-    address: "Calle Chile 456",
-    phone_number: "1188776655",
-    city: "Rosario",
-    membership_number: "MEM556677",
-    id_health_plan: 4,
-    health_plan: {
-      id_health_plan: 4,
-      name: "Plan Premium",
-      health_insurance: {
-        id_health_insurance: 2,
-        name: "Swiss Medical"
-      }
-    }
-  },
-  {
-    id_user: 15,
-    first_name: "Lucía",
-    last_name: "Morales",
-    email: "lucia@email.com",
-    birth_date: "1993-07-07",
-    dni: "41123456",
-    address: "Av. Callao 1234",
-    phone_number: "1166998855",
-    city: "Buenos Aires",
-    membership_number: "MEM889900",
-    id_health_plan: 1,
-    health_plan: {
-      id_health_plan: 1,
-      name: "Plan Oro",
-      health_insurance: {
-        id_health_insurance: 1,
-        name: "OSDE"
-      }
-    }
-  },
-  {
-    id_user: 16,
-    first_name: "Javier",
-    last_name: "Ortega",
-    email: "javier@email.com",
-    birth_date: "1979-01-30",
-    dni: "31123456",
-    address: "Calle Paraguay 789",
-    phone_number: "1144887799",
-    city: "La Plata",
-    membership_number: "MEM112233",
-    id_health_plan: 3,
-    health_plan: {
-      id_health_plan: 3,
-      name: "Plan Básico",
-      health_insurance: {
-        id_health_insurance: 2,
-        name: "Swiss Medical"
-      }
-    }
-  },
-  {
-    id_user: 17,
-    first_name: "Daniela",
-    last_name: "Silva",
-    email: "daniela@email.com",
-    birth_date: "1984-05-12",
-    dni: "34123456",
-    address: "Av. Dorrego 234",
-    phone_number: "1133774466",
-    city: "Mar del Plata",
-    membership_number: "MEM445566",
-    id_health_plan: 2,
-    health_plan: {
-      id_health_plan: 2,
-      name: "Plan Plata",
-      health_insurance: {
-        id_health_insurance: 1,
-        name: "OSDE"
-      }
-    }
-  },
-  {
-    id_user: 18,
-    first_name: "Ricardo",
-    last_name: "Vargas",
-    email: "ricardo@email.com",
-    birth_date: "1968-10-23",
-    dni: "26123456",
-    address: "Calle Junín 567",
-    phone_number: "1155443322",
-    city: "Salta",
-    membership_number: "MEM778899",
-    id_health_plan: 5,
-    health_plan: {
-      id_health_plan: 5,
-      name: "Particular",
-      health_insurance: {
-        id_health_insurance: 3,
-        name: "Particular"
-      }
-    }
-  },
-  {
-    id_user: 19,
-    first_name: "Valeria",
-    last_name: "Ríos",
-    email: "valeria@email.com",
-    birth_date: "1994-03-08",
-    dni: "43123456",
-    address: "Av. Las Heras 1234",
-    phone_number: "1122778855",
-    city: "Buenos Aires",
-    membership_number: "MEM001122",
-    id_health_plan: 4,
-    health_plan: {
-      id_health_plan: 4,
-      name: "Plan Premium",
-      health_insurance: {
-        id_health_insurance: 2,
-        name: "Swiss Medical"
-      }
-    }
-  },
-  {
-    id_user: 20,
-    first_name: "Andrés",
-    last_name: "Molina",
-    email: "andres@email.com",
-    birth_date: "1981-08-17",
-    dni: "33123456",
-    address: "Calle Suipacha 456",
-    phone_number: "1166887744",
-    city: "Córdoba",
-    membership_number: "MEM334455",
-    id_health_plan: 1,
-    health_plan: {
-      id_health_plan: 1,
-      name: "Plan Oro",
-      health_insurance: {
-        id_health_insurance: 1,
-        name: "OSDE"
-      }
-    }
-  },
-  {
-    id_user: 21,
-    first_name: "Camila",
-    last_name: "Paz",
-    email: "camila@email.com",
-    birth_date: "1996-12-01",
-    dni: "44123456",
-    address: "Av. Libertad 789",
-    phone_number: "1144998877",
-    city: "Mendoza",
-    membership_number: "MEM667788",
-    id_health_plan: 3,
-    health_plan: {
-      id_health_plan: 3,
-      name: "Plan Básico",
-      health_insurance: {
-        id_health_insurance: 2,
-        name: "Swiss Medical"
-      }
-    }
-  },
-  {
-    id_user: 22,
-    first_name: "Héctor",
-    last_name: "Luna",
-    email: "hector@email.com",
-    birth_date: "1974-04-26",
-    dni: "28123456",
-    address: "Calle Maipú 123",
-    phone_number: "1133557799",
-    city: "Rosario",
-    membership_number: "MEM990011",
-    id_health_plan: 2,
-    health_plan: {
-      id_health_plan: 2,
-      name: "Plan Plata",
-      health_insurance: {
-        id_health_insurance: 1,
-        name: "OSDE"
-      }
-    }
-  },
-  {
-    id_user: 23,
-    first_name: "Natalia",
-    last_name: "Cruz",
-    email: "natalia@email.com",
-    birth_date: "1989-11-14",
-    dni: "38123456",
-    address: "Av. Corrientes 5678",
-    phone_number: "1122554466",
-    city: "Buenos Aires",
-    membership_number: "MEM223344",
-    id_health_plan: 5,
-    health_plan: {
-      id_health_plan: 5,
-      name: "Particular",
-      health_insurance: {
-        id_health_insurance: 3,
-        name: "Particular"
-      }
-    }
-  },
-  {
-    id_user: 24,
-    first_name: "Sergio",
-    last_name: "Flores",
-    email: "sergio@email.com",
-    birth_date: "1977-02-09",
-    dni: "29123456",
-    address: "Calle Lavalle 234",
-    phone_number: "1188665544",
-    city: "La Plata",
-    membership_number: "MEM556677",
-    id_health_plan: 4,
-    health_plan: {
-      id_health_plan: 4,
-      name: "Plan Premium",
-      health_insurance: {
-        id_health_insurance: 2,
-        name: "Swiss Medical"
-      }
-    }
-  },
-  {
-    id_user: 25,
-    first_name: "Verónica",
-    last_name: "Miranda",
-    email: "veronica@email.com",
-    birth_date: "1990-06-20",
-    dni: "40123457",
-    address: "Av. Santa Fe 2345",
-    phone_number: "1166443322",
-    city: "Mar del Plata",
-    membership_number: "MEM889900",
-    id_health_plan: 1,
-    health_plan: {
-      id_health_plan: 1,
-      name: "Plan Oro",
-      health_insurance: {
-        id_health_insurance: 1,
-        name: "OSDE"
-      }
-    }
-  }
-]
-
-const mockHealthPlans = [
-  { id_health_plan: 1, name: "Plan Oro", id_health_insurance: 1, health_insurance: { name: "OSDE" } },
-  { id_health_plan: 2, name: "Plan Plata", id_health_insurance: 1, health_insurance: { name: "OSDE" } },
-  { id_health_plan: 3, name: "Plan Básico", id_health_insurance: 2, health_insurance: { name: "Swiss Medical" } },
-  { id_health_plan: 4, name: "Plan Premium", id_health_insurance: 2, health_insurance: { name: "Swiss Medical" } },
-  { id_health_plan: 5, name: "Particular", id_health_insurance: 3, health_insurance: { name: "Particular" } }
-]
 
 export default function PatientsPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [isFormModalOpen, setIsFormModalOpen] = useState(false)
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
-  const [selectedPatient, setSelectedPatient] = useState(null)
-  const [editingPatient, setEditingPatient] = useState(null)
-  const [isVisitsModalOpen, setIsVisitsModalOpen] = useState(false)
-  const [selectedPatientForVisits, setSelectedPatientForVisits] = useState(null)
-  const [isOdontogramModalOpen, setIsOdontogramModalOpen] = useState(false)
-  const [selectedPatientForOdontogram, setSelectedPatientForOdontogram] = useState(null)
+  const { token } = useContext(AuthContext);
+  const [patients, setPatients] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [editingPatient, setEditingPatient] = useState(null);
+  const [isVisitsModalOpen, setIsVisitsModalOpen] = useState(false);
+  const [selectedPatientForVisits, setSelectedPatientForVisits] = useState(null);
+  const [isOdontogramModalOpen, setIsOdontogramModalOpen] = useState(false);
+  const [selectedPatientForOdontogram, setSelectedPatientForOdontogram] = useState(null);
+  const [healthInsurances, setHealthInsurances] = useState([]);
+  const [healthPlans, setHealthPlans] = useState([]);
 
-  const handleViewVisits = (patient) => {
-    setSelectedPatientForVisits(patient)
-    setIsVisitsModalOpen(true)
-  }
+  // Cargar pacientes
+  useEffect(() => {
+    if (!token) return;
 
-  const handleViewOdontogram = (patient) => {
-    setSelectedPatientForOdontogram(patient)
-    setIsOdontogramModalOpen(true)
-  }
+    getAllPatients(
+      token,
+      (response) => {
+        setPatients(
+          (response || []).map((p) => ({
+            id_user: p.id_user || p.id,
+            first_name: p.firstName || p.first_name || "",
+            last_name: p.lastName || p.last_name || "",
+            dni: p.dni || "",
+            email: p.email || p.Email || "",
+            phone_number: p.phoneNumber || p.phone_number || "",
+            address: p.address || "",
+            city: p.city || "",
+            membership_number: p.membershipNumber || p.membership_number || "",
+            birth_date: p.birthDate || p.birth_date || "",
+            healthPlanId: p.healthPlanId || p.id_health_plan || null,
+          }))
+        );
+      },
+      (err) => {
+        const message = err?.message?.toLowerCase();
+        if (message?.includes("paciente") || message?.includes("no se encontraron")) return;
+        errorToast("Error del servidor al cargar los pacientes");
+      }
+    );
+  }, [token]);
 
-  const filteredPatients = mockPatients.filter(patient =>
-    patient.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.dni.includes(searchTerm)
-  )
+  // Cargar obras sociales y planes
+  useEffect(() => {
+    if (!token) return;
 
+    getAllHealthInsurances(
+      token,
+      (data) => setHealthInsurances(data || []),
+      () => errorToast("Error al cargar obras sociales")
+    );
+
+    getAllHealthPlans(
+      token,
+      (data) => setHealthPlans(data || []),
+      () => errorToast("Error al cargar planes de salud")
+    );
+  }, [token]);
+
+  // Filtrar pacientes
+  const filteredPatients = (patients || []).filter((p) => {
+    const firstName = p.first_name || "";
+    const lastName = p.last_name || "";
+    const dni = p.dni || "";
+
+    return (
+      firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      dni.includes(searchTerm)
+    );
+  });
+
+  // Acciones
   const handleCreatePatient = () => {
-    setEditingPatient(null)
-    setIsFormModalOpen(true)
-  }
+    setEditingPatient(null);
+    setIsFormModalOpen(true);
+  };
 
   const handleEditPatient = (patient) => {
-    setEditingPatient(patient)
-    setIsFormModalOpen(true)
-  }
+    setEditingPatient(patient);
+    setIsFormModalOpen(true);
+  };
 
   const handleViewPatient = (patient) => {
-    setSelectedPatient(patient)
-    setIsDetailModalOpen(true)
-  }
+    setSelectedPatient(patient);
+    setIsDetailModalOpen(true);
+  };
 
+  const handleViewVisits = (patient) => {
+    setSelectedPatientForVisits(patient);
+    setIsVisitsModalOpen(true);
+  };
+
+  const handleViewOdontogram = (patient) => {
+    setSelectedPatientForOdontogram(patient);
+    setIsOdontogramModalOpen(true);
+  };
+
+  // Guardar paciente (crear o actualizar)
   const handleSavePatient = (patientData) => {
-    if (patientData.id_user) {
-      console.log("Actualizando paciente:", patientData)
-    } else {
-      console.log("Creando nuevo paciente:", patientData)
+    const payload = {
+      firstName: patientData.first_name || patientData.firstName,
+      lastName: patientData.last_name || patientData.lastName,
+      email: patientData.email,
+      dni: patientData.dni,
+      birthDate: patientData.birth_date || patientData.birthDate || null,
+      address: patientData.address || null,
+      phoneNumber: patientData.phone_number || patientData.phoneNumber || null,
+      city: patientData.city || null,
+      membershipNumber: patientData.membership_number || patientData.membershipNumber || null,
+      healthPlanId: patientData.healthPlanId || patientData.id_health_plan || null,
+    };
+
+    if (editingPatient) {
+      // Actualizar paciente
+      updatePatientByDentist(
+        editingPatient.id_user || editingPatient.id,
+        payload,
+        token,
+        (updated) => {
+          const patientId = updated.id_user || updated.id;
+          setPatients((prev) =>
+            prev.map((p) =>
+              (p.id_user || p.id) === patientId
+                ? {
+                    ...p,
+                    first_name: updated.firstName || updated.first_name,
+                    last_name: updated.lastName || updated.last_name,
+                    email: updated.email,
+                    dni: updated.dni,
+                    phone_number: updated.phoneNumber || updated.phone_number,
+                    address: updated.address,
+                    city: updated.city,
+                    birth_date: updated.birthDate || updated.birth_date,
+                    membership_number: updated.membershipNumber || updated.membership_number,
+                    healthPlanId: updated.healthPlanId || updated.id_health_plan || null,
+                  }
+                : p
+            )
+          );
+          successToast("Paciente actualizado exitosamente");
+          setEditingPatient(null);
+          setIsFormModalOpen(false);
+        },
+        () => errorToast("Error al actualizar el paciente")
+      );
+      return;
     }
-    setIsFormModalOpen(false)
-    setEditingPatient(null)
-  }
 
-  const fadeSlideDown = { hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }
-  const fadeSlideUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }
+    // Crear paciente
+    CreatePatientByDentist(
+      payload,
+      token,
+      (response) => {
+        setPatients((prev) => [
+          ...prev,
+          {
+            id_user: response.id_user || response.id,
+            first_name: response.firstName || response.first_name || "",
+            last_name: response.lastName || response.last_name || "",
+            dni: response.dni || "",
+            email: response.email || "",
+            phone_number: response.phoneNumber || response.phone_number || "",
+            address: response.address || "",
+            city: response.city || "",
+            membership_number: response.membershipNumber || response.membership_number || "",
+            birth_date: response.birthDate || response.birth_date || "",
+            healthPlanId: response.healthPlanId || response.id_health_plan || null,
+          },
+        ]);
+        successToast("Paciente creado exitosamente");
+        setEditingPatient(null);
+        setIsFormModalOpen(false);
+      },
+      () => errorToast("Error al crear el paciente")
+    );
+  };
 
+  // Animaciones
+  const fadeSlideDown = { hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
+  const fadeSlideUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
+
+  // Abrir modal automáticamente si viene desde otra página
   const location = useLocation();
-
   useEffect(() => {
     if (location.state?.openNewPatientModal) {
       setIsFormModalOpen(true);
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
-
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
@@ -626,15 +226,11 @@ export default function PatientsPage() {
           actionIcon={Plus}
         />
       </motion.div>
+
       <motion.div variants={fadeSlideDown} initial="hidden" animate="visible" transition={{ delay: 0.1 }}>
-        <div className="relative w-full">
-          <SearchBar
-            searchTerm={searchTerm}
-            onChange={setSearchTerm}
-            placeholder="Buscar por nombre, apellido o DNI..."
-          />
-        </div>
+        <SearchBar searchTerm={searchTerm} onChange={setSearchTerm} placeholder="Buscar por nombre, apellido o DNI..." />
       </motion.div>
+
       <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }}>
         <Card>
           <CardHeader>
@@ -654,31 +250,46 @@ export default function PatientsPage() {
 
       <PatientFormModal
         open={isFormModalOpen}
-        onClose={() => { setIsFormModalOpen(false); setEditingPatient(null) }}
+        onClose={() => {
+          setIsFormModalOpen(false);
+          setEditingPatient(null);
+        }}
         onSave={handleSavePatient}
         patient={editingPatient}
-        healthPlans={mockHealthPlans}
+        healthInsurances={healthInsurances}
+        healthPlans={healthPlans}
       />
 
       <PatientDetailModal
         open={isDetailModalOpen}
-        onClose={() => { setIsDetailModalOpen(false); setSelectedPatient(null) }}
+        onClose={() => {
+          setIsDetailModalOpen(false);
+          setSelectedPatient(null);
+        }}
         patient={selectedPatient}
-        onEdit={() => { setIsDetailModalOpen(false); handleEditPatient(selectedPatient) }}
+        onEdit={() => {
+          setIsDetailModalOpen(false);
+          handleEditPatient(selectedPatient);
+        }}
       />
 
       <PatientVisitsModal
         open={isVisitsModalOpen}
-        onClose={() => { setIsVisitsModalOpen(false); setSelectedPatientForVisits(null) }}
+        onClose={() => {
+          setIsVisitsModalOpen(false);
+          setSelectedPatientForVisits(null);
+        }}
         patient={selectedPatientForVisits}
       />
 
       <PatientOdontogramModal
         open={isOdontogramModalOpen}
-        onClose={() => { setIsOdontogramModalOpen(false); setSelectedPatientForOdontogram(null) }}
+        onClose={() => {
+          setIsOdontogramModalOpen(false);
+          setSelectedPatientForOdontogram(null);
+        }}
         patient={selectedPatientForOdontogram}
       />
-
     </div>
-  )
+  );
 }

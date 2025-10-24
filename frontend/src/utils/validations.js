@@ -90,14 +90,14 @@ export const updatePasswordValidations = {
 };
 
 export const dentistValidations = {
-    first_name: {
+    firstName: {
         required: "El nombre es obligatorio",
         minLength: {
             value: 2,
             message: "Debe tener al menos 2 caracteres"
         }
     },
-    last_name: {
+    lastName: {
         required: "El apellido es obligatorio",
         minLength: {
             value: 2,
@@ -111,7 +111,7 @@ export const dentistValidations = {
             message: "El formato del email no es válido"
         }
     },
-    license_number: {
+    licenseNumber: {
         required: "La matrícula es obligatoria",
         pattern: {
             value: /^MN-\d{3,6}$/,
@@ -149,12 +149,12 @@ export const appointmentValidations = {
 };
 
 export const patientValidations = {
-    first_name: {
+    firstName: {
         required: "El nombre es requerido",
         minLength: { value: 2, message: "Debe tener al menos 2 caracteres" },
         maxLength: { value: 50, message: "No puede exceder 50 caracteres" }
     },
-    last_name: {
+    lastName: {
         required: "El apellido es requerido",
         minLength: { value: 2, message: "Debe tener al menos 2 caracteres" },
         maxLength: { value: 50, message: "No puede exceder 50 caracteres" }
@@ -175,7 +175,7 @@ export const patientValidations = {
             validLength: (value) => (value.length >= 7 && value.length <= 9) || "El DNI debe tener entre 7 y 9 dígitos"
         }
     },
-    birth_date: {
+    birthDate: {
         validate: {
             notFuture: (date) => {
                 if (!date) return true
@@ -193,7 +193,7 @@ export const patientValidations = {
             }
         }
     },
-    phone_number: {
+    phoneNumber: {
         validate: {
             validCharacters: (phone) => {
                 if (!phone) return true
@@ -213,7 +213,7 @@ export const patientValidations = {
     address: {
         maxLength: { value: 100, message: "No puede exceder 100 caracteres" }
     },
-    membership_number: {
+    membershipNumber: {
         maxLength: { value: 20, message: "No puede exceder 20 caracteres" }
     }
 };

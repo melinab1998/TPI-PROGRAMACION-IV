@@ -9,6 +9,7 @@ namespace Application.Services;
 public class DentistService : IDentistService
 {
     private readonly IDentistRepository _dentistRepository;
+
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _hasher;
     private readonly IEmailService _emailService;
