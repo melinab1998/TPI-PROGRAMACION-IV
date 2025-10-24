@@ -39,13 +39,20 @@ export default function SuperAdminPage() {
             email: d.email || d.Email,
             license_number: d.licenseNumber || d.license_number,
             status: d.status || "active",
-            created_at: d.createdAt || d.created_at || new Date().toISOString().split("T")[0],
+            created_at:
+              d.createdAt ||
+              d.created_at ||
+              new Date().toISOString().split("T")[0],
           }))
         );
       },
       (err) => {
-        console.error(err);
-        errorToast("Error al cargar los dentistas");
+        const message = err?.message?.toLowerCase();
+        if (message?.includes("dentista") || message?.includes("no se encontraron")) {
+          return;
+        } else {
+          errorToast("Error del servidor al cargar los dentistas.");
+        }
       }
     );
   }, [token]);
@@ -87,12 +94,12 @@ export default function SuperAdminPage() {
             prev.map((d) =>
               d.id_user === (updated.id_user || updated.id)
                 ? {
-                    ...d,
-                    first_name: updated.firstName || updated.first_name,
-                    last_name: updated.lastName || updated.last_name,
-                    email: updated.email,
-                    license_number: updated.licenseNumber || updated.license_number,
-                  }
+                  ...d,
+                  first_name: updated.firstName || updated.first_name,
+                  last_name: updated.lastName || updated.last_name,
+                  email: updated.email,
+                  license_number: updated.licenseNumber || updated.license_number,
+                }
                 : d
             )
           );
