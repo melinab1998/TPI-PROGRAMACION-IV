@@ -36,7 +36,7 @@ export default function BookingModal({ time, date, doctor, formData, setFormData
                     ✕
                 </button>
 
-                <h3 className="text-xl font-bold mb-5">Reservar turno - {doctor.firstName}</h3>
+                <h3 className="text-xl font-bold mb-5">Reservar turno - {doctor.name}</h3>
 
                 <div className="mb-6 p-3 bg-muted rounded-lg">
                     <p className="font-medium">

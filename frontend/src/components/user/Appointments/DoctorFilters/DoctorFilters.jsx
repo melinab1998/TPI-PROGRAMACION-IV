@@ -5,17 +5,15 @@ import { Button } from "@/components/ui/button";
 export default function DoctorFilters({
   selectedProfessional,
   selectedSocial,
-  selectedPlan,
   setSelectedProfessional,
   setSelectedSocial,
-  setSelectedPlan,
   handleSearch,
   dentists,
   healthInsurances,
-  plans,
 }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      
       {/* Profesional */}
       <Select value={selectedProfessional || ""} onValueChange={setSelectedProfessional}>
         <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
@@ -23,9 +21,9 @@ export default function DoctorFilters({
         </SelectTrigger>
         <SelectContent>
           {dentists.map((doc) => (
-             <SelectItem key={doc.id} value={`${doc.firstName} ${doc.lastName}`}>
-             {doc.firstName} {doc.lastName}
-           </SelectItem>
+            <SelectItem key={doc.id} value={`${doc.firstName} ${doc.lastName}`}>
+              {doc.firstName} {doc.lastName}
+            </SelectItem>
           ))}
         </SelectContent>
       </Select>
@@ -44,26 +42,13 @@ export default function DoctorFilters({
         </SelectContent>
       </Select>
 
-      {/* Plan */}
-      <Select value={selectedPlan || ""} onValueChange={setSelectedPlan} disabled={!selectedSocial}>
-        <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
-          <SelectValue placeholder="Seleccionar Plan..." />
-        </SelectTrigger>
-        <SelectContent>
-          {plans.map((plan) => (
-            <SelectItem key={plan.id} value={plan.id.toString()}>
-              {plan.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
       {/* Botón */}
       <div className="flex items-end">
         <Button className="w-full" onClick={handleSearch}>
           Buscar
         </Button>
       </div>
+
     </div>
   );
 }
