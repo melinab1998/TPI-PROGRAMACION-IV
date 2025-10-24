@@ -1,5 +1,7 @@
 import { useState, useEffect, createContext } from "react";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
+
 
 export const AuthContext = createContext();
 
@@ -8,12 +10,13 @@ export function AuthContextProvider({ children }) {
     const [isLoggedIn, setIsLoggedIn] = useState(!!token);
     const [role, setRole] = useState(null);
     const [userId, setUserId] = useState(null);
+    const navigate = useNavigate();
 
     const decodeToken = (tokenToDecode) => {
         try {
             const decoded = jwtDecode(tokenToDecode);
             setRole(decoded.role || null);
-            setUserId(decoded.sub || null); // el id lo guardamos en "sub" según tu backend
+            setUserId(decoded.sub || null);
             setIsLoggedIn(true);
             return decoded;
         } catch (error) {
@@ -44,6 +47,7 @@ export function AuthContextProvider({ children }) {
         setRole(null);
         setUserId(null);
         setIsLoggedIn(false);
+        navigate("/"); 
     };
 
     return (
