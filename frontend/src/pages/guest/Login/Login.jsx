@@ -44,7 +44,7 @@ export default function Login() {
                 navigate("/", { replace: true });
                 break;
               case "Dentist":
-                navigate("/schedule", { replace: true });
+                navigate("/", { replace: true });
                 break;
               case "SuperAdmin":
                 navigate("/", { replace: true });

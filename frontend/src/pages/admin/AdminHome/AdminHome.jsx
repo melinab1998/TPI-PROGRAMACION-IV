@@ -1,12 +1,15 @@
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CalendarDays, Users, Clock, User, FileText, ArrowRight, X, Rocket, Plus } from "lucide-react"
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
 import Header from "@/components/common/Header/Header"
+import { getAllDentists } from "@/services/api.services"
 
 export default function AdminHome() {
-  const dentistName = "Dra. García"
+  const [dentistName, setDentistName] = useState("Dentista")
+  const token = localStorage.getItem("token")
 
   const nextAppointment = {
     paciente: "Juan Pérez",
@@ -38,6 +41,22 @@ export default function AdminHome() {
     visible: i => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.3 } })
   }
 
+  // --- Traer solo el firstName desde la API ---
+  useEffect(() => {
+    if (!token) return
+
+    getAllDentists(
+      token,
+      (data) => {
+        if (data && data.length > 0) {
+          const firstDentist = data[0]
+          setDentistName(firstDentist.firstName) // <-- solo el nombre
+        }
+      },
+      (err) => console.error("Error cargando dentista:", err)
+    )
+  }, [token])
+
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-10 max-w-6xl mx-auto">
       <motion.div
@@ -46,7 +65,7 @@ export default function AdminHome() {
         animate="visible"
       >
         <Header
-          title={`¡Bienvenida, ${dentistName}!`}
+          title={`¡Bienvenido/a, ${dentistName}!`} 
           subtitle={new Date().toLocaleDateString("es-ES", {
             weekday: "long",
             day: "numeric",
