@@ -55,7 +55,7 @@ export default function ResetPassword() {
             data.password,
             () => {
                 console.log(`Cuenta activada (${userType})`);
-                successToast("Cuenta activada correctamente 🎉");
+                successToast("Tu cuenta ha sido activada. Ya podés iniciar sesión.");
                 reset();
                 setTimeout(() => navigate("/login"), 1200);
             },
