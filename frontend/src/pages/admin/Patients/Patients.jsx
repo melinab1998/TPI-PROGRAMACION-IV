@@ -35,30 +35,34 @@ export default function PatientsPage() {
   const [healthInsurances, setHealthInsurances] = useState([]);
   const [healthPlans, setHealthPlans] = useState([]);
 
-  // Cargar pacientes y normalizar campos
   useEffect(() => {
     if (!token) return;
 
     getAllPatients(
       token,
-      (data) => {
-        const normalized = (data || []).map((p) => ({
-          ...p,
-          first_name: p.first_name || "",
-          last_name: p.last_name || "",
-          dni: p.dni || "",
-          email: p.email || "",
-          phone_number: p.phone_number || "",
-          address: p.address || "",
-          city: p.city || "",
-          membership_number: p.membership_number || "",
-          birth_date: p.birth_date || "",
-        }));
-        setPatients(normalized);
+      (response) => {
+        setPatients(
+          (response || []).map((p) => ({
+            id_user: p.id_user || p.id,
+            first_name: p.firstName || p.first_name || "",
+            last_name: p.lastName || p.last_name || "",
+            dni: p.dni || "",
+            email: p.email || p.Email || "",
+            phone_number: p.phoneNumber || p.phone_number || "",
+            address: p.address || "",
+            city: p.city || "",
+            membership_number: p.membershipNumber || p.membership_number || "",
+            birth_date: p.birthDate || p.birth_date || "",
+          }))
+        );
       },
       (err) => {
-        console.error(err);
-        errorToast("Error al cargar los pacientes");
+        const message = err?.message?.toLowerCase();
+        if (message?.includes("paciente") || message?.includes("no se encontraron")) {
+          return;
+        } else {
+          errorToast("Error del servidor al cargar los pacientes");
+        }
       }
     );
   }, [token]);
@@ -131,7 +135,7 @@ export default function PatientsPage() {
       membershipNumber: patientData.membership_number || patientData.membershipNumber || null,
       healthPlanId: patientData.id_health_plan || patientData.healthPlanId || null,
     };
-  
+
     if (editingPatient) {
       updatePatientByDentist(
         editingPatient.id_user || editingPatient.id,
@@ -151,7 +155,7 @@ export default function PatientsPage() {
       );
       return;
     }
-  
+
     CreatePatientByDentist(
       payload,
       token,
