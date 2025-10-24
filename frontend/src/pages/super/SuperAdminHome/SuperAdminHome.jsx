@@ -5,6 +5,7 @@ import StatsCards from "@/components/super/SuperAdmin/StatsCards/StatsCards";
 import DentistList from "@/components/super/SuperAdmin/DentistList/DentistList";
 import DentistForm from "@/components/super/SuperAdmin/DentistForm/DentistForm";
 import ConfirmDialog from "@/components/super/SuperAdmin/ConfirmDialog/ConfirmDialog";
+import { toggleDentistStatus } from "@/services/api.services.js";
 import { Plus } from "lucide-react";
 import {
   createDentist,
@@ -25,6 +26,7 @@ export default function SuperAdminPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
+  // Obtener todos los dentistas
   useEffect(() => {
     if (!token) return;
 
@@ -38,11 +40,9 @@ export default function SuperAdminPage() {
             last_name: d.lastName || d.last_name,
             email: d.email || d.Email,
             license_number: d.licenseNumber || d.license_number,
-            status: d.status || "active",
+            status: d.isActive ? "active" : "inactive", // CORRECCIÓN
             created_at:
-              d.createdAt ||
-              d.created_at ||
-              new Date().toISOString().split("T")[0],
+              d.createdAt || d.created_at || new Date().toISOString().split("T")[0],
           }))
         );
       },
@@ -57,6 +57,7 @@ export default function SuperAdminPage() {
     );
   }, [token]);
 
+  // Filtrado por búsqueda
   const filteredDentists = dentists.filter(
     (dentist) =>
       `${dentist.first_name} ${dentist.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -85,6 +86,7 @@ export default function SuperAdminPage() {
     };
 
     if (editingDentist) {
+      // Actualizar dentista existente
       updateDentistBySuperAdmin(
         editingDentist.id_user || editingDentist.id,
         payload,
@@ -94,12 +96,12 @@ export default function SuperAdminPage() {
             prev.map((d) =>
               d.id_user === (updated.id_user || updated.id)
                 ? {
-                  ...d,
-                  first_name: updated.firstName || updated.first_name,
-                  last_name: updated.lastName || updated.last_name,
-                  email: updated.email,
-                  license_number: updated.licenseNumber || updated.license_number,
-                }
+                    ...d,
+                    first_name: updated.firstName || updated.first_name,
+                    last_name: updated.lastName || updated.last_name,
+                    email: updated.email,
+                    license_number: updated.licenseNumber || updated.license_number,
+                  }
                 : d
             )
           );
@@ -161,14 +163,33 @@ export default function SuperAdminPage() {
   const handleConfirmToggle = () => {
     if (!deleteConfirm) return;
 
-    setDentists((prev) =>
-      prev.map((dentist) =>
-        dentist.id_user === deleteConfirm.id_user
-          ? { ...dentist, status: dentist.status === "active" ? "inactive" : "active" }
-          : dentist
-      )
+    const newStatus = deleteConfirm.status === "active" ? false : true;
+
+    toggleDentistStatus(
+      deleteConfirm.id_user,
+      newStatus,
+      token,
+      (updatedDentist) => {
+        setDentists((prev) =>
+          prev.map((d) =>
+            d.id_user === (updatedDentist.id_user || updatedDentist.id)
+              ? {
+                  ...d,
+                  status: updatedDentist.isActive ? "active" : "inactive", // CORRECCIÓN
+                }
+              : d
+          )
+        );
+        successToast(
+          `Dentista ${updatedDentist.isActive ? "activado" : "desactivado"} exitosamente`
+        );
+        setDeleteConfirm(null);
+      },
+      (err) => {
+        errorToast("Error al actualizar el estado del dentista");
+        setDeleteConfirm(null);
+      }
     );
-    setDeleteConfirm(null);
   };
 
   const activeDentists = dentists.filter((d) => d.status === "active").length;
@@ -208,7 +229,7 @@ export default function SuperAdminPage() {
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
         onSubmit={handleSaveDentist}
-        dentist={editingDentist} // <-- PASAR DENTISTA A EDITAR
+        dentist={editingDentist}
       />
 
       <ConfirmDialog

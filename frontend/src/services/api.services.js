@@ -346,3 +346,27 @@ export const getAvailability = (token, dentistId, onSuccess, onError) => {
     .then(onSuccess)
     .catch(onError);
 };
+
+export const toggleDentistStatus = (id, isActive, token, onSuccess, onError) => {
+    if (!token) {
+        onError({ message: "Token no proporcionado" });
+        return;
+    }
+
+    if (!id) {
+        onError({ message: "ID de dentista no proporcionado" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/dentists/${id}/activate`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ isActive }),
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
