@@ -5,6 +5,7 @@ import Header from "@/components/user/PatientProfile/Header/Header";
 import PersonalInfoCard from "@/components/user/PatientProfile/PersonalInfoCard/PersonalInfoCard";
 import UpdateEmailDialog from "@/components/user/PatientProfile/UpdateEmailDialog/UpdateEmailDialog";
 import UpdatePasswordDialog from "@/components/user/PatientProfile/UpdatePasswordDialog/UpdatePasswordDialog";
+import AppointmentsCard from "@/components/user/PatientProfile/AppointmentsCard/AppointmentsCard";
 import { getPatientById } from "@/services/api.services";
 import { errorToast } from "@/utils/notifications";
 
@@ -12,7 +13,13 @@ export default function PatientProfile() {
   const { userId, token } = useContext(AuthContext);
   const [patientData, setPatientData] = useState(null);
 
-  // Traer datos del paciente desde el backend
+  // Datos de turnos hardcodeados (para mostrar mientras no haya back)
+  const [appointments] = useState([
+    { id: 1, date: "15/08/2023", time: "10:30", dentist: "Dra. Laura Martínez" },
+    { id: 2, date: "22/06/2023", time: "16:00", dentist: "Dr. Carlos Rodríguez" },
+    { id: 3, date: "10/04/2023", time: "11:15", dentist: "Dra. Laura Martínez" },
+  ]);
+
   useEffect(() => {
     if (!userId || !token) return;
 
@@ -59,6 +66,13 @@ export default function PatientProfile() {
           <UpdateEmailDialog currentEmail={patientData.email} onUpdate={handleEmailUpdate} />
           <UpdatePasswordDialog onUpdate={handlePasswordUpdate} />
         </motion.div>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+      >
+        <AppointmentsCard appointments={appointments} />
       </motion.div>
     </div>
   );
