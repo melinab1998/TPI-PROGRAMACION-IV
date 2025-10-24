@@ -11,9 +11,12 @@ import { errorToast } from "@/utils/notifications";
 
 export default function PatientProfile() {
   const { userId, token } = useContext(AuthContext);
-  const [patientData, setPatientData] = useState(null);
+  const [patientData, setPatientData] = useState({
+    name: "",
+    surname: "",
+    email: "",
+  });
 
-  // Datos de turnos hardcodeados (para mostrar mientras no haya back)
   const [appointments] = useState([
     { id: 1, date: "15/08/2023", time: "10:30", dentist: "Dra. Laura Martínez" },
     { id: 2, date: "22/06/2023", time: "16:00", dentist: "Dr. Carlos Rodríguez" },
@@ -49,8 +52,6 @@ export default function PatientProfile() {
 
   const itemVariants = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
 
-  if (!patientData) return <div>Cargando...</div>;
-
   return (
     <div className="container mx-auto p-6 max-w-4xl space-y-10 mt-10">
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
@@ -67,11 +68,8 @@ export default function PatientProfile() {
           <UpdatePasswordDialog onUpdate={handlePasswordUpdate} />
         </motion.div>
       </motion.div>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, delay: 0.3 }}
-      >
+
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, delay: 0.3 }}>
         <AppointmentsCard appointments={appointments} />
       </motion.div>
     </div>
