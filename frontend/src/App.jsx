@@ -23,9 +23,9 @@ import "react-toastify/dist/ReactToastify.css";
 import "./utils/notifications.css";
 import { AuthContext } from "@/services/auth/AuthContextProvider"; 
 import NotFound from "./components/common/NotFound/NotFound";
+import ProtectedRoute from "./components/common/ProtectedRoute/ProtectedRoute";
 
 function App() {
-
   const { role } = useContext(AuthContext);
 
   return (
@@ -38,20 +38,31 @@ function App() {
                 : role === "Patient" ? <UserHome />
                   : <GuestHome />
           } />
-
+          
           <Route path="login" element={<Login />} />
           <Route path="services" element={<ServicesPage />} />
           <Route path="register" element={<Register />} />
           <Route path="contact" element={<Contact />} />
-          <Route path="appointments" element={<Appointments />} />
-          <Route path="calendar/:id" element={<Calendar />} />
-          <Route path="profile" element={<PatientProfile />} />
-          <Route path="schedule" element={<AdminSchedule />} />
-          <Route path="patients" element={<PatientsPage />} />
-          <Route path="availability" element={<Availability />} />
-          <Route path="visit-record" element={<VisitsPage />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
+
+          <Route element={<ProtectedRoute allowedRoles={["Patient"]} />}>
+            <Route path="appointments" element={<Appointments />} />
+            <Route path="calendar/:id" element={<Calendar />} />
+            <Route path="profile" element={<PatientProfile />} />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={["Dentist"]} />}>
+            <Route path="schedule" element={<AdminSchedule />} />
+            <Route path="patients" element={<PatientsPage />} />
+            <Route path="availability" element={<Availability />} />
+            <Route path="visit-record" element={<VisitsPage />} />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={["SuperAdmin"]} />}>
+            <Route path="super-admin" element={<SuperAdminPage />} />
+          </Route>
+
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
