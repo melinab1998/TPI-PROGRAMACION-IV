@@ -25,10 +25,10 @@ public class PatientController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<PatientDto> GetPatientById([FromRoute] int id)
+    public ActionResult<PatientDtoFull> GetPatientById([FromRoute] int id)
     {
         var patient = _patientService.GetPatientById(id);
-        var dto = PatientDto.RegisterPatient(patient);
+        var dto = PatientDtoFull.Create(patient);
         return Ok(dto);
     }
 

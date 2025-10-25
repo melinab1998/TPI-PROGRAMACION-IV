@@ -12,7 +12,8 @@ public record PatientDtoFull(
     string? Address,
     string? PhoneNumber,
     string? City,
-    string? MembershipNumber
+    string? MembershipNumber,
+    int? HealthPlanId
 )
 {
     public static PatientDtoFull Create(Patient entity)
@@ -27,11 +28,11 @@ public record PatientDtoFull(
             entity.Address,
             entity.PhoneNumber,
             entity.City,
-            entity.MembershipNumber
+            entity.MembershipNumber,
+            entity.HealthPlanId
         );
 
         return dto;
     }
 }
 
-// Falta agregar HealthPlan cuando esté creada

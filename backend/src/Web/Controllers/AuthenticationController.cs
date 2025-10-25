@@ -34,7 +34,7 @@ public class AuthenticationController : ControllerBase
     }
 
     // -------------------- PACIENTES --------------------
-    
+
     // Registro directo (público)
     [HttpPost("register-patient")]
     public ActionResult<PatientDto> RegisterPatient([FromBody] RegisterPatientRequest patientDto)
@@ -69,7 +69,8 @@ public class AuthenticationController : ControllerBase
             request.PhoneNumber,
             request.City,
             request.MembershipNumber,
-            request.BirthDate
+            request.BirthDate,
+            request.HealthPlanId 
         );
 
         var dto = PatientDtoFull.Create(newPatient);
@@ -91,7 +92,7 @@ public class AuthenticationController : ControllerBase
     }
 
     // -------------------- DENTISTAS --------------------
-    
+
     // Creación por parte del superadmin
     [HttpPost("create-dentist")]
     [Authorize(Roles = "SuperAdmin")]

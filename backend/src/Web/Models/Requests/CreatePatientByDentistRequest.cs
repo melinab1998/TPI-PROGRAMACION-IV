@@ -32,6 +32,11 @@ namespace Web.Models.Requests
         [StringLength(20, ErrorMessage = "No puede exceder 20 caracteres")]
         string? MembershipNumber,
 
-        DateOnly? BirthDate
+        [DataType(DataType.Date, ErrorMessage = "Ingrese una fecha de nacimiento válida")]
+        DateOnly? BirthDate,
+
+        [Range(1, int.MaxValue, ErrorMessage = "Seleccione un plan de salud válido")]
+        int? HealthPlanId
     );
 }
+
