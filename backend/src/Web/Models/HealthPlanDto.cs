@@ -1,6 +1,6 @@
 namespace Web.Models
 {
-    public record HealthPlanResponseDto(
+    public record HealthPlanDto(
         int Id,
         string Name
     );

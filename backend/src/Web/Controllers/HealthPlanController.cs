@@ -17,18 +17,18 @@ namespace Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<HealthPlanResponseDto>> GetAll()
+        public ActionResult<IEnumerable<HealthPlanDto>> GetAll()
         {
             var plans = _healthPlanService.GetAll();
-            var result = plans.Select(p => new HealthPlanResponseDto(p.Id, p.Name));
+            var result = plans.Select(p => new HealthPlanDto(p.Id, p.Name));
             return Ok(result);
         }
 
         [HttpGet("byInsurance/{insuranceId}")]
-        public ActionResult<IEnumerable<HealthPlanResponseDto>> GetByInsuranceId(int insuranceId)
+        public ActionResult<IEnumerable<HealthPlanDto>> GetByInsuranceId(int insuranceId)
         {
             var plans = _healthPlanService.GetByInsuranceId(insuranceId);
-            var result = plans.Select(p => new HealthPlanResponseDto(p.Id, p.Name));
+            var result = plans.Select(p => new HealthPlanDto(p.Id, p.Name));
             return Ok(result);
         }
 

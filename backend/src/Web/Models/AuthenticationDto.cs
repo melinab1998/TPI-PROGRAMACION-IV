@@ -1,6 +1,6 @@
 namespace Web.Models.Responses
 {
-    public record AuthenticationResponseDto(
+    public record AuthenticationDto(
         string Token,
         string Role
     );

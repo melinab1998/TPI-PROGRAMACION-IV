@@ -27,10 +27,10 @@ public class AuthenticationController : ControllerBase
 
     // -------------------- LOGIN --------------------
     [HttpPost("login")]
-    public ActionResult<AuthenticationResponseDto> Login([FromBody] AuthenticationRequest dto)
+    public ActionResult<AuthenticationDto> Login([FromBody] AuthenticationRequest dto)
     {
         var user = _userService.Authenticate(dto.Email, dto.Password);
-        return Ok(new AuthenticationResponseDto(user.Token, user.GetType().Name));
+        return Ok(new AuthenticationDto(user.Token, user.GetType().Name));
     }
 
     // -------------------- PACIENTES --------------------

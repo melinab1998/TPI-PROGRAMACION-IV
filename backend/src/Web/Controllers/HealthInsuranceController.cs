@@ -18,26 +18,26 @@ namespace Web.Controllers
 
         
         [HttpGet]
-        public ActionResult<IEnumerable<HealthInsuranceResponseDto>> GetAll()
+        public ActionResult<IEnumerable<HealthInsuranceDto>> GetAll()
         {
             var insurances = _healthInsuranceService.GetAll();
-            var result = insurances.Select(h => new HealthInsuranceResponseDto(
+            var result = insurances.Select(h => new HealthInsuranceDto(
                 h.Id,
                 h.Name,
-                h.Plans.Select(p => new HealthPlanResponseDto(p.Id, p.Name))
+                h.Plans.Select(p => new HealthPlanDto(p.Id, p.Name))
             ));
             return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<HealthInsuranceResponseDto> GetByIdWithPlans(int id)
+        public ActionResult<HealthInsuranceDto> GetByIdWithPlans(int id)
         {
             var insurance = _healthInsuranceService.GetById(id);
             
-            var response = new HealthInsuranceResponseDto(
+            var response = new HealthInsuranceDto(
                 insurance.Id,
                 insurance.Name,
-                insurance.Plans.Select(p => new HealthPlanResponseDto(p.Id, p.Name))
+                insurance.Plans.Select(p => new HealthPlanDto(p.Id, p.Name))
             );
 
             return Ok(response);
