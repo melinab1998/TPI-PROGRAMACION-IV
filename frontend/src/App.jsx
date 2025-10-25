@@ -21,7 +21,8 @@ import ResetPassword from "./components/guest/ForgotPassword/ResetPasswordForm/R
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./utils/notifications.css";
-import { AuthContext } from "@/services/auth/AuthContextProvider"; // <- importamos contexto
+import { AuthContext } from "@/services/auth/AuthContextProvider"; 
+import NotFound from "./components/common/NotFound/NotFound";
 
 function App() {
 
@@ -51,6 +52,7 @@ function App() {
           <Route path="visit-record" element={<VisitsPage />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
       <ToastContainer
