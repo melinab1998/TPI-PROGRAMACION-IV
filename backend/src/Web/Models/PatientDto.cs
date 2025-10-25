@@ -2,7 +2,7 @@ using Domain.Entities;
 
 namespace Web.Models;
 
-public record PatientDtoFull(
+public record PatientDto(
     int Id,
     string FirstName,
     string LastName,
@@ -16,9 +16,9 @@ public record PatientDtoFull(
     int? HealthPlanId
 )
 {
-    public static PatientDtoFull Create(Patient entity)
+    public static PatientDto Create(Patient entity)
     {
-        var dto = new PatientDtoFull(
+        var dto = new PatientDto(
             entity.Id,
             entity.FirstName,
             entity.LastName,

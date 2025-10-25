@@ -17,18 +17,18 @@ public class PatientController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<PatientDtoFull>> GetAllPatients()
+    public ActionResult<IEnumerable<PatientDto>> GetAllPatients()
     {
         var patients = _patientService.GetAllPatients();
-        var dtoList = patients.Select(PatientDtoFull.Create).ToList();
+        var dtoList = patients.Select(PatientDto.Create).ToList();
         return Ok(dtoList);
     }
 
     [HttpGet("{id}")]
-    public ActionResult<PatientDtoFull> GetPatientById([FromRoute] int id)
+    public ActionResult<PatientDto> GetPatientById([FromRoute] int id)
     {
         var patient = _patientService.GetPatientById(id);
-        var dto = PatientDtoFull.Create(patient);
+        var dto = PatientDto.Create(patient);
         return Ok(dto);
     }
 
@@ -36,7 +36,7 @@ public class PatientController : ControllerBase
 
     [HttpPut("{id}")]
     [Authorize(Roles = "SuperAdmin, Dentist")]
-    public ActionResult<PatientDtoFull> UpdatePatient([FromRoute] int id, [FromBody] UpdatePatientRequest request)
+    public ActionResult<PatientDto> UpdatePatient([FromRoute] int id, [FromBody] UpdatePatientRequest request)
     {
         var updatedPatient = _patientService.UpdatePatient(
             id,
@@ -51,17 +51,17 @@ public class PatientController : ControllerBase
             request.HealthPlanId 
         );
 
-        var dto = PatientDtoFull.Create(updatedPatient);
+        var dto = PatientDto.Create(updatedPatient);
         return Ok(dto);
     }
 
     //Actualiza sólo email. Desde perfil de paciente.
 
     [HttpPut("{id}/email")]
-    public ActionResult<PatientDtoFull> UpdatePatientEmail([FromRoute] int id, [FromBody] UpdatePatientEmailRequest request)
+    public ActionResult<PatientDto> UpdatePatientEmail([FromRoute] int id, [FromBody] UpdatePatientEmailRequest request)
     {
         var updatedPatient = _patientService.UpdatePatientEmail(id, request.Email);
-        var dto = PatientDtoFull.Create(updatedPatient);
+        var dto = PatientDto.Create(updatedPatient);
         return Ok(dto);
     }
 

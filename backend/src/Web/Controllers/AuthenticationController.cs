@@ -51,14 +51,14 @@ public class AuthenticationController : ControllerBase
             nameof(PatientController.GetPatientById),
             "Patient",
             new { id = newPatient.Id },
-            PatientDto.RegisterPatient(newPatient)
+            PatientDto.Create(newPatient)
         );
     }
 
     // Creación por parte del dentista o admin
     [HttpPost("create-patient")]
     [Authorize(Roles = "Dentist, SuperAdmin")]
-    public ActionResult<PatientDtoFull> CreatePatientByDentist([FromBody] CreatePatientByDentistRequest request)
+    public ActionResult<PatientDto> CreatePatientByDentist([FromBody] CreatePatientByDentistRequest request)
     {
         var newPatient = _patientService.CreatePatientByDentist(
             request.FirstName,
@@ -70,10 +70,10 @@ public class AuthenticationController : ControllerBase
             request.City,
             request.MembershipNumber,
             request.BirthDate,
-            request.HealthPlanId 
+            request.HealthPlanId
         );
 
-        var dto = PatientDtoFull.Create(newPatient);
+        var dto = PatientDto.Create(newPatient);
 
         return CreatedAtAction(
             nameof(PatientController.GetPatientById),
