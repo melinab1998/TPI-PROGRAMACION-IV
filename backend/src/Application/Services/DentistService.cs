@@ -1,21 +1,26 @@
 using Application.Interfaces;
+using Application.Models;
+using Application.Models.Requests;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
-
 
 namespace Application.Services;
 
 public class DentistService : IDentistService
 {
     private readonly IDentistRepository _dentistRepository;
-
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _hasher;
     private readonly IEmailService _emailService;
     private readonly IJwtService _jwtService;
 
-    public DentistService(IDentistRepository dentistRepository, IUserRepository userRepository, IPasswordHasher hasher, IEmailService emailService, IJwtService jwtService)
+    public DentistService(
+        IDentistRepository dentistRepository,
+        IUserRepository userRepository,
+        IPasswordHasher hasher,
+        IEmailService emailService,
+        IJwtService jwtService)
     {
         _dentistRepository = dentistRepository;
         _userRepository = userRepository;
@@ -24,107 +29,103 @@ public class DentistService : IDentistService
         _jwtService = jwtService;
     }
 
-    public Dentist CreateDentist(string FirstName, string LastName, string Email, string LicenseNumber)
+    public DentistDto CreateDentist(CreateDentistRequest request)
     {
-        if (_userRepository.GetByEmail(Email) != null)
-            throw new AppValidationException($"El email {Email} ya está registrado");
+        if (_userRepository.GetByEmail(request.Email) != null)
+            throw new AppValidationException("EMAIL_ALREADY_EXISTS");
 
-        if (_dentistRepository.LicenseExists(LicenseNumber))
-            throw new AppValidationException($"La matrícula {LicenseNumber} ya está registrada");
+        if (_dentistRepository.LicenseExists(request.LicenseNumber))
+            throw new AppValidationException("LICENSE_ALREADY_EXISTS");
 
-        var dentist = new Dentist(FirstName, LastName, Email, LicenseNumber);
+        var dentist = new Dentist(request.FirstName, request.LastName, request.Email, request.LicenseNumber);
 
         var tempPassword = GenerateTemporaryPassword();
         dentist.Activate(_hasher.HashPassword(tempPassword));
 
         _dentistRepository.Add(dentist);
 
-
         var activationToken = _jwtService.GenerateActivationTokenForDentist(dentist.Id);
-
         _emailService.SendActivationEmailAsync(dentist.Email, activationToken);
 
-        return dentist;
+        return DentistDto.Create(dentist);
     }
 
-    public void ActivateDentist(string Token, string Password)
+    public void ActivateDentist(string token, string password)
     {
-        Console.WriteLine("🔹 Validando token...");
-        var principal = _jwtService.ValidateToken(Token);
+        var principal = _jwtService.ValidateToken(token);
         var dentistIdClaim = principal.FindFirst("dentistId");
-        Console.WriteLine($"Claim dentistId: {dentistIdClaim?.Value}");
 
         if (dentistIdClaim == null)
-            throw new AppValidationException("Token inválido o dentistId no encontrado.");
+            throw new AppValidationException("INVALID_TOKEN");
 
         int dentistId = int.Parse(dentistIdClaim.Value);
-
-        Console.WriteLine($"🔹 Buscando dentista con Id: {dentistId}");
         var dentist = _dentistRepository.GetById(dentistId);
-        if (dentist == null) throw new AppValidationException("Dentista no encontrado");
+        if (dentist == null)
+            throw new AppValidationException("DENTIST_NOT_FOUND");
 
-        Console.WriteLine($"🔹 Activando dentista: {dentist.Email}");
-        dentist.Activate(_hasher.HashPassword(Password));
+        dentist.Activate(_hasher.HashPassword(password));
         _dentistRepository.Update(dentist);
-        Console.WriteLine("✅ Dentista activado correctamente");
     }
-
 
     private string GenerateTemporaryPassword()
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         var random = new Random();
-        return "Tmp-" + new string(Enumerable.Repeat(chars, 10).Select(s => s[random.Next(s.Length)]).ToArray());
+        return "Tmp-" + new string(Enumerable.Repeat(chars, 10)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 
-
-    public Dentist GetDentistById(int id)
+    public DentistDto GetDentistById(int id)
     {
-        var dentist = _dentistRepository.GetById(id);
-        if (dentist == null) throw new AppValidationException("Dentista no encontrado");
-        return dentist;
+        var dentist = _dentistRepository.GetById(id)
+            ?? throw new AppValidationException("DENTIST_NOT_FOUND");
+
+        return DentistDto.Create(dentist);
     }
 
-    public IEnumerable<Dentist> GetAllDentists()
+    public IEnumerable<DentistDto> GetAllDentists()
     {
         var dentists = _dentistRepository.List();
         if (dentists == null || !dentists.Any())
-            throw new AppValidationException("No se encontraron dentistas registrados.");
-        return dentists;
+            throw new AppValidationException("NO_DENTISTS_FOUND");
+
+        return dentists.Select(DentistDto.Create);
     }
 
-    public Dentist UpdateDentist(int id, string? firstName, string? lastName, string? email, string? licenseNumber)
+    public DentistDto UpdateDentist(int id, UpdateDentistRequest request)
     {
-        var dentist = _dentistRepository.GetById(id);
-        if (dentist == null)
-            throw new AppValidationException("Dentista no encontrado");
+        var dentist = _dentistRepository.GetById(id)
+            ?? throw new AppValidationException("DENTIST_NOT_FOUND");
 
-        if (!string.IsNullOrEmpty(email) && _userRepository.GetByEmail(email) != null && email != dentist.Email)
-            throw new AppValidationException($"El email {email} ya está registrado");
+        if (!string.IsNullOrEmpty(request.Email) && 
+            _userRepository.GetByEmail(request.Email) != null &&
+            request.Email != dentist.Email)
+            throw new AppValidationException("EMAIL_ALREADY_EXISTS");
 
-        if (!string.IsNullOrEmpty(licenseNumber) && _dentistRepository.LicenseExists(licenseNumber) && licenseNumber != dentist.LicenseNumber)
-            throw new AppValidationException($"La matrícula {licenseNumber} ya está registrada");
+        if (!string.IsNullOrEmpty(request.LicenseNumber) && 
+            _dentistRepository.LicenseExists(request.LicenseNumber) &&
+            request.LicenseNumber != dentist.LicenseNumber)
+            throw new AppValidationException("LICENSE_ALREADY_EXISTS");
 
-        if (!string.IsNullOrEmpty(firstName)) dentist.FirstName = firstName;
-        if (!string.IsNullOrEmpty(lastName)) dentist.LastName = lastName;
-        if (!string.IsNullOrEmpty(email)) dentist.Email = email;
-        if (!string.IsNullOrEmpty(licenseNumber)) dentist.LicenseNumber = licenseNumber;
+        if (!string.IsNullOrEmpty(request.FirstName)) dentist.FirstName = request.FirstName;
+        if (!string.IsNullOrEmpty(request.LastName)) dentist.LastName = request.LastName;
+        if (!string.IsNullOrEmpty(request.Email)) dentist.Email = request.Email;
+        if (!string.IsNullOrEmpty(request.LicenseNumber)) dentist.LicenseNumber = request.LicenseNumber;
 
         _dentistRepository.Update(dentist);
-
-        return dentist;
+        return DentistDto.Create(dentist);
     }
 
-    public Dentist SetActiveStatusByAdmin(int id, bool isActive)
+    public DentistDto SetActiveStatusByAdmin(int id, bool isActive)
     {
-        var dentist = _dentistRepository.GetById(id);
-        if (dentist == null)
-            throw new AppValidationException("Dentista no encontrado");
+        var dentist = _dentistRepository.GetById(id)
+            ?? throw new AppValidationException("DENTIST_NOT_FOUND");
 
-        dentist.IsActive = isActive; 
+        dentist.IsActive = isActive;
         _dentistRepository.Update(dentist);
 
-        return dentist;
+        return DentistDto.Create(dentist);
     }
 }
+
 

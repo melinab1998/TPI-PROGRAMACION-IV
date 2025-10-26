@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Application.Interfaces;
-using Web.Models;
-using Web.Models.Requests;
-using Domain.Entities;
+using Application.Models;
+using Application.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
+
+namespace Web.Controllers;
 
 [Route("api/patients")]
 [ApiController]
@@ -17,61 +18,53 @@ public class PatientController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<PatientDtoFull>> GetAllPatients()
+    public ActionResult<IEnumerable<PatientDto>> GetAllPatients()
     {
-        var patients = _patientService.GetAllPatients();
-        var dtoList = patients.Select(PatientDtoFull.Create).ToList();
-        return Ok(dtoList);
+        return Ok(_patientService.GetAllPatients());
     }
 
     [HttpGet("{id}")]
     public ActionResult<PatientDto> GetPatientById([FromRoute] int id)
     {
-        var patient = _patientService.GetPatientById(id);
-        var dto = PatientDto.RegisterPatient(patient);
-        return Ok(dto);
+        return Ok(_patientService.GetPatientById(id));
     }
 
-    //Puede actualizar paciente completo. Desde dentista.
+    [HttpPost("register")]
+    public ActionResult<PatientDto> RegisterPatient([FromBody] RegisterPatientRequest request)
+    {
+        var created = _patientService.RegisterPatient(request);
+        return CreatedAtAction(nameof(GetPatientById), new { id = created.Id }, created);
+    }
+
+    [HttpPost("create-by-dentist")]
+    [Authorize(Roles = "Dentist,SuperAdmin")]
+    public ActionResult<PatientDto> CreatePatientByDentist([FromBody] CreatePatientByDentistRequest request)
+    {
+        var created = _patientService.CreatePatientByDentist(request);
+        return CreatedAtAction(nameof(GetPatientById), new { id = created.Id }, created);
+    }
 
     [HttpPut("{id}")]
     [Authorize(Roles = "SuperAdmin, Dentist")]
-    public ActionResult<PatientDtoFull> UpdatePatient([FromRoute] int id, [FromBody] UpdatePatientRequest request)
+    public ActionResult<PatientDto> UpdatePatient([FromRoute] int id, [FromBody] UpdatePatientRequest request)
     {
-        var updatedPatient = _patientService.UpdatePatient(
-            id,
-            request.FirstName,
-            request.LastName,
-            request.Email,
-            request.Address,
-            request.PhoneNumber,
-            request.City,
-            request.MembershipNumber,
-            request.BirthDate,
-            request.HealthPlanId 
-        );
-
-        var dto = PatientDtoFull.Create(updatedPatient);
-        return Ok(dto);
+        var updated = _patientService.UpdatePatient(id, request);
+        return Ok(updated);
     }
-
-    //Actualiza sólo email. Desde perfil de paciente.
 
     [HttpPut("{id}/email")]
-    public ActionResult<PatientDtoFull> UpdatePatientEmail([FromRoute] int id, [FromBody] UpdatePatientEmailRequest request)
+    [Authorize(Roles = "Patient")]
+    public ActionResult<PatientDto> UpdatePatientEmail([FromRoute] int id, [FromBody] UpdatePatientEmailRequest request)
     {
-        var updatedPatient = _patientService.UpdatePatientEmail(id, request.Email);
-        var dto = PatientDtoFull.Create(updatedPatient);
-        return Ok(dto);
+        var updated = _patientService.UpdatePatientEmail(id, request);
+        return Ok(updated);
     }
-
-    //Actualiza sólo contraseña. Desde perfil de paciente.
 
     [HttpPut("{id}/password")]
+    [Authorize(Roles = "Patient")]
     public IActionResult UpdatePatientPassword([FromRoute] int id, [FromBody] UpdatePatientPasswordRequest request)
     {
-        _patientService.UpdatePatientPassword(id, request.CurrentPassword, request.NewPassword);
-        return NoContent(); 
+        _patientService.UpdatePatientPassword(id, request);
+        return NoContent();
     }
-
 }

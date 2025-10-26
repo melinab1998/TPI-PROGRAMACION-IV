@@ -1,7 +1,7 @@
 using Domain.Entities;
 using Domain.Enums;
 
-namespace Web.Models
+namespace Application.Models
 {
     public record AvailabilityDto(int Id, DayOfWeek DayOfWeek, string StartTime, string EndTime)
     {

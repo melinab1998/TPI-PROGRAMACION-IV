@@ -2,7 +2,6 @@ import { useState, useEffect, createContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
-
 export const AuthContext = createContext();
 
 export function AuthContextProvider({ children }) {
@@ -10,6 +9,7 @@ export function AuthContextProvider({ children }) {
     const [isLoggedIn, setIsLoggedIn] = useState(!!token);
     const [role, setRole] = useState(null);
     const [userId, setUserId] = useState(null);
+    const [loading, setLoading] = useState(true); 
     const navigate = useNavigate();
 
     const decodeToken = (tokenToDecode) => {
@@ -27,18 +27,21 @@ export function AuthContextProvider({ children }) {
     };
 
     useEffect(() => {
-        if (token) decodeToken(token);
-        else {
+        if (token) {
+            decodeToken(token);
+        } else {
             setIsLoggedIn(false);
             setRole(null);
             setUserId(null);
         }
+        setLoading(false); 
     }, [token]);
 
     const handleLogin = (newToken) => {
         localStorage.setItem("token", newToken);
         setToken(newToken);
         decodeToken(newToken);
+        setLoading(false); 
     };
 
     const handleLogout = () => {
@@ -47,6 +50,7 @@ export function AuthContextProvider({ children }) {
         setRole(null);
         setUserId(null);
         setIsLoggedIn(false);
+        setLoading(false); 
         navigate("/"); 
     };
 
@@ -57,6 +61,7 @@ export function AuthContextProvider({ children }) {
                 isLoggedIn,
                 role,
                 userId,
+                loading, 
                 login: handleLogin,
                 logout: handleLogout,
             }}

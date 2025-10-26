@@ -44,24 +44,25 @@ export default function PatientsPage() {
       (response) => {
         setPatients(
           (response || []).map((p) => ({
-            id_user: p.id_user || p.id,
-            first_name: p.firstName || p.first_name || "",
-            last_name: p.lastName || p.last_name || "",
+            id: p.id,
+            firstName: p.firstName || p.first_name || "",
+            lastName: p.lastName || p.last_name || "",
             dni: p.dni || "",
-            email: p.email || p.Email || "",
-            phone_number: p.phoneNumber || p.phone_number || "",
+            email: p.email || "",
+            phoneNumber: p.phoneNumber || p.phone_number || "",
             address: p.address || "",
             city: p.city || "",
-            membership_number: p.membershipNumber || p.membership_number || "",
-            birth_date: p.birthDate || p.birth_date || "",
+            membershipNumber: p.membershipNumber || p.membership_number || "",
+            birthDate: p.birthDate || p.birth_date || "",
             healthPlanId: p.healthPlanId || p.id_health_plan || null,
+            healthPlanName: p.healthPlanName || "",
+            healthInsuranceId: p.healthInsuranceId || p.id_health_insurance || null,
+            healthInsuranceName: p.healthInsuranceName || "",
           }))
         );
       },
       (err) => {
-        const message = err?.message?.toLowerCase();
-        if (message?.includes("paciente") || message?.includes("no se encontraron")) return;
-        errorToast("Error del servidor al cargar los pacientes");
+        errorToast(err?.message || "Error del servidor al cargar los pacientes");
       }
     );
   }, [token]);
@@ -73,20 +74,20 @@ export default function PatientsPage() {
     getAllHealthInsurances(
       token,
       (data) => setHealthInsurances(data || []),
-      () => errorToast("Error al cargar obras sociales")
+      (err) => errorToast(err?.message || "Error al cargar obras sociales")
     );
 
     getAllHealthPlans(
       token,
       (data) => setHealthPlans(data || []),
-      () => errorToast("Error al cargar planes de salud")
+      (err) => errorToast(err?.message || "Error al cargar planes de salud")
     );
   }, [token]);
 
   // Filtrar pacientes
   const filteredPatients = (patients || []).filter((p) => {
-    const firstName = p.first_name || "";
-    const lastName = p.last_name || "";
+    const firstName = p.firstName || "";
+    const lastName = p.lastName || "";
     const dni = p.dni || "";
 
     return (
@@ -122,54 +123,60 @@ export default function PatientsPage() {
     setIsOdontogramModalOpen(true);
   };
 
-  // Guardar paciente (crear o actualizar)
   const handleSavePatient = (patientData) => {
     const payload = {
-      firstName: patientData.first_name || patientData.firstName,
-      lastName: patientData.last_name || patientData.lastName,
+      firstName: patientData.firstName,
+      lastName: patientData.lastName,
       email: patientData.email,
       dni: patientData.dni,
-      birthDate: patientData.birth_date || patientData.birthDate || null,
+      birthDate: patientData.birthDate || null,
       address: patientData.address || null,
-      phoneNumber: patientData.phone_number || patientData.phoneNumber || null,
+      phoneNumber: patientData.phoneNumber || null,
       city: patientData.city || null,
-      membershipNumber: patientData.membership_number || patientData.membershipNumber || null,
-      healthPlanId: patientData.healthPlanId || patientData.id_health_plan || null,
+      membershipNumber: patientData.membershipNumber || null,
+      healthInsuranceId: patientData.healthInsuranceId ? parseInt(patientData.healthInsuranceId) : null,
+      healthPlanId: patientData.healthPlanId ? parseInt(patientData.healthPlanId) : null,
     };
+
+    console.log("Payload a enviar:", payload); // Para debug
 
     if (editingPatient) {
       // Actualizar paciente
       updatePatientByDentist(
-        editingPatient.id_user || editingPatient.id,
+        editingPatient.id,
         payload,
         token,
         (updated) => {
-          const patientId = updated.id_user || updated.id;
+          console.log("Paciente actualizado:", updated); // Para debug
           setPatients((prev) =>
             prev.map((p) =>
-              (p.id_user || p.id) === patientId
+              p.id === updated.id
                 ? {
-                    ...p,
-                    first_name: updated.firstName || updated.first_name,
-                    last_name: updated.lastName || updated.last_name,
-                    email: updated.email,
-                    dni: updated.dni,
-                    phone_number: updated.phoneNumber || updated.phone_number,
-                    address: updated.address,
-                    city: updated.city,
-                    birth_date: updated.birthDate || updated.birth_date,
-                    membership_number: updated.membershipNumber || updated.membership_number,
-                    healthPlanId: updated.healthPlanId || updated.id_health_plan || null,
-                  }
+                  ...p,
+                  id: updated.id,
+                  firstName: updated.firstName,
+                  lastName: updated.lastName,
+                  email: updated.email,
+                  dni: updated.dni,
+                  phoneNumber: updated.phoneNumber,
+                  address: updated.address,
+                  city: updated.city,
+                  birthDate: updated.birthDate,
+                  membershipNumber: updated.membershipNumber,
+                  healthPlanId: updated.healthPlanId,
+                  healthPlanName: updated.healthPlanName,
+                  healthInsuranceId: updated.healthInsuranceId,
+                  healthInsuranceName: updated.healthInsuranceName,
+                }
                 : p
             )
           );
-          successToast("Paciente actualizado exitosamente");
-          setEditingPatient(null);
-          setIsFormModalOpen(false);
         },
-        () => errorToast("Error al actualizar el paciente")
+        (err) => {
+          errorToast(err?.message || "Error al actualizar el paciente");
+        }
       );
+
       return;
     }
 
@@ -178,27 +185,33 @@ export default function PatientsPage() {
       payload,
       token,
       (response) => {
+        console.log("Paciente creado:", response); // Para debug
         setPatients((prev) => [
           ...prev,
           {
-            id_user: response.id_user || response.id,
-            first_name: response.firstName || response.first_name || "",
-            last_name: response.lastName || response.last_name || "",
-            dni: response.dni || "",
-            email: response.email || "",
-            phone_number: response.phoneNumber || response.phone_number || "",
-            address: response.address || "",
-            city: response.city || "",
-            membership_number: response.membershipNumber || response.membership_number || "",
-            birth_date: response.birthDate || response.birth_date || "",
-            healthPlanId: response.healthPlanId || response.id_health_plan || null,
+            id: response.id,
+            firstName: response.firstName,
+            lastName: response.lastName,
+            dni: response.dni,
+            email: response.email,
+            phoneNumber: response.phoneNumber,
+            address: response.address,
+            city: response.city,
+            membershipNumber: response.membershipNumber,
+            birthDate: response.birthDate,
+            healthPlanId: response.healthPlanId,
+            healthPlanName: response.healthPlanName,
+            healthInsuranceId: response.healthInsuranceId,
+            healthInsuranceName: response.healthInsuranceName,
           },
         ]);
         successToast("Paciente creado exitosamente");
         setEditingPatient(null);
         setIsFormModalOpen(false);
       },
-      () => errorToast("Error al crear el paciente")
+      (err) => {
+        errorToast(err?.message || "Error al crear el paciente");
+      }
     );
   };
 

@@ -1,9 +1,10 @@
-using Domain.Entities;
+using Application.Models;
 
-namespace Application.Interfaces;
-
-public interface IHealthPlanService
+namespace Application.Interfaces
 {
-    IEnumerable<HealthPlan> GetAll();
-    IEnumerable<HealthPlan> GetByInsuranceId(int healthInsuranceId);
+    public interface IHealthPlanService
+    {
+        IEnumerable<HealthPlanDto> GetAll();
+        IEnumerable<HealthPlanDto> GetByInsuranceId(int healthInsuranceId);
+    }
 }

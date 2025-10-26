@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Web.Models.Requests;
+namespace Application.Models.Requests;
 
 public record AuthenticationRequest(
     [Required] string Email,

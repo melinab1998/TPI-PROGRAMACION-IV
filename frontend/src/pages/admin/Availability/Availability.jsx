@@ -103,7 +103,9 @@ export default function Availability() {
         }));
         setAvailabilities(formatted);
       },
-      (err) => console.error("Error al cargar horarios:", err)
+      (err) => {
+        errorToast(err?.message || "Error al cargar horarios");
+      }
     );
   };
 
@@ -194,7 +196,7 @@ export default function Availability() {
         successToast("Horarios guardados exitosamente");
         loadAvailabilities();
       },
-      (err) => errorToast(err.message || "Error al guardar los horarios")
+      (err) => errorToast(err?.message || "Error al guardar los horarios")
     );
   };
 

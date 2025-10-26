@@ -22,16 +22,17 @@ export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
               <span className="text-xl font-bold text-primary">
-                {patient.first_name?.[0]}{patient.last_name?.[0]}
+                {patient.firstName?.[0]}{patient.lastName?.[0]}
               </span>
             </div>
             <div>
               <h2 className="text-2xl font-bold">
-                {patient.first_name} {patient.last_name}
+                {patient.firstName} {patient.lastName}
               </h2>
               <p className="text-muted-foreground">DNI: {patient.dni}</p>
             </div>
           </div>
+          
           <div className="space-y-4">
             <h3 className="font-semibold flex items-center gap-2">
               <User className="w-4 h-4" />
@@ -48,6 +49,7 @@ export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
               </div>
             </div>
           </div>
+          
           <div className="space-y-4">
             <h3 className="font-semibold flex items-center gap-2">
               <Phone className="w-4 h-4" />
@@ -68,6 +70,7 @@ export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
               </div>
             </div>
           </div>
+          
           <div className="space-y-4">
             <h3 className="font-semibold flex items-center gap-2">
               <FileText className="w-4 h-4" />
@@ -75,13 +78,12 @@ export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
             </h3>
             <div className="text-sm space-y-2">
               <div>
+                <span className="text-muted-foreground">Obra Social:</span>
+                <p>{patient.healthInsuranceName || "Particular"}</p>
+              </div>
+              <div>
                 <span className="text-muted-foreground">Plan:</span>
-                <p>
-                  {patient.healthPlan
-                    ? `${patient.healthPlan.healthInsurance.name} - ${patient.healthPlan.name}`
-                    : "Particular"
-                  }
-                </p>
+                <p>{patient.healthPlanName || "No especificado"}</p>
               </div>
               {patient.membershipNumber && (
                 <div>

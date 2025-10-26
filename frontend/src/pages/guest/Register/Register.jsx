@@ -13,7 +13,7 @@ import { registerPatient } from "@/services/api.services.js";
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
     const password = watch("password");
@@ -37,17 +37,10 @@ export default function Register() {
             (response) => {
                 successToast("¡Registro exitoso! Ahora puedes iniciar sesión.");
                 reset();
-                setTimeout(() => navigate("/login"), 1500); 
+                setTimeout(() => navigate("/login"), 1500);
             },
             (err) => {
-                const message = err?.message?.toLowerCase();
-                if (message?.includes("email")) {
-                    errorToast("Email ya registrado");
-                } else if (message?.includes("dni")) {
-                    errorToast("DNI ya registrado");
-                } else {
-                    errorToast("Error del servidor");
-                }
+                errorToast(err.message || "Error del servidor");
             }
         );
     };

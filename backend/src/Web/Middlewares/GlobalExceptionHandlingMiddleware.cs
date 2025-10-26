@@ -27,17 +27,10 @@ public class GlobalExceptionHandlingMiddleware : IMiddleware
 
             int statusCode = (int)HttpStatusCode.BadRequest;
 
-            ProblemDetails problem = new()
-            {
-                Status = statusCode,
-                Type = "https://turnapi/errors/appvalidation",
-                Title = "Validation error",
-                Detail = ex.Message
-            };
+            var response = new { message = ex.Message }; 
+            string json = JsonSerializer.Serialize(response);
 
-            string json = JsonSerializer.Serialize(problem);
-
-            context.Response.StatusCode = statusCode; 
+            context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json";
 
             await context.Response.WriteAsync(json);

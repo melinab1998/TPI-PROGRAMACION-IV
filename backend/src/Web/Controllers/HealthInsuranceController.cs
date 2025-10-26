@@ -1,7 +1,6 @@
 using Application.Interfaces;
+using Application.Models;
 using Microsoft.AspNetCore.Mvc;
-using Web.Models.Requests;
-using Web.Models;
 
 namespace Web.Controllers
 {
@@ -16,31 +15,19 @@ namespace Web.Controllers
             _healthInsuranceService = healthInsuranceService;
         }
 
-        
         [HttpGet]
-        public ActionResult<IEnumerable<HealthInsuranceResponseDto>> GetAll()
+        public ActionResult<IEnumerable<HealthInsuranceDto>> GetAll()
         {
-            var insurances = _healthInsuranceService.GetAll();
-            var result = insurances.Select(h => new HealthInsuranceResponseDto(
-                h.Id,
-                h.Name,
-                h.Plans.Select(p => new HealthPlanResponseDto(p.Id, p.Name))
-            ));
+            var result = _healthInsuranceService.GetAll();
             return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<HealthInsuranceResponseDto> GetByIdWithPlans(int id)
+        public ActionResult<HealthInsuranceDto> GetByIdWithPlans(int id)
         {
-            var insurance = _healthInsuranceService.GetById(id);
-            
-            var response = new HealthInsuranceResponseDto(
-                insurance.Id,
-                insurance.Name,
-                insurance.Plans.Select(p => new HealthPlanResponseDto(p.Id, p.Name))
-            );
-
-            return Ok(response);
+            var result = _healthInsuranceService.GetById(id);
+            return Ok(result);
         }
     }
 }
+

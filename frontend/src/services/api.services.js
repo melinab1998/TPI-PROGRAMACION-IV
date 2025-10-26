@@ -1,16 +1,36 @@
 const baseUrl = import.meta.env.VITE_BASE_SERVER_URL;
 
+const errorMessages = {
+    EMAIL_ALREADY_EXISTS: "El email ya está registrado",
+    DNI_ALREADY_EXISTS: "El DNI ya está registrado",
+    LICENSE_ALREADY_EXISTS: "La matrícula ya está registrada",
+    PATIENT_NOT_FOUND: "Paciente no encontrado",
+    DENTIST_NOT_FOUND: "Dentista no encontrado",
+    USER_NOT_FOUND: "Usuario no encontrado",
+    HEALTH_INSURANCE_NOT_FOUND: "Obra social no encontrada",
+    HEALTH_PLAN_NOT_FOUND: "Plan de salud no encontrado",
+    AVAILABILITY_NOT_FOUND: "No se encontraron horarios disponibles para este dentista",
+    NO_SLOTS_PROVIDED: "Debe proporcionar al menos un horario",
+    PATIENTS_NOT_FOUND: "No se encontraron pacientes registrados",
+    DENTISTS_NOT_FOUND: "No se encontraron dentistas registrados",
+    EMAIL_AND_PASSWORD_REQUIRED: "Email y contraseña son obligatorios",
+    INVALID_EMAIL_OR_PASSWORD: "Email y/o contraseña incorrectos",
+    DENTIST_NOT_ACTIVATED: "El dentista aún no está activado",
+    INVALID_TOKEN: "Token inválido o paciente/dentista no encontrado",
+    CURRENT_PASSWORD_INCORRECT: "La contraseña actual es incorrecta",
+};
+
 const handleResponse = async (res) => {
-    
     let data = null;
-    
+
     try {
-        data = await res.json(); 
-    } catch {
-    }
+        data = await res.json();
+    } catch {}
 
     if (!res.ok) {
-        const message = data?.detail || data?.title || data?.message || `Error ${res.status}`;
+        const code = data?.message || data?.detail || `HTTP_${res.status}`;
+        const message = errorMessages[code] || code || `Error ${res.status}`;
+
         throw { 
             message,
             status: res.status,
@@ -20,8 +40,6 @@ const handleResponse = async (res) => {
 
     return data;
 };
-
-/* LOGIN */
 
 export const loginUser = (email, password, onSuccess, onError) => {
     if (!email || !password) {
@@ -186,16 +204,16 @@ export const getAllPatients = (token, onSuccess, onError) => {
 
 export const getPatientById = (id, token, onSuccess, onError) => {
     fetch(`${baseUrl}/api/patients/${id}`, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
     })
-      .then(handleResponse)
-      .then(onSuccess)
-      .catch(onError);
-  };
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
 
 export const updatePatientByDentist = (id, payload, token, onSuccess, onError) => {
     if (!token) {
@@ -223,53 +241,53 @@ export const updatePatientByDentist = (id, payload, token, onSuccess, onError) =
 
 export const UpdatePatientEmail = (id, token, data, onSuccess, onError) => {
     fetch(`${baseUrl}/api/patients/${id}/email`, {
-      method: "PUT",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email: data.email }), 
+        method: "PUT",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: data.email }),
     })
-      .then(handleResponse)
-      .then(onSuccess)
-      .catch(onError);
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
 };
 
-  export const UpdatePatientPassword = (id, token, data, onSuccess, onError) => {
+export const UpdatePatientPassword = (id, token, data, onSuccess, onError) => {
     fetch(`${baseUrl}/api/patients/${id}/password`, {
-      method: "PUT",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        currentPassword: data.currentPassword,
-        newPassword: data.newPassword
-      }),
+        method: "PUT",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            currentPassword: data.currentPassword,
+            newPassword: data.newPassword
+        }),
     })
-      .then(handleResponse)
-      .then(onSuccess)
-      .catch(onError);
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
 };
 
 
 /* Obra social */
 export const getAllHealthInsurances = (token, onSuccess, onError) => {
     fetch(`${baseUrl}/api/healthinsurances`, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
     })
-      .then(handleResponse)
-      .then(onSuccess)
-      .catch(onError);
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
 };
 
 
 export const getHealthInsuranceById = (token, id, onSuccess, onError) => {
-   
+
     fetch(`${baseUrl}/api/healthinsurances/${id}`, {
         headers: {
             "Content-Type": "application/json",
@@ -309,7 +327,7 @@ export const getHealthPlansByInsurance = (token, insuranceId, onSuccess, onError
 };
 
 /* Disponibilidad */
-export const setAvailability = ( token, dentistId, data, onSuccess, onError) => {
+export const setAvailability = (token, dentistId, data, onSuccess, onError) => {
     if (!token) {
         onError({ message: "Token no proporcionado" });
         return;
@@ -323,9 +341,9 @@ export const setAvailability = ( token, dentistId, data, onSuccess, onError) => 
         },
         body: JSON.stringify(data),
     })
-    .then(handleResponse)
-    .then(onSuccess)
-    .catch(onError);
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
 };
 
 
@@ -342,9 +360,9 @@ export const getAvailability = (token, dentistId, onSuccess, onError) => {
             "Authorization": `Bearer ${token}`,
         },
     })
-    .then(handleResponse)
-    .then(onSuccess)
-    .catch(onError);
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
 };
 
 export const toggleDentistStatus = (id, isActive, token, onSuccess, onError) => {

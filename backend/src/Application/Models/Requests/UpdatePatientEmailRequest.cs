@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Web.Models.Requests
+namespace Application.Models.Requests
 {
     public record UpdatePatientEmailRequest(
         [Required(ErrorMessage = "El email es obligatorio")]
