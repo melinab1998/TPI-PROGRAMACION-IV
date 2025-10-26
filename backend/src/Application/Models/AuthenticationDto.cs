@@ -1,5 +1,4 @@
-namespace Web.Models.Responses
-{
+namespace Application.Models{
     public record AuthenticationDto(
         string Token,
         string Role

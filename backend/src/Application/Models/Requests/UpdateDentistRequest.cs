@@ -1,4 +1,4 @@
-namespace Web.Models.Requests;
+namespace Application.Models.Requests;
 using System.ComponentModel.DataAnnotations;
 public record UpdateDentistRequest(
     [MinLength(2, ErrorMessage = "Debe tener al menos 2 caracteres")]

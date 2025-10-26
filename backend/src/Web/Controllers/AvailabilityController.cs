@@ -1,44 +1,35 @@
-using Microsoft.AspNetCore.Mvc;
 using Application.Interfaces;
-using Web.Models;
-using Web.Models.Requests;
-using Domain.Entities;
+using Application.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-[Route("api/availabilities")]
-[ApiController]
-[Authorize(Roles = "Dentist")] // Solo dentistas pueden modificar sus horarios
-public class AvailabilityController : ControllerBase
+namespace Web.Controllers
 {
-    private readonly IAvailabilityService _availabilityService;
-
-    public AvailabilityController(IAvailabilityService availabilityService)
+    [ApiController]
+    [Route("api/availabilities")]
+    [Authorize(Roles = "Dentist")]
+    public class AvailabilityController : ControllerBase
     {
-        _availabilityService = availabilityService;
-    }
+        private readonly IAvailabilityService _availabilityService;
 
-    // GET api/availabilities/{dentistId}
-    [HttpGet("{dentistId}")]
-    public ActionResult<IEnumerable<AvailabilityDto>> GetByDentistId([FromRoute] int dentistId)
-    {
-        var slots = _availabilityService.GetByDentistId(dentistId);
-        var dtoList = slots.Select(AvailabilityDto.Create).ToList();
-        return Ok(dtoList);
-    }
+        public AvailabilityController(IAvailabilityService availabilityService)
+        {
+            _availabilityService = availabilityService;
+        }
 
-    // POST api/availabilities/{dentistId}
-    [HttpPost("{dentistId}")]
-    public ActionResult SetAvailability([FromRoute] int dentistId, [FromBody] List<AvailabilityRequest> requests)
-    {
-         var slots = requests.Select(r => new Availability(
-                r.DayOfWeek,
-                TimeSpan.Parse(r.StartTime),
-                TimeSpan.Parse(r.EndTime),
-                dentistId
-            )).ToList();
+        [HttpGet("{dentistId}")]
+        public ActionResult<IEnumerable<AvailabilityDto>> GetByDentistId(int dentistId)
+        {
+            var slots = _availabilityService.GetByDentistId(dentistId);
+            return Ok(slots);
+        }
 
-        _availabilityService.SetAvailability(dentistId, slots);
-
-        return NoContent(); 
+        [HttpPost("{dentistId}")]
+        public IActionResult SetAvailability(int dentistId, [FromBody] List<AvailabilityDto> slots)
+        {
+            _availabilityService.SetAvailability(dentistId, slots);
+            return NoContent();
+        }
     }
 }
+

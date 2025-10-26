@@ -1,6 +1,6 @@
 using Domain.Entities;
 
-namespace Web.Models;
+namespace Application.Models;
 
 public record DentistDto(int Id, string FirstName, string LastName, string Email, string LicenseNumber, bool IsActive )
 {

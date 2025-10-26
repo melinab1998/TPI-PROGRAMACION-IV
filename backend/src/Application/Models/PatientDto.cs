@@ -1,6 +1,6 @@
 using Domain.Entities;
 
-namespace Web.Models;
+namespace Application.Models;
 
 public record PatientDto(
     int Id,

@@ -1,74 +1,73 @@
-using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using Domain.Exceptions;
+using Application.Interfaces;
 
-
-namespace Application.Services;
-
-public class UserService : IUserService
-{ 
-    private readonly IUserRepository _userRepository;
-    private readonly IPasswordHasher _hasher;
-    private readonly IJwtService _jwtService;
-
-    public UserService(
-        IUserRepository userRepository,
-        IPasswordHasher hasher,
-        IJwtService jwtService)
+namespace Application.Services
+{
+    public class UserService : IUserService
     {
-        _userRepository = userRepository;
-        _hasher = hasher;
-        _jwtService = jwtService;
-    }
+        private readonly IUserRepository _userRepository;
+        private readonly IPasswordHasher _hasher;
+        private readonly IJwtService _jwtService;
 
-    public User Authenticate(string Email, string Password)
-    {
-        if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
-            throw new AppValidationException("Email y contraseña son obligatorios.");
-
-        var user = _userRepository.GetByEmail(Email);
-
-        if (user == null)
-            throw new AppValidationException("Email y/o contraseña incorrectos.");
-
-        if (user is Dentist dentist && !dentist.IsActive)
-            throw new AppValidationException("El dentista aún no está activado.");
-
-        if (!_hasher.VerifyPassword(Password, user.Password))
-            throw new AppValidationException("Email y/o contraseña incorrectos.");
-
-        user.Token = _jwtService.GenerateToken(user.Id, user.GetType().Name, TimeSpan.FromHours(1));
-
-        return user;
-    }
-
-    public void CreateSuperAdminOnce(string FirstName, string LastName, string Email, string Password)
-    {
-        try
+        public UserService(
+            IUserRepository userRepository,
+            IPasswordHasher hasher,
+            IJwtService jwtService)
         {
-            var exists = _userRepository.List().Any(u => u is SuperAdmin);
-            if (!exists)
-            {
-                var superAdmin = new SuperAdmin(FirstName, LastName, Email, null!);
-                var hashed = _hasher.HashPassword(Password);
-                superAdmin.SetPassword(hashed);
-                _userRepository.Add(superAdmin);
+            _userRepository = userRepository;
+            _hasher = hasher;
+            _jwtService = jwtService;
+        }
 
-                Console.WriteLine("✅ SuperAdmin creado exitosamente");
-            }
-            else
+        public User Authenticate(string email, string password)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                throw new AppValidationException("Email y contraseña son obligatorios.");
+
+            var user = _userRepository.GetByEmail(email);
+
+            if (user == null)
+                throw new AppValidationException("Email y/o contraseña incorrectos.");
+
+            if (user is Dentist dentist && !dentist.IsActive)
+                throw new AppValidationException("El dentista aún no está activado.");
+
+            if (!_hasher.VerifyPassword(password, user.Password))
+                throw new AppValidationException("Email y/o contraseña incorrectos.");
+
+            user.Token = _jwtService.GenerateToken(user.Id, user.GetType().Name, TimeSpan.FromHours(1));
+
+            return user;
+        }
+
+        public void CreateSuperAdminOnce(string firstName, string lastName, string email, string password)
+        {
+            try
             {
-                var superAdmin = _userRepository.List().FirstOrDefault(u => u is SuperAdmin);
-                Console.WriteLine($"SuperAdmin ya existe: {superAdmin?.Email}");
+                var exists = _userRepository.List().Any(u => u is SuperAdmin);
+                if (!exists)
+                {
+                    var superAdmin = new SuperAdmin(firstName, lastName, email, null!);
+                    var hashed = _hasher.HashPassword(password);
+                    superAdmin.SetPassword(hashed);
+                    _userRepository.Add(superAdmin);
+
+                    Console.WriteLine("✅ SuperAdmin creado exitosamente");
+                }
+                else
+                {
+                    var superAdmin = _userRepository.List().FirstOrDefault(u => u is SuperAdmin);
+                    Console.WriteLine($"SuperAdmin ya existe: {superAdmin?.Email}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error creando SuperAdmin: {ex.Message}");
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"❌ Error creando SuperAdmin: {ex.Message}");
-        }
     }
-
-
 }
+
 

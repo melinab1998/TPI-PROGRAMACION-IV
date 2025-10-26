@@ -1,14 +1,15 @@
+using Application.Models;
+using Application.Models.Requests;
 using Domain.Entities;
 
 namespace Application.Interfaces;
 
 public interface IDentistService
 {
-    Dentist CreateDentist(string firstName, string lastName, string email, string licenseNumber);
+    DentistDto CreateDentist(CreateDentistRequest request);
     void ActivateDentist(string token, string password);
-    Dentist GetDentistById(int id);
-    IEnumerable<Dentist> GetAllDentists();
-    Dentist UpdateDentist(int id, string? firstName, string? lastName, string? email, string? licenseNumber); 
-    Dentist SetActiveStatusByAdmin(int id, bool isActive);
-
+    DentistDto GetDentistById(int id);
+    IEnumerable<DentistDto> GetAllDentists();
+    DentistDto UpdateDentist(int id, UpdateDentistRequest request);
+    DentistDto SetActiveStatusByAdmin(int id, bool isActive);
 }

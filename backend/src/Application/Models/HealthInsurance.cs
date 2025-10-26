@@ -1,4 +1,4 @@
-namespace Web.Models
+namespace Application.Models
 {
     public record HealthInsuranceDto(
         int Id,

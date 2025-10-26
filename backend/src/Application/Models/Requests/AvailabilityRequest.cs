@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Domain.Enums;
 
-namespace Web.Models.Requests
+namespace Application.Models.Requests
 {
     public record AvailabilityRequest(
         [Required]

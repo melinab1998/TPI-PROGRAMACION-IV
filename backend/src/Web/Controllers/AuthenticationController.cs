@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using Application.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Application.Interfaces;
-using Web.Models.Requests;
-using Web.Models;
-using Web.Models.Responses;
+using Application.Models;
+using Application.Models.Requests;
 using Domain.Entities;
+using Web.Controllers;
 
 [Route("api/auth")]
 [ApiController]
@@ -25,65 +24,46 @@ public class AuthenticationController : ControllerBase
         _patientService = patientService;
     }
 
-    // -------------------- LOGIN --------------------
     [HttpPost("login")]
     public ActionResult<AuthenticationDto> Login([FromBody] AuthenticationRequest dto)
     {
         var user = _userService.Authenticate(dto.Email, dto.Password);
-        return Ok(new AuthenticationDto(user.Token, user.GetType().Name));
+
+        var response = new AuthenticationDto(
+            user.Token,
+            user.GetType().Name
+        );
+
+        return Ok(response);
     }
 
-    // -------------------- PACIENTES --------------------
-
-    // Registro directo (público)
     [HttpPost("register-patient")]
     public ActionResult<PatientDto> RegisterPatient([FromBody] RegisterPatientRequest patientDto)
     {
-        var newPatient = _patientService.RegisterPatient(
-            patientDto.FirstName,
-            patientDto.LastName,
-            patientDto.Email,
-            patientDto.Password,
-            patientDto.Dni
-        );
+        var newPatient = _patientService.RegisterPatient(patientDto);
 
         return CreatedAtAction(
             nameof(PatientController.GetPatientById),
             "Patient",
             new { id = newPatient.Id },
-            PatientDto.Create(newPatient)
+            newPatient
         );
     }
 
-    // Creación por parte del dentista o admin
     [HttpPost("create-patient")]
     [Authorize(Roles = "Dentist, SuperAdmin")]
     public ActionResult<PatientDto> CreatePatientByDentist([FromBody] CreatePatientByDentistRequest request)
     {
-        var newPatient = _patientService.CreatePatientByDentist(
-            request.FirstName,
-            request.LastName,
-            request.Email,
-            request.Dni,
-            request.Address,
-            request.PhoneNumber,
-            request.City,
-            request.MembershipNumber,
-            request.BirthDate,
-            request.HealthPlanId
-        );
-
-        var dto = PatientDto.Create(newPatient);
+        var newPatient = _patientService.CreatePatientByDentist(request);
 
         return CreatedAtAction(
             nameof(PatientController.GetPatientById),
             "Patient",
             new { id = newPatient.Id },
-            dto
+            newPatient
         );
     }
 
-    // Activación del paciente creado por un dentista
     [HttpPost("activate-patient")]
     public IActionResult ActivatePatient([FromBody] ActivatePatientRequest dto)
     {
@@ -91,30 +71,22 @@ public class AuthenticationController : ControllerBase
         return NoContent();
     }
 
-    // -------------------- DENTISTAS --------------------
-
-    // Creación por parte del superadmin
     [HttpPost("create-dentist")]
     [Authorize(Roles = "SuperAdmin")]
     public ActionResult<DentistDto> CreateDentist([FromBody] CreateDentistRequest dentistDto)
     {
-        var newDentist = _dentistService.CreateDentist(
-            dentistDto.FirstName,
-            dentistDto.LastName,
-            dentistDto.Email,
-            dentistDto.LicenseNumber
-        );
+        var newDentist = _dentistService.CreateDentist(dentistDto);
 
         return CreatedAtAction(
             nameof(DentistController.GetDentistById),
             "Dentist",
             new { id = newDentist.Id },
-            DentistDto.Create(newDentist)
+            newDentist
         );
     }
 
     [HttpPost("activate-dentist")]
-    public ActionResult ActivateDentist([FromBody] ActivateDentistRequest dto)
+    public IActionResult ActivateDentist([FromBody] ActivateDentistRequest dto)
     {
         _dentistService.ActivateDentist(dto.Token, dto.Password);
         return NoContent();

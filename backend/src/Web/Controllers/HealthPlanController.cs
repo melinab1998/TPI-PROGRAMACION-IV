@@ -1,7 +1,6 @@
 using Application.Interfaces;
+using Application.Models;
 using Microsoft.AspNetCore.Mvc;
-using Web.Models.Requests;
-using Web.Models;
 
 namespace Web.Controllers
 {
@@ -19,18 +18,15 @@ namespace Web.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<HealthPlanDto>> GetAll()
         {
-            var plans = _healthPlanService.GetAll();
-            var result = plans.Select(p => new HealthPlanDto(p.Id, p.Name));
+            var result = _healthPlanService.GetAll();
             return Ok(result);
         }
 
         [HttpGet("byInsurance/{insuranceId}")]
         public ActionResult<IEnumerable<HealthPlanDto>> GetByInsuranceId(int insuranceId)
         {
-            var plans = _healthPlanService.GetByInsuranceId(insuranceId);
-            var result = plans.Select(p => new HealthPlanDto(p.Id, p.Name));
+            var result = _healthPlanService.GetByInsuranceId(insuranceId);
             return Ok(result);
         }
-
     }
 }

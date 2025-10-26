@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Application.Interfaces;
-using Web.Models;
-using Web.Models.Requests;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-
+using Application.Interfaces;
+using Application.Models;
+using Application.Models.Requests;
 
 [Route("api/dentists")]
 [ApiController]
@@ -20,44 +18,34 @@ public class DentistController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<DentistDto>> GetAllDentists()
     {
-        var dentists = _dentistService.GetAllDentists();
-        var dtoList = dentists.Select(DentistDto.Create).ToList();
-        return Ok(dtoList);
+        return Ok(_dentistService.GetAllDentists());
     }
 
     [HttpGet("{id}")]
     public ActionResult<DentistDto> GetDentistById([FromRoute] int id)
     {
-        var dentist = _dentistService.GetDentistById(id);
-        var dto = DentistDto.Create(dentist);
-        return Ok(dto);
+        return Ok(_dentistService.GetDentistById(id));
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "SuperAdmin")]
+    public ActionResult<DentistDto> CreateDentist([FromBody] CreateDentistRequest request)
+    {
+        var created = _dentistService.CreateDentist(request);
+        return CreatedAtAction(nameof(GetDentistById), new { id = created.Id }, created);
     }
 
     [HttpPut("{id}")]
     [Authorize(Roles = "SuperAdmin")]
     public ActionResult<DentistDto> UpdateDentist([FromRoute] int id, [FromBody] UpdateDentistRequest request)
     {
-        var updatedDentist = _dentistService.UpdateDentist(
-            id,
-            request.FirstName,
-            request.LastName,
-            request.Email,
-            request.LicenseNumber
-        );
-
-        var dto = DentistDto.Create(updatedDentist);
-        return Ok(dto);
+        return Ok(_dentistService.UpdateDentist(id, request));
     }
-
-    // Este endpoint es para cuando el superadmin activa o desactiva un dentista, no tiene relación con la lógica 
-    // de "activar dentista" donde le llegaba un email y activaba su cuenta creando una contraseña.
 
     [HttpPatch("{id}/activate")]
     [Authorize(Roles = "SuperAdmin")]
     public ActionResult<DentistDto> ActivateDentistByAdmin([FromRoute] int id, [FromBody] AdminActivateDentistRequest request)
     {
-        var dentist = _dentistService.SetActiveStatusByAdmin(id, request.IsActive!.Value);
-        var dto = DentistDto.Create(dentist);
-        return Ok(dto);
+        return Ok(_dentistService.SetActiveStatusByAdmin(id, request.IsActive!.Value));
     }
 }

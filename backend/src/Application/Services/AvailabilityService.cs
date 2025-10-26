@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Application.Models;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
@@ -14,44 +15,48 @@ namespace Application.Services
             _availabilityRepository = availabilityRepository;
         }
 
-        public IEnumerable<Availability> GetByDentistId(int dentistId)
+        public IEnumerable<AvailabilityDto> GetByDentistId(int dentistId)
         {
             var availabilities = _availabilityRepository.GetByDentistId(dentistId);
+
             if (availabilities == null || !availabilities.Any())
                 throw new AppValidationException("No se encontraron horarios disponibles para este dentista.");
 
-            return availabilities;
+            return availabilities.Select(AvailabilityDto.Create);
         }
 
-        public void SetAvailability(int dentistId, List<Availability> slots)
+        public void SetAvailability(int dentistId, IEnumerable<AvailabilityDto> slots)
         {
             if (slots == null || !slots.Any())
                 throw new AppValidationException("Debe proporcionar al menos un horario.");
 
             var existingSlots = _availabilityRepository.GetByDentistId(dentistId).ToList();
 
-            foreach (var slot in slots)
+            foreach (var slotDto in slots)
             {
-                slot.DentistId = dentistId;
+                var newSlot = new Availability(
+                    slotDto.DayOfWeek,
+                    TimeSpan.Parse(slotDto.StartTime),
+                    TimeSpan.Parse(slotDto.EndTime),
+                    dentistId
+                );
 
-                // Buscar si ya existe un slot con mismo día y hora de inicio
                 var existing = existingSlots.FirstOrDefault(s =>
-                    s.DayOfWeek == slot.DayOfWeek
+                    s.DayOfWeek == newSlot.DayOfWeek
                 );
 
                 if (existing != null)
                 {
-                    // Actualizar si cambió algo hora de fin o de inicio
-                    existing.StartTime = slot.StartTime;
-                    existing.EndTime = slot.EndTime;
+                    existing.StartTime = newSlot.StartTime;
+                    existing.EndTime = newSlot.EndTime;
                     _availabilityRepository.Update(existing);
                 }
                 else
                 {
-                    // Crear nuevo
-                    _availabilityRepository.Add(slot);
+                    _availabilityRepository.Add(newSlot);
                 }
             }
         }
     }
 }
+

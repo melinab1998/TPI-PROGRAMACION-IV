@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
-namespace Web.Models.Requests;
+namespace Application.Models.Requests;
 
    public record RegisterPatientRequest
     (
