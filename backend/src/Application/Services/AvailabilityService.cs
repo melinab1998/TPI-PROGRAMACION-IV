@@ -20,7 +20,7 @@ namespace Application.Services
             var availabilities = _availabilityRepository.GetByDentistId(dentistId);
 
             if (availabilities == null || !availabilities.Any())
-                throw new AppValidationException("No se encontraron horarios disponibles para este dentista.");
+                throw new AppValidationException("NO_AVAILABLE_SLOTS");
 
             return availabilities.Select(AvailabilityDto.Create);
         }
@@ -28,7 +28,7 @@ namespace Application.Services
         public void SetAvailability(int dentistId, IEnumerable<AvailabilityDto> slots)
         {
             if (slots == null || !slots.Any())
-                throw new AppValidationException("Debe proporcionar al menos un horario.");
+                throw new AppValidationException("MANDATORY_FIELDS");
 
             var existingSlots = _availabilityRepository.GetByDentistId(dentistId).ToList();
 
@@ -59,4 +59,3 @@ namespace Application.Services
         }
     }
 }
-

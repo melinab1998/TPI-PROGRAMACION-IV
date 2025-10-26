@@ -20,7 +20,7 @@ namespace Application.Services
             var plans = _healthPlanRepository.GetAll();
 
             if (plans == null || !plans.Any())
-                throw new AppValidationException("No se encontraron planes de salud.");
+                throw new AppValidationException("HEALTH_PLAN_NOT_FOUND");
 
             return plans.Select(plan => new HealthPlanDto(plan.Id, plan.Name));
         }
@@ -30,10 +30,9 @@ namespace Application.Services
             var plans = _healthPlanRepository.GetByInsuranceId(healthInsuranceId);
 
             if (plans == null || !plans.Any())
-                throw new AppValidationException("No se encontraron planes para la obra social especificada.");
+                throw new AppValidationException("HEALTH_PLAN_NOT_FOUND");
 
             return plans.Select(plan => new HealthPlanDto(plan.Id, plan.Name));
         }
     }
 }
-

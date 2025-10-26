@@ -106,9 +106,9 @@ export default function PatientFormModal({
             setValue("healthPlanId", patient.healthPlanId.toString());
           }
         },
-        () => {
+        (err) => {
           setPlans([]);
-          errorToast("Error al cargar planes de la obra social del paciente");
+          errorToast(err?.message || "Error al cargar planes de la obra social del paciente");
         }
       );
     }
@@ -126,9 +126,9 @@ export default function PatientFormModal({
       token,
       selectedInsurance,
       (data) => setPlans(data || []),
-      () => {
+      (err) => {
         setPlans([]);
-        errorToast("Error al cargar planes de la obra social seleccionada");
+        errorToast(err?.message || "Error al cargar planes de la obra social seleccionada");
       }
     );
   }, [selectedInsurance, token, setValue]);

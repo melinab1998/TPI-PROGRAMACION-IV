@@ -35,14 +35,10 @@ export default function UpdateEmailDialog({ currentEmail, onUpdate }) {
         reset();
       },
       (err) => {
-        
-        if (err?.message) {
-            errorToast(err.message);
-          } else {
-            errorToast("Error al actualizar el correo electrónico");
-          }
+        errorToast(err?.message || "Error al actualizar el correo electrónico");
       }
     );
+
   };
 
   return (

@@ -24,18 +24,18 @@ namespace Application.Services
         public User Authenticate(string email, string password)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-                throw new AppValidationException("Email y contraseña son obligatorios.");
+                throw new AppValidationException("EMAIL_AND_PASSWORD_REQUIRED");
 
             var user = _userRepository.GetByEmail(email);
 
             if (user == null)
-                throw new AppValidationException("Email y/o contraseña incorrectos.");
+                throw new AppValidationException("INVALID_EMAIL_OR_PASSWORD");
 
             if (user is Dentist dentist && !dentist.IsActive)
-                throw new AppValidationException("El dentista aún no está activado.");
+                throw new AppValidationException("DENTIST_NOT_ACTIVATED");
 
             if (!_hasher.VerifyPassword(password, user.Password))
-                throw new AppValidationException("Email y/o contraseña incorrectos.");
+                throw new AppValidationException("INVALID_EMAIL_OR_PASSWORD");
 
             user.Token = _jwtService.GenerateToken(user.Id, user.GetType().Name, TimeSpan.FromHours(1));
 
@@ -54,20 +54,21 @@ namespace Application.Services
                     superAdmin.SetPassword(hashed);
                     _userRepository.Add(superAdmin);
 
-                    Console.WriteLine("✅ SuperAdmin creado exitosamente");
+                    Console.WriteLine("✅ SuperAdmin created successfully");
                 }
                 else
                 {
                     var superAdmin = _userRepository.List().FirstOrDefault(u => u is SuperAdmin);
-                    Console.WriteLine($"SuperAdmin ya existe: {superAdmin?.Email}");
+                    Console.WriteLine($"SuperAdmin already exists: {superAdmin?.Email}");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error creando SuperAdmin: {ex.Message}");
+                Console.WriteLine($"❌ Error creating SuperAdmin: {ex.Message}");
             }
         }
     }
 }
+
 
 

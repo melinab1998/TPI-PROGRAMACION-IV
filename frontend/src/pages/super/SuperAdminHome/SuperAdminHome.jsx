@@ -40,19 +40,14 @@ export default function SuperAdminPage() {
             last_name: d.lastName || d.last_name,
             email: d.email || d.Email,
             license_number: d.licenseNumber || d.license_number,
-            status: d.isActive ? "active" : "inactive", // CORRECCIÓN
-            created_at:
-              d.createdAt || d.created_at || new Date().toISOString().split("T")[0],
+            status: d.isActive ? "active" : "inactive",
+            created_at: d.createdAt || d.created_at || new Date().toISOString().split("T")[0],
           }))
         );
       },
       (err) => {
-        const message = err?.message?.toLowerCase();
-        if (message?.includes("dentista") || message?.includes("no se encontraron")) {
-          return;
-        } else {
-          errorToast("Error del servidor al cargar los dentistas.");
-        }
+        // Mostrar mensaje que viene del back o un fallback genérico
+        errorToast(err?.message || "Error del servidor al cargar los dentistas.");
       }
     );
   }, [token]);
@@ -96,12 +91,12 @@ export default function SuperAdminPage() {
             prev.map((d) =>
               d.id_user === (updated.id_user || updated.id)
                 ? {
-                    ...d,
-                    first_name: updated.firstName || updated.first_name,
-                    last_name: updated.lastName || updated.last_name,
-                    email: updated.email,
-                    license_number: updated.licenseNumber || updated.license_number,
-                  }
+                  ...d,
+                  first_name: updated.firstName || updated.first_name,
+                  last_name: updated.lastName || updated.last_name,
+                  email: updated.email,
+                  license_number: updated.licenseNumber || updated.license_number,
+                }
                 : d
             )
           );
@@ -110,14 +105,7 @@ export default function SuperAdminPage() {
           setIsFormOpen(false);
         },
         (err) => {
-          const message = err?.message?.toLowerCase();
-          if (message?.includes("email")) {
-            errorToast("El email ya está registrado");
-          } else if (message?.includes("matrícula") || message?.includes("license")) {
-            errorToast("La matrícula ya está registrada");
-          } else {
-            errorToast("Error del servidor");
-          }
+          errorToast(err?.message || "Error del servidor");
         }
       );
       return;
@@ -144,14 +132,7 @@ export default function SuperAdminPage() {
         setIsFormOpen(false);
       },
       (err) => {
-        const message = err?.message?.toLowerCase();
-        if (message?.includes("email")) {
-          errorToast("El email ya está registrado");
-        } else if (message?.includes("matrícula") || message?.includes("license")) {
-          errorToast("La matrícula ya está registrada");
-        } else {
-          errorToast("Error del servidor");
-        }
+        errorToast(err?.message || "Error del servidor");
       }
     );
   };
@@ -174,9 +155,9 @@ export default function SuperAdminPage() {
           prev.map((d) =>
             d.id_user === (updatedDentist.id_user || updatedDentist.id)
               ? {
-                  ...d,
-                  status: updatedDentist.isActive ? "active" : "inactive", // CORRECCIÓN
-                }
+                ...d,
+                status: updatedDentist.isActive ? "active" : "inactive",
+              }
               : d
           )
         );
@@ -186,7 +167,7 @@ export default function SuperAdminPage() {
         setDeleteConfirm(null);
       },
       (err) => {
-        errorToast("Error al actualizar el estado del dentista");
+        errorToast(err?.message || "Error al actualizar el estado del dentista");
         setDeleteConfirm(null);
       }
     );

@@ -33,17 +33,16 @@ public class PatientService : IPatientService
     public PatientDto RegisterPatient(RegisterPatientRequest request)
     {
         if (_userRepository.GetByEmail(request.Email) != null)
-            throw new AppValidationException($"El email {request.Email} ya está registrado");
+            throw new AppValidationException("EMAIL_ALREADY_EXISTS");
 
         if (_patientRepository.GetByDni(request.Dni) != null)
-            throw new AppValidationException($"El DNI {request.Dni} ya está registrado");
+            throw new AppValidationException("DNI_ALREADY_EXISTS");
 
         var patient = new Patient(request.FirstName, request.LastName, request.Email, request.Dni);
         patient.SetPassword(_hasher.HashPassword(request.Password));
 
         _patientRepository.Add(patient);
 
-        // recargamos el paciente con los Includes del repositorio
         var saved = _patientRepository.GetById(patient.Id);
 
         return PatientDto.Create(saved!);
@@ -52,10 +51,10 @@ public class PatientService : IPatientService
     public PatientDto CreatePatientByDentist(CreatePatientByDentistRequest request)
     {
         if (_userRepository.GetByEmail(request.Email) != null)
-            throw new AppValidationException($"El email {request.Email} ya está registrado");
+            throw new AppValidationException("EMAIL_ALREADY_EXISTS");
 
         if (_patientRepository.GetByDni(request.Dni) != null)
-            throw new AppValidationException($"El DNI {request.Dni} ya está registrado");
+            throw new AppValidationException("DNI_ALREADY_EXISTS");
 
         var patient = new Patient(request.FirstName, request.LastName, request.Email, request.Dni)
         {
@@ -72,10 +71,8 @@ public class PatientService : IPatientService
 
         _patientRepository.Add(patient);
 
-        // recargamos el paciente desde la BD con sus relaciones
         var saved = _patientRepository.GetById(patient.Id);
 
-        // generamos el token y enviamos el correo
         var activationToken = _jwtService.GenerateActivationTokenForPatient(patient.Id);
         _emailService.SendActivationEmailAsync(patient.Email, activationToken);
 
@@ -94,11 +91,11 @@ public class PatientService : IPatientService
         var principal = _jwtService.ValidateToken(token);
         var patientIdClaim = principal.FindFirst("patientId"); 
         if (patientIdClaim == null)
-            throw new AppValidationException("Token inválido o patientId no encontrado.");
+            throw new AppValidationException("INVALID_TOKEN");
 
         int patientId = int.Parse(patientIdClaim.Value);
         var patient = _patientRepository.GetById(patientId)
-            ?? throw new AppValidationException("Paciente no encontrado");
+            ?? throw new AppValidationException("PATIENT_NOT_FOUND");
 
         patient.SetPassword(_hasher.HashPassword(password));
         _patientRepository.Update(patient);
@@ -108,7 +105,7 @@ public class PatientService : IPatientService
     {
         var patients = _patientRepository.List();
         if (patients == null || !patients.Any())
-            throw new AppValidationException("No se encontraron pacientes registrados.");
+            throw new AppValidationException("NO_PATIENTS_FOUND");
 
         return patients.Select(PatientDto.Create);
     }
@@ -116,19 +113,19 @@ public class PatientService : IPatientService
     public PatientDto GetPatientById(int id)
     {
         var patient = _patientRepository.GetById(id)
-            ?? throw new AppValidationException("Paciente no encontrado");
+            ?? throw new AppValidationException("PATIENT_NOT_FOUND");
         return PatientDto.Create(patient);
     }
 
     public PatientDto UpdatePatient(int id, UpdatePatientRequest request)
     {
         var patient = _patientRepository.GetById(id)
-            ?? throw new AppValidationException("Paciente no encontrado");
+            ?? throw new AppValidationException("PATIENT_NOT_FOUND");
 
         if (!string.IsNullOrEmpty(request.Email) &&
             _userRepository.GetByEmail(request.Email) != null &&
             request.Email != patient.Email)
-            throw new AppValidationException($"El email {request.Email} ya está registrado");
+            throw new AppValidationException("EMAIL_ALREADY_EXISTS");
 
         if (!string.IsNullOrEmpty(request.FirstName)) patient.FirstName = request.FirstName;
         if (!string.IsNullOrEmpty(request.LastName)) patient.LastName = request.LastName;
@@ -142,7 +139,6 @@ public class PatientService : IPatientService
 
         _patientRepository.Update(patient);
 
-        // recargar para devolver con relaciones
         var saved = _patientRepository.GetById(patient.Id);
 
         return PatientDto.Create(saved!);
@@ -151,10 +147,10 @@ public class PatientService : IPatientService
     public PatientDto UpdatePatientEmail(int id, UpdatePatientEmailRequest request)
     {
         var patient = _patientRepository.GetById(id)
-            ?? throw new AppValidationException("Paciente no encontrado");
+            ?? throw new AppValidationException("PATIENT_NOT_FOUND");
 
         if (_userRepository.GetByEmail(request.Email) != null && request.Email != patient.Email)
-            throw new AppValidationException($"El email {request.Email} ya está registrado");
+            throw new AppValidationException("EMAIL_ALREADY_EXISTS");
 
         patient.Email = request.Email;
         _patientRepository.Update(patient);
@@ -167,13 +163,14 @@ public class PatientService : IPatientService
     public void UpdatePatientPassword(int id, UpdatePatientPasswordRequest request)
     {
         var patient = _patientRepository.GetById(id)
-            ?? throw new AppValidationException("Paciente no encontrado");
+            ?? throw new AppValidationException("PATIENT_NOT_FOUND");
 
         if (!_hasher.VerifyPassword(request.CurrentPassword, patient.Password!))
-            throw new AppValidationException("La contraseña actual es incorrecta");
+            throw new AppValidationException("CURRENT_PASSWORD_INCORRECT");
 
         patient.SetPassword(_hasher.HashPassword(request.NewPassword));
         _patientRepository.Update(patient);
     }
 }
+
 

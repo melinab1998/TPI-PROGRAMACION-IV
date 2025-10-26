@@ -62,9 +62,7 @@ export default function PatientsPage() {
         );
       },
       (err) => {
-        const message = err?.message?.toLowerCase();
-        if (message?.includes("paciente") || message?.includes("no se encontraron")) return;
-        errorToast("Error del servidor al cargar los pacientes");
+        errorToast(err?.message || "Error del servidor al cargar los pacientes");
       }
     );
   }, [token]);
@@ -76,13 +74,13 @@ export default function PatientsPage() {
     getAllHealthInsurances(
       token,
       (data) => setHealthInsurances(data || []),
-      () => errorToast("Error al cargar obras sociales")
+      (err) => errorToast(err?.message || "Error al cargar obras sociales")
     );
 
     getAllHealthPlans(
       token,
       (data) => setHealthPlans(data || []),
-      () => errorToast("Error al cargar planes de salud")
+      (err) => errorToast(err?.message || "Error al cargar planes de salud")
     );
   }, [token]);
 
@@ -126,34 +124,34 @@ export default function PatientsPage() {
   };
 
   const handleSavePatient = (patientData) => {
-  const payload = {
-    firstName: patientData.firstName,
-    lastName: patientData.lastName,
-    email: patientData.email,
-    dni: patientData.dni,
-    birthDate: patientData.birthDate || null,
-    address: patientData.address || null,
-    phoneNumber: patientData.phoneNumber || null,
-    city: patientData.city || null,
-    membershipNumber: patientData.membershipNumber || null,
-    healthInsuranceId: patientData.healthInsuranceId ? parseInt(patientData.healthInsuranceId) : null,
-    healthPlanId: patientData.healthPlanId ? parseInt(patientData.healthPlanId) : null,
-  };
+    const payload = {
+      firstName: patientData.firstName,
+      lastName: patientData.lastName,
+      email: patientData.email,
+      dni: patientData.dni,
+      birthDate: patientData.birthDate || null,
+      address: patientData.address || null,
+      phoneNumber: patientData.phoneNumber || null,
+      city: patientData.city || null,
+      membershipNumber: patientData.membershipNumber || null,
+      healthInsuranceId: patientData.healthInsuranceId ? parseInt(patientData.healthInsuranceId) : null,
+      healthPlanId: patientData.healthPlanId ? parseInt(patientData.healthPlanId) : null,
+    };
 
-  console.log("Payload a enviar:", payload); // Para debug
+    console.log("Payload a enviar:", payload); // Para debug
 
-  if (editingPatient) {
-    // Actualizar paciente
-    updatePatientByDentist(
-      editingPatient.id,
-      payload,
-      token,
-      (updated) => {
-        console.log("Paciente actualizado:", updated); // Para debug
-        setPatients((prev) =>
-          prev.map((p) =>
-            p.id === updated.id
-              ? {
+    if (editingPatient) {
+      // Actualizar paciente
+      updatePatientByDentist(
+        editingPatient.id,
+        payload,
+        token,
+        (updated) => {
+          console.log("Paciente actualizado:", updated); // Para debug
+          setPatients((prev) =>
+            prev.map((p) =>
+              p.id === updated.id
+                ? {
                   ...p,
                   id: updated.id,
                   firstName: updated.firstName,
@@ -170,56 +168,52 @@ export default function PatientsPage() {
                   healthInsuranceId: updated.healthInsuranceId,
                   healthInsuranceName: updated.healthInsuranceName,
                 }
-              : p
-          )
-        );
-        successToast("Paciente actualizado exitosamente");
+                : p
+            )
+          );
+        },
+        (err) => {
+          errorToast(err?.message || "Error al actualizar el paciente");
+        }
+      );
+
+      return;
+    }
+
+    // Crear paciente
+    CreatePatientByDentist(
+      payload,
+      token,
+      (response) => {
+        console.log("Paciente creado:", response); // Para debug
+        setPatients((prev) => [
+          ...prev,
+          {
+            id: response.id,
+            firstName: response.firstName,
+            lastName: response.lastName,
+            dni: response.dni,
+            email: response.email,
+            phoneNumber: response.phoneNumber,
+            address: response.address,
+            city: response.city,
+            membershipNumber: response.membershipNumber,
+            birthDate: response.birthDate,
+            healthPlanId: response.healthPlanId,
+            healthPlanName: response.healthPlanName,
+            healthInsuranceId: response.healthInsuranceId,
+            healthInsuranceName: response.healthInsuranceName,
+          },
+        ]);
+        successToast("Paciente creado exitosamente");
         setEditingPatient(null);
         setIsFormModalOpen(false);
       },
-      (error) => {
-        console.error("Error al actualizar:", error);
-        errorToast("Error al actualizar el paciente");
+      (err) => {
+        errorToast(err?.message || "Error al crear el paciente");
       }
     );
-    return;
-  }
-
-  // Crear paciente
-  CreatePatientByDentist(
-    payload,
-    token,
-    (response) => {
-      console.log("Paciente creado:", response); // Para debug
-      setPatients((prev) => [
-        ...prev,
-        {
-          id: response.id,
-          firstName: response.firstName,
-          lastName: response.lastName,
-          dni: response.dni,
-          email: response.email,
-          phoneNumber: response.phoneNumber,
-          address: response.address,
-          city: response.city,
-          membershipNumber: response.membershipNumber,
-          birthDate: response.birthDate,
-          healthPlanId: response.healthPlanId,
-          healthPlanName: response.healthPlanName,
-          healthInsuranceId: response.healthInsuranceId,
-          healthInsuranceName: response.healthInsuranceName,
-        },
-      ]);
-      successToast("Paciente creado exitosamente");
-      setEditingPatient(null);
-      setIsFormModalOpen(false);
-    },
-    (error) => {
-      console.error("Error al crear:", error);
-      errorToast("Error al crear el paciente");
-    }
-  );
-};
+  };
 
   // Animaciones
   const fadeSlideDown = { hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };

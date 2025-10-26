@@ -26,7 +26,7 @@ export default function ResetPassword() {
     const searchParams = new URLSearchParams(window.location.search);
     const token = searchParams.get("token");
 
-    let userType = "patient"; 
+    let userType = "patient";
     try {
         if (token) {
             const decoded = jwtDecode(token);
@@ -60,8 +60,7 @@ export default function ResetPassword() {
                 setTimeout(() => navigate("/login"), 1200);
             },
             (err) => {
-                const msg = err?.message || "Error al activar la cuenta";
-                errorToast(msg);
+                errorToast(err?.message || "Error al activar la cuenta");
             }
         );
     };
