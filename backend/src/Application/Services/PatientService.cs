@@ -43,7 +43,10 @@ public class PatientService : IPatientService
 
         _patientRepository.Add(patient);
 
-        return PatientDto.Create(patient);
+        // recargamos el paciente con los Includes del repositorio
+        var saved = _patientRepository.GetById(patient.Id);
+
+        return PatientDto.Create(saved!);
     }
 
     public PatientDto CreatePatientByDentist(CreatePatientByDentistRequest request)
@@ -69,10 +72,14 @@ public class PatientService : IPatientService
 
         _patientRepository.Add(patient);
 
+        // recargamos el paciente desde la BD con sus relaciones
+        var saved = _patientRepository.GetById(patient.Id);
+
+        // generamos el token y enviamos el correo
         var activationToken = _jwtService.GenerateActivationTokenForPatient(patient.Id);
         _emailService.SendActivationEmailAsync(patient.Email, activationToken);
 
-        return PatientDto.Create(patient);
+        return PatientDto.Create(saved!);
     }
 
     private string GenerateTemporaryPassword()
@@ -135,7 +142,10 @@ public class PatientService : IPatientService
 
         _patientRepository.Update(patient);
 
-        return PatientDto.Create(patient);
+        // recargar para devolver con relaciones
+        var saved = _patientRepository.GetById(patient.Id);
+
+        return PatientDto.Create(saved!);
     }
 
     public PatientDto UpdatePatientEmail(int id, UpdatePatientEmailRequest request)
@@ -149,7 +159,9 @@ public class PatientService : IPatientService
         patient.Email = request.Email;
         _patientRepository.Update(patient);
 
-        return PatientDto.Create(patient);
+        var saved = _patientRepository.GetById(patient.Id);
+
+        return PatientDto.Create(saved!);
     }
 
     public void UpdatePatientPassword(int id, UpdatePatientPasswordRequest request)

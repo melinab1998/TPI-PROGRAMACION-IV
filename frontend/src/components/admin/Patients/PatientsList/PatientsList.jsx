@@ -38,11 +38,11 @@ export default function PatientsList({ patients, onView, onEdit, onViewVisits })
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
                                     <span className="text-sm font-medium text-primary">
-                                        {patient.first_name?.[0]}{patient.last_name?.[0]}
+                                        {patient.firstName?.[0]}{patient.lastName?.[0]}
                                     </span>
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <h3 className="font-semibold truncate">{patient.first_name} {patient.last_name}</h3>
+                                    <h3 className="font-semibold truncate">{patient.firstName} {patient.lastName}</h3>
                                     <p className="text-sm text-muted-foreground truncate">
                                         {[
                                             `DNI: ${patient.dni}`,

@@ -42,15 +42,15 @@ export default function PatientFormModal({
     watch,
   } = useForm({
     defaultValues: {
-      first_name: "",
-      last_name: "",
+      firstName: "",
+      lastName: "",
       email: "",
-      birth_date: "",
+      birthDate: "",
       dni: "",
       address: "",
-      phone_number: "",
+      phoneNumber: "",
       city: "",
-      membership_number: "",
+      membershipNumber: "",
       healthInsuranceId: "",
       healthPlanId: "",
     },
@@ -63,29 +63,29 @@ export default function PatientFormModal({
   useEffect(() => {
     if (patient) {
       reset({
-        first_name: patient.first_name || patient.firstName || "",
-        last_name: patient.last_name || patient.lastName || "",
-        email: patient.email || patient.Email || "",
-        birth_date: patient.birth_date || patient.birthDate || "",
+        firstName: patient.firstName || "",
+        lastName: patient.lastName || "",
+        email: patient.email || "",
+        birthDate: patient.birthDate || "",
         dni: patient.dni || "",
         address: patient.address || "",
-        phone_number: patient.phone_number || patient.phoneNumber || "",
+        phoneNumber: patient.phoneNumber || "",
         city: patient.city || "",
-        membership_number: patient.membership_number || patient.membershipNumber || "",
-        healthInsuranceId: patient.healthInsuranceId || "",
-        healthPlanId: patient.healthPlanId || "",
+        membershipNumber: patient.membershipNumber || "",
+        healthInsuranceId: patient.healthInsuranceId?.toString() || "",
+        healthPlanId: patient.healthPlanId?.toString() || "",
       });
     } else {
       reset({
-        first_name: "",
-        last_name: "",
+        firstName: "",
+        lastName: "",
         email: "",
-        birth_date: "",
+        birthDate: "",
         dni: "",
         address: "",
-        phone_number: "",
+        phoneNumber: "",
         city: "",
-        membership_number: "",
+        membershipNumber: "",
         healthInsuranceId: "",
         healthPlanId: "",
       });
@@ -93,7 +93,28 @@ export default function PatientFormModal({
     }
   }, [patient, open, reset]);
 
-  // Cargar planes según obra social seleccionada
+  // Cargar planes cuando abrimos el modal con un paciente existente
+  useEffect(() => {
+    const insuranceId = patient?.healthInsuranceId?.toString();
+    if (insuranceId && token) {
+      getHealthPlansByInsurance(
+        token,
+        insuranceId,
+        (data) => {
+          setPlans(data || []);
+          if (patient?.healthPlanId && data.find(p => p.id.toString() === patient.healthPlanId.toString())) {
+            setValue("healthPlanId", patient.healthPlanId.toString());
+          }
+        },
+        () => {
+          setPlans([]);
+          errorToast("Error al cargar planes de la obra social del paciente");
+        }
+      );
+    }
+  }, [patient, token, setValue]);
+
+  // Cargar planes cuando el usuario selecciona otra obra social
   useEffect(() => {
     if (!selectedInsurance || !token) {
       setPlans([]);
@@ -110,21 +131,17 @@ export default function PatientFormModal({
         errorToast("Error al cargar planes de la obra social seleccionada");
       }
     );
-
-    // Limpiar plan si no pertenece a la obra social seleccionada
-    if (!plans.find((p) => p.id.toString() === selectedPlan)) {
-      setValue("healthPlanId", "");
-    }
   }, [selectedInsurance, token, setValue]);
 
   const onSubmit = (data) => {
     const patientData = {
       ...data,
-      id_user: patient?.id_user,
-      healthInsuranceId: data.healthInsuranceId || null,
-      healthPlanId: data.healthPlanId || null,
+      id: patient?.id,
+      healthInsuranceId: data.healthInsuranceId ? parseInt(data.healthInsuranceId) : null,
+      healthPlanId: data.healthPlanId ? parseInt(data.healthPlanId) : null,
     };
 
+    console.log("Datos a guardar:", patientData);
     onSave(patientData);
     onClose();
   };
@@ -142,24 +159,24 @@ export default function PatientFormModal({
           {/* Nombre y Apellido */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="first_name">Nombre *</Label>
+              <Label htmlFor="firstName">Nombre *</Label>
               <Input
-                id="first_name"
+                id="firstName"
                 placeholder="Ingrese el nombre"
-                {...register("first_name", patientValidations.first_name)}
-                className={errors.first_name ? "border-red-500" : ""}
+                {...register("firstName", patientValidations.firstName)}
+                className={errors.firstName ? "border-red-500" : ""}
               />
-              {errors.first_name && <p className="text-red-500 text-xs">{errors.first_name.message}</p>}
+              {errors.firstName && <p className="text-red-500 text-xs">{errors.firstName.message}</p>}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="last_name">Apellido *</Label>
+              <Label htmlFor="lastName">Apellido *</Label>
               <Input
-                id="last_name"
+                id="lastName"
                 placeholder="Ingrese el apellido"
-                {...register("last_name", patientValidations.last_name)}
-                className={errors.last_name ? "border-red-500" : ""}
+                {...register("lastName", patientValidations.lastName)}
+                className={errors.lastName ? "border-red-500" : ""}
               />
-              {errors.last_name && <p className="text-red-500 text-xs">{errors.last_name.message}</p>}
+              {errors.lastName && <p className="text-red-500 text-xs">{errors.lastName.message}</p>}
             </div>
           </div>
 
@@ -176,14 +193,14 @@ export default function PatientFormModal({
               {errors.dni && <p className="text-red-500 text-xs">{errors.dni.message}</p>}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="birth_date">Fecha de nacimiento</Label>
+              <Label htmlFor="birthDate">Fecha de nacimiento</Label>
               <Input
-                id="birth_date"
+                id="birthDate"
                 type="date"
-                {...register("birth_date", patientValidations.birth_date)}
-                className={errors.birth_date ? "border-red-500" : ""}
+                {...register("birthDate", patientValidations.birthDate)}
+                className={errors.birthDate ? "border-red-500" : ""}
               />
-              {errors.birth_date && <p className="text-red-500 text-xs">{errors.birth_date.message}</p>}
+              {errors.birthDate && <p className="text-red-500 text-xs">{errors.birthDate.message}</p>}
             </div>
           </div>
 
@@ -201,14 +218,14 @@ export default function PatientFormModal({
               {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone_number">Teléfono</Label>
+              <Label htmlFor="phoneNumber">Teléfono</Label>
               <Input
-                id="phone_number"
+                id="phoneNumber"
                 placeholder="+54 11 1234-5678"
-                {...register("phone_number", patientValidations.phone_number)}
-                className={errors.phone_number ? "border-red-500" : ""}
+                {...register("phoneNumber", patientValidations.phoneNumber)}
+                className={errors.phoneNumber ? "border-red-500" : ""}
               />
-              {errors.phone_number && <p className="text-red-500 text-xs">{errors.phone_number.message}</p>}
+              {errors.phoneNumber && <p className="text-red-500 text-xs">{errors.phoneNumber.message}</p>}
             </div>
           </div>
 
@@ -289,14 +306,14 @@ export default function PatientFormModal({
 
           {/* Número de afiliado */}
           <div className="space-y-2">
-            <Label htmlFor="membership_number">Número de afiliado</Label>
+            <Label htmlFor="membershipNumber">Número de afiliado</Label>
             <Input
-              id="membership_number"
+              id="membershipNumber"
               placeholder="Número de afiliado"
-              {...register("membership_number", patientValidations.membership_number)}
-              className={errors.membership_number ? "border-red-500" : ""}
+              {...register("membershipNumber", patientValidations.membershipNumber)}
+              className={errors.membershipNumber ? "border-red-500" : ""}
             />
-            {errors.membership_number && <p className="text-red-500 text-xs">{errors.membership_number.message}</p>}
+            {errors.membershipNumber && <p className="text-red-500 text-xs">{errors.membershipNumber.message}</p>}
           </div>
 
           <div className="text-xs text-muted-foreground">

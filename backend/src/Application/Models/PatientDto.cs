@@ -13,12 +13,15 @@ public record PatientDto(
     string? PhoneNumber,
     string? City,
     string? MembershipNumber,
-    int? HealthPlanId
+    int? HealthPlanId,
+    string? HealthPlanName,
+    int? HealthInsuranceId,
+    string? HealthInsuranceName
 )
 {
     public static PatientDto Create(Patient entity)
     {
-        var dto = new PatientDto(
+        return new PatientDto(
             entity.Id,
             entity.FirstName,
             entity.LastName,
@@ -29,10 +32,11 @@ public record PatientDto(
             entity.PhoneNumber,
             entity.City,
             entity.MembershipNumber,
-            entity.HealthPlanId
+            entity.HealthPlanId,
+            entity.HealthPlan?.Name,
+            entity.HealthPlan?.HealthInsuranceId,
+            entity.HealthPlan?.HealthInsurance?.Name
         );
-
-        return dto;
     }
 }
 

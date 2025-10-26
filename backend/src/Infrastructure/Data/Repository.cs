@@ -1,41 +1,45 @@
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Data;
-public class Repository<T> : IRepository<T> where T : class
+namespace Infrastructure.Data
 {
-    protected readonly ApplicationDbContext _applicationDbcontext;
-    protected readonly DbSet<T> _dbSet;
-
-    public Repository(ApplicationDbContext applicationDbcontext)
+    public class Repository<T> : IRepository<T> where T : class
     {
-        _applicationDbcontext = applicationDbcontext;
-        _dbSet = _applicationDbcontext.Set<T>();
+        protected readonly ApplicationDbContext _applicationDbcontext;
+        protected readonly DbSet<T> _dbSet;
+
+        public Repository(ApplicationDbContext applicationDbcontext)
+        {
+            _applicationDbcontext = applicationDbcontext;
+            _dbSet = _applicationDbcontext.Set<T>();
+        }
+        public virtual T? GetById(int id)
+        {
+            return _dbSet.Find(id);
+        }
+        public virtual IEnumerable<T> List()
+        {
+            return _dbSet.ToList();
+        }
+
+        public virtual T Add(T entity)
+        {
+            _dbSet.Add(entity);
+            _applicationDbcontext.SaveChanges();
+            return entity;
+        }
+
+        public virtual T Update(T entity)
+        {
+            _dbSet.Update(entity);
+            _applicationDbcontext.SaveChanges();
+            return entity;
+        }
+
+        public virtual void Delete(T entity)
+        {
+            _dbSet.Remove(entity);
+            _applicationDbcontext.SaveChanges();
+        }
     }
-
-    public T GetById(int id) => _dbSet.Find(id)!;
-
-   
-    public IEnumerable<T> List() => _dbSet.ToList();
-
-    public T Add(T entity)
-    {
-        _dbSet.Add(entity);
-        _applicationDbcontext.SaveChanges();
-        return entity;
-    }
-
-    public T Update(T entity)
-    {
-        _dbSet.Update(entity);
-        _applicationDbcontext.SaveChanges();
-        return entity;
-    }
-
-    public void Delete(T entity)
-    {
-        _dbSet.Remove(entity);
-        _applicationDbcontext.SaveChanges();
-    }
-
 }

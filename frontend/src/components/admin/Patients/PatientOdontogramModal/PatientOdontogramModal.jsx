@@ -12,7 +12,7 @@ export default function PatientOdontogramModal({ open, onClose, patient }) {
                 <DialogHeader className="flex-shrink-0 px-4 sm:px-0 pt-4 sm:pt-0">
                     <DialogTitle className="flex items-center gap-2 text-base sm:text-xl">
                         <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
-                        Odontograma - {patient.first_name} {patient.last_name}
+                        Odontograma - {patient.firstName} {patient.lastName}
                     </DialogTitle>
                 </DialogHeader>
                 <Button 
