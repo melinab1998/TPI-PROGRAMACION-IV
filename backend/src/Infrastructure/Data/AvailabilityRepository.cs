@@ -1,5 +1,8 @@
 using Domain.Entities;
 using Domain.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Infrastructure.Data
 {
@@ -11,9 +14,11 @@ namespace Infrastructure.Data
         {
             return _dbSet.Where(a => a.DentistId == dentistId).ToList();
         }
-        public Availability? GetByDentistAndDay(int dentistId, DayOfWeek dayOfWeek)
+
+        public IEnumerable<Availability> GetByDentistAndDay(int dentistId, DayOfWeek dayOfWeek)
         {
-            return _dbSet.FirstOrDefault(a => a.DentistId == dentistId && a.DayOfWeek == dayOfWeek);
+            return _dbSet.Where(a => a.DentistId == dentistId && a.DayOfWeek == dayOfWeek).ToList();
         }
     }
 }
+

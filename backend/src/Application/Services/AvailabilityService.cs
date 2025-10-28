@@ -1,9 +1,12 @@
 using Application.Interfaces;
 using Application.Models;
+using Application.Models.Requests;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
-using Application.Models.Requests;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.Services
 {
@@ -42,19 +45,18 @@ namespace Application.Services
                     dentistId
                 );
 
-                var existing = existingSlots.FirstOrDefault(s => s.DayOfWeek == newSlot.DayOfWeek);
+                // Validar superposición con tramos existentes del mismo día
+                bool overlaps = existingSlots
+                    .Where(s => s.DayOfWeek == newSlot.DayOfWeek)
+                    .Any(s => !(newSlot.EndTime <= s.StartTime || newSlot.StartTime >= s.EndTime));
 
-                if (existing != null)
-                {
-                    existing.StartTime = newSlot.StartTime;
-                    existing.EndTime = newSlot.EndTime;
-                    _availabilityRepository.Update(existing);
-                }
-                else
-                {
-                    _availabilityRepository.Add(newSlot);
-                }
+                if (overlaps)
+                    throw new AppValidationException("TIME_SLOT_OVERLAP");
+
+                _availabilityRepository.Add(newSlot);
+                existingSlots.Add(newSlot); // para validar siguientes slots
             }
         }
     }
 }
+

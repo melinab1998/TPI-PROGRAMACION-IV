@@ -5,6 +5,9 @@ using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.Services
 {
@@ -15,8 +18,11 @@ namespace Application.Services
         private readonly IPatientRepository _patientRepository;
         private readonly IDentistRepository _dentistRepository;
 
-
-        public TurnService(ITurnRepository turnRepository, IAvailabilityRepository availabilityRepository, IPatientRepository patientRepository, IDentistRepository dentistRepository)
+        public TurnService(
+            ITurnRepository turnRepository,
+            IAvailabilityRepository availabilityRepository,
+            IPatientRepository patientRepository,
+            IDentistRepository dentistRepository)
         {
             _turnRepository = turnRepository;
             _availabilityRepository = availabilityRepository;
@@ -54,12 +60,15 @@ namespace Application.Services
                 throw new AppValidationException("DENTIST_NOT_FOUND");
 
             // Validar disponibilidad del dentista
-            var availability = _availabilityRepository.GetByDentistAndDay(request.DentistId, request.AppointmentDate.DayOfWeek);
-            if (availability == null)
+            var availabilities = _availabilityRepository.GetByDentistAndDay(request.DentistId, request.AppointmentDate.DayOfWeek);
+            if (!availabilities.Any())
                 throw new AppValidationException("NO_AVAILABILITY_FOR_DAY");
 
             var start = request.AppointmentDate.TimeOfDay;
-            if (start < availability.StartTime || start >= availability.EndTime)
+
+            // Verificar que caiga dentro de algún tramo
+            bool fits = availabilities.Any(a => start >= a.StartTime && start < a.EndTime);
+            if (!fits)
                 throw new AppValidationException("OUT_OF_AVAILABLE_HOURS");
 
             // Validar que la hora sea múltiplo de 30 minutos
@@ -81,17 +90,35 @@ namespace Application.Services
             );
 
             _turnRepository.Add(turn);
-
             return TurnDto.Create(turn);
         }
+
         public TurnDto UpdateTurn(int id, UpdateTurnRequest request)
         {
             var turn = _turnRepository.GetById(id)
                 ?? throw new AppValidationException("TURN_NOT_FOUND");
 
-            // Actualizar solo los campos que vienen en el request
             if (request.AppointmentDate != null)
+            {
+                var availabilities = _availabilityRepository.GetByDentistAndDay(turn.DentistId, request.AppointmentDate.Value.DayOfWeek);
+                if (!availabilities.Any())
+                    throw new AppValidationException("NO_AVAILABILITY_FOR_DAY");
+
+                var start = request.AppointmentDate.Value.TimeOfDay;
+                bool fits = availabilities.Any(a => start >= a.StartTime && start < a.EndTime);
+                if (!fits)
+                    throw new AppValidationException("OUT_OF_AVAILABLE_HOURS");
+
+                if (start.Minutes % 30 != 0 || start.Seconds != 0 || start.Milliseconds != 0)
+                    throw new AppValidationException("INVALID_TIME_SLOT");
+
+                var existingTurns = _turnRepository.GetTurnsByDentist(turn.DentistId)
+                    .Where(t => t.Id != id);
+                if (existingTurns.Any(t => t.AppointmentDate == request.AppointmentDate))
+                    throw new AppValidationException("TIME_SLOT_TAKEN");
+
                 turn.AppointmentDate = request.AppointmentDate.Value;
+            }
 
             if (request.Status != null)
                 turn.Status = request.Status.Value;
@@ -108,11 +135,9 @@ namespace Application.Services
             var turn = _turnRepository.GetById(id)
                 ?? throw new AppValidationException("TURN_NOT_FOUND");
 
-            typeof(Turn)
-                .GetProperty("Status")!
-                .SetValue(turn, TurnStatus.Cancelled);
-
+            turn.Status = TurnStatus.Cancelled;
             _turnRepository.Update(turn);
         }
     }
 }
+
