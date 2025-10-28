@@ -5,17 +5,17 @@ namespace Domain.Entities
     public class Turn
     {
         public int Id { get; private set; }
-        public DateTime AppointmentDate { get; private set; }
-        public TurnStatus Status { get; private set; }
-        public string? ConsultationType { get; private set; }
+        public DateTime AppointmentDate { get; set; }
+        public TurnStatus Status { get;  set; }
+        public string? ConsultationType { get; set; }
 
         // Foreign Keys
-        public int PatientId { get; private set; }
-        public int DentistId { get; private set; }
+        public int PatientId { get;  set; }
+        public int DentistId { get;  set; }
 
         // Propiedades de navegación
-        public Patient? Patient { get; private set; }
-        public Dentist? Dentist { get; private set; }
+        public Patient? Patient { get;  set; }
+        public Dentist? Dentist { get;  set; }
         public Turn() { }
         public Turn(DateTime appointmentDate, TurnStatus status, string? consultationType, int patientId, int dentistId)
         {

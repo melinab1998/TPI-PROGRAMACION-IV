@@ -11,5 +11,9 @@ namespace Infrastructure.Data
         {
             return _dbSet.Where(a => a.DentistId == dentistId).ToList();
         }
+        public Availability? GetByDentistAndDay(int dentistId, DayOfWeek dayOfWeek)
+        {
+            return _dbSet.FirstOrDefault(a => a.DentistId == dentistId && a.DayOfWeek == dayOfWeek);
+        }
     }
 }

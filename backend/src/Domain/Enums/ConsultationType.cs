@@ -3,10 +3,10 @@ using System.Text.Json.Serialization;
 namespace Domain.Enums
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum TurnStatus
+    public enum ConsultationType
     {
-        Pending,
-        Completed,
-        Cancelled
+        Consulta,
+        Tratamiento
     }
+
 }

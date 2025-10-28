@@ -10,6 +10,7 @@ namespace Infrastructure.Data
         public DbSet<Dentist> Dentists { get; set; }
         public DbSet<SuperAdmin> SuperAdmins { get; set; }
         public DbSet<Availability> Availabilities { get; set; }
+        public DbSet<Turn> Turns { get; set; }   
 
         // DbSets para obras sociales y planes
         public DbSet<HealthInsurance> HealthInsurances { get; set; }
@@ -23,7 +24,6 @@ namespace Infrastructure.Data
         {
         }
 
-        // 🔹 Un solo OnModelCreating con todo dentro
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -33,18 +33,40 @@ namespace Infrastructure.Data
             modelBuilder.Entity<Patient>().ToTable("Patients");
             modelBuilder.Entity<Dentist>().ToTable("Dentists");
             modelBuilder.Entity<SuperAdmin>().ToTable("SuperAdmins");
+            modelBuilder.Entity<Turn>().ToTable("Turns");  
 
-            // Configuraciones específicas
+            // Configuración de Turn
+            modelBuilder.Entity<Turn>()
+                .HasKey(t => t.Id);
+
+            modelBuilder.Entity<Turn>()
+                .Property(t => t.AppointmentDate)
+                .IsRequired();
+
+            modelBuilder.Entity<Turn>()
+                .Property(t => t.Status)
+                .IsRequired();
+
+            modelBuilder.Entity<Turn>()
+                .HasOne(t => t.Patient)
+                .WithMany()
+                .HasForeignKey(t => t.PatientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Turn>()
+                .HasOne(t => t.Dentist)
+                .WithMany()
+                .HasForeignKey(t => t.DentistId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Patient>()
                 .Property(p => p.Dni)
                 .IsRequired();
 
-            //Semillas de datos (HealthInsurance y HealthPlan)
             modelBuilder.Entity<HealthInsurance>().HasData(CreateHealthInsuranceSeed());
             modelBuilder.Entity<HealthPlan>().HasData(CreateHealthPlanSeed());
         }
 
-        
         private HealthInsurance[] CreateHealthInsuranceSeed()
         {
             return new[]

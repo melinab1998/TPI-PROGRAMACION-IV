@@ -3,6 +3,7 @@ using Application.Models;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
+using Application.Models.Requests;
 
 namespace Application.Services
 {
@@ -25,25 +26,23 @@ namespace Application.Services
             return availabilities.Select(AvailabilityDto.Create);
         }
 
-        public void SetAvailability(int dentistId, IEnumerable<AvailabilityDto> slots)
+        public void SetAvailability(int dentistId, IEnumerable<AvailabilityRequest> slots)
         {
             if (slots == null || !slots.Any())
                 throw new AppValidationException("MANDATORY_FIELDS");
 
             var existingSlots = _availabilityRepository.GetByDentistId(dentistId).ToList();
 
-            foreach (var slotDto in slots)
+            foreach (var slotRequest in slots)
             {
                 var newSlot = new Availability(
-                    slotDto.DayOfWeek,
-                    TimeSpan.Parse(slotDto.StartTime),
-                    TimeSpan.Parse(slotDto.EndTime),
+                    slotRequest.DayOfWeek,
+                    TimeSpan.Parse(slotRequest.StartTime),
+                    TimeSpan.Parse(slotRequest.EndTime),
                     dentistId
                 );
 
-                var existing = existingSlots.FirstOrDefault(s =>
-                    s.DayOfWeek == newSlot.DayOfWeek
-                );
+                var existing = existingSlots.FirstOrDefault(s => s.DayOfWeek == newSlot.DayOfWeek);
 
                 if (existing != null)
                 {
