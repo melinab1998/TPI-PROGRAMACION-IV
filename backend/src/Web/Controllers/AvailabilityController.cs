@@ -2,12 +2,13 @@ using Application.Interfaces;
 using Application.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Application.Models.Requests;
 
 namespace Web.Controllers
 {
     [ApiController]
     [Route("api/availabilities")]
-    [Authorize(Roles = "Dentist")]
+    [Authorize(Roles = "Dentist, SuperAdmin")]
     public class AvailabilityController : ControllerBase
     {
         private readonly IAvailabilityService _availabilityService;
@@ -25,10 +26,10 @@ namespace Web.Controllers
         }
 
         [HttpPost("{dentistId}")]
-        public IActionResult SetAvailability(int dentistId, [FromBody] List<AvailabilityDto> slots)
+        public IActionResult SetAvailability(int dentistId, [FromBody] List<AvailabilityRequest> slots)
         {
             _availabilityService.SetAvailability(dentistId, slots);
-            return NoContent();
+            return Ok();
         }
     }
 }
