@@ -62,6 +62,10 @@ namespace Application.Services
             if (start < availability.StartTime || start >= availability.EndTime)
                 throw new AppValidationException("OUT_OF_AVAILABLE_HOURS");
 
+            // Validar que la hora sea múltiplo de 30 minutos
+            if (start.Minutes % 30 != 0 || start.Seconds != 0 || start.Milliseconds != 0)
+                throw new AppValidationException("INVALID_TIME_SLOT");
+
             // Validar que no haya otro turno en esa hora
             var existingTurns = _turnRepository.GetTurnsByDentist(request.DentistId);
             if (existingTurns.Any(t => t.AppointmentDate == request.AppointmentDate))
