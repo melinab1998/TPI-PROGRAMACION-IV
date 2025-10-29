@@ -127,15 +127,11 @@ public class PatientService : IPatientService
             request.Email != patient.Email)
             throw new AppValidationException("EMAIL_ALREADY_EXISTS");
 
-        if (!string.IsNullOrEmpty(request.FirstName)) patient.FirstName = request.FirstName;
-        if (!string.IsNullOrEmpty(request.LastName)) patient.LastName = request.LastName;
-        if (!string.IsNullOrEmpty(request.Email)) patient.Email = request.Email;
-        if (!string.IsNullOrEmpty(request.Address)) patient.Address = request.Address;
-        if (!string.IsNullOrEmpty(request.PhoneNumber)) patient.PhoneNumber = request.PhoneNumber;
-        if (!string.IsNullOrEmpty(request.City)) patient.City = request.City;
-        if (!string.IsNullOrEmpty(request.MembershipNumber)) patient.MembershipNumber = request.MembershipNumber;
-        if (request.BirthDate.HasValue) patient.BirthDate = request.BirthDate;
-        if (request.HealthPlanId.HasValue) patient.HealthPlanId = request.HealthPlanId.Value;
+          patient.UpdatePersonalInfo(
+            request.FirstName, request.LastName, request.Email,
+            request.Address, request.PhoneNumber, request.City,
+            request.MembershipNumber, request.BirthDate, request.HealthPlanId
+        );
 
         _patientRepository.Update(patient);
 
