@@ -24,7 +24,7 @@ namespace Application.Services
             var availabilities = _availabilityRepository.GetByDentistId(dentistId);
 
             if (availabilities == null || !availabilities.Any())
-                throw new AppValidationException("NO_AVAILABLE_SLOTS");
+                throw new NotFoundException("NO_AVAILABLE_SLOTS");
 
             return availabilities.Select(AvailabilityDto.Create);
         }

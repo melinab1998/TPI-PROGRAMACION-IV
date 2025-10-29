@@ -34,7 +34,7 @@ namespace Application.Services
         {
             var turns = _turnRepository.List();
             if (!turns.Any())
-                throw new AppValidationException("NO_TURNS_FOUND");
+                throw new NotFoundException("NO_TURNS_FOUND");
 
             return turns.Select(TurnDto.Create);
         }
@@ -42,7 +42,7 @@ namespace Application.Services
         public TurnDto GetTurnById(int id)
         {
             var turn = _turnRepository.GetById(id)
-                ?? throw new AppValidationException("TURN_NOT_FOUND");
+                ?? throw new NotFoundException("TURN_NOT_FOUND");
 
             return TurnDto.Create(turn);
         }
@@ -52,12 +52,12 @@ namespace Application.Services
             // Validar paciente
             var patient = _patientRepository.GetById(request.PatientId);
             if (patient == null)
-                throw new AppValidationException("PATIENT_NOT_FOUND");
+                throw new NotFoundException("PATIENT_NOT_FOUND");
 
             // Validar dentista
             var dentist = _dentistRepository.GetById(request.DentistId);
             if (dentist == null)
-                throw new AppValidationException("DENTIST_NOT_FOUND");
+                throw new NotFoundException("DENTIST_NOT_FOUND");
 
             // Validar disponibilidad del dentista
             var availabilities = _availabilityRepository.GetByDentistAndDay(request.DentistId, request.AppointmentDate.DayOfWeek);
@@ -96,7 +96,7 @@ namespace Application.Services
         public TurnDto UpdateTurn(int id, UpdateTurnRequest request)
         {
             var turn = _turnRepository.GetById(id)
-                ?? throw new AppValidationException("TURN_NOT_FOUND");
+                ?? throw new NotFoundException("TURN_NOT_FOUND");
 
             if (request.AppointmentDate != null)
             {
@@ -133,7 +133,7 @@ namespace Application.Services
         public void CancelTurn(int id)
         {
             var turn = _turnRepository.GetById(id)
-                ?? throw new AppValidationException("TURN_NOT_FOUND");
+                ?? throw new NotFoundException("TURN_NOT_FOUND");
 
             turn.Status = TurnStatus.Cancelled;
             _turnRepository.Update(turn);

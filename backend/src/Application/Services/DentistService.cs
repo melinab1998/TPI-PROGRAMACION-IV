@@ -78,7 +78,7 @@ public class DentistService : IDentistService
     public DentistDto GetDentistById(int id)
     {
         var dentist = _dentistRepository.GetById(id)
-            ?? throw new AppValidationException("DENTIST_NOT_FOUND");
+            ?? throw new NotFoundException("DENTIST_NOT_FOUND");
 
         return DentistDto.Create(dentist);
     }
@@ -87,7 +87,7 @@ public class DentistService : IDentistService
     {
         var dentists = _dentistRepository.List();
         if (dentists == null || !dentists.Any())
-            throw new AppValidationException("NO_DENTISTS_FOUND");
+            throw new NotFoundException("NO_DENTISTS_FOUND");
 
         return dentists.Select(DentistDto.Create);
     }
@@ -95,7 +95,7 @@ public class DentistService : IDentistService
     public DentistDto UpdateDentist(int id, UpdateDentistRequest request)
     {
         var dentist = _dentistRepository.GetById(id)
-            ?? throw new AppValidationException("DENTIST_NOT_FOUND");
+            ?? throw new NotFoundException("DENTIST_NOT_FOUND");
 
         if (!string.IsNullOrEmpty(request.Email) && 
             _userRepository.GetByEmail(request.Email) != null &&
@@ -119,7 +119,7 @@ public class DentistService : IDentistService
     public DentistDto SetActiveStatusByAdmin(int id, bool isActive)
     {
         var dentist = _dentistRepository.GetById(id)
-            ?? throw new AppValidationException("DENTIST_NOT_FOUND");
+            ?? throw new NotFoundException("DENTIST_NOT_FOUND");
 
         dentist.IsActive = isActive;
         _dentistRepository.Update(dentist);

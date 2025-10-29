@@ -20,7 +20,7 @@ namespace Application.Services
             var insurances = _healthInsuranceRepository.GetAll();
 
             if (insurances == null || !insurances.Any())
-                throw new AppValidationException("HEALTH_INSURANCE_NOT_FOUND");
+                throw new NotFoundException("HEALTH_INSURANCE_NOT_FOUND");
 
             return insurances.Select(insurance => new HealthInsuranceDto(
                 insurance.Id,
@@ -34,7 +34,7 @@ namespace Application.Services
             var insurance = _healthInsuranceRepository.GetByIdWithPlans(id);
 
             if (insurance == null)
-                throw new AppValidationException("HEALTH_INSURANCE_NOT_FOUND");
+                throw new NotFoundException("HEALTH_INSURANCE_NOT_FOUND");
 
             return new HealthInsuranceDto(
                 insurance.Id,
