@@ -6,6 +6,7 @@ namespace Application.Interfaces
     public interface IAvailabilityService
     {
         IEnumerable<AvailabilityDto> GetByDentistId(int dentistId);
-        void SetAvailability(int dentistId, IEnumerable<AvailabilityRequest> slots);
+        void CreateAvailability(int dentistId, IEnumerable<AvailabilityRequest> slots);
+        void UpdateAvailability(int slotId, AvailabilityRequest updatedSlot);
     }
 }
