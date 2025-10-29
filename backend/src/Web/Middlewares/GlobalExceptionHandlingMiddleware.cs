@@ -39,7 +39,7 @@ public class GlobalExceptionHandlingMiddleware : IMiddleware
         {
             _logger.LogError(ex, ex.Message);
 
-            int statusCode = (int)HttpStatusCode.BadRequest;
+            int statusCode = (int)HttpStatusCode.NotFound;
 
             ProblemDetails problem = new()
             {
