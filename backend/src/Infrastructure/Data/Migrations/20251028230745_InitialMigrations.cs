@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class InitialMigrations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -149,6 +149,35 @@ namespace Infrastructure.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Turns",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AppointmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    ConsultationType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PatientId = table.Column<int>(type: "int", nullable: false),
+                    DentistId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Turns", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Turns_Dentists_DentistId",
+                        column: x => x.DentistId,
+                        principalTable: "Dentists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Turns_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.InsertData(
                 table: "HealthInsurances",
                 columns: new[] { "Id", "Name" },
@@ -188,6 +217,16 @@ namespace Infrastructure.Data.Migrations
                 name: "IX_Patients_HealthPlanId",
                 table: "Patients",
                 column: "HealthPlanId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Turns_DentistId",
+                table: "Turns",
+                column: "DentistId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Turns_PatientId",
+                table: "Turns",
+                column: "PatientId");
         }
 
         /// <inheritdoc />
@@ -197,13 +236,16 @@ namespace Infrastructure.Data.Migrations
                 name: "Availabilities");
 
             migrationBuilder.DropTable(
-                name: "Patients");
-
-            migrationBuilder.DropTable(
                 name: "SuperAdmins");
 
             migrationBuilder.DropTable(
+                name: "Turns");
+
+            migrationBuilder.DropTable(
                 name: "Dentists");
+
+            migrationBuilder.DropTable(
+                name: "Patients");
 
             migrationBuilder.DropTable(
                 name: "HealthPlans");
