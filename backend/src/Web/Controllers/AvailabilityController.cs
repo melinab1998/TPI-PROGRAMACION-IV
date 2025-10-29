@@ -28,9 +28,17 @@ namespace Web.Controllers
         [HttpPost("{dentistId}")]
         public IActionResult SetAvailability(int dentistId, [FromBody] List<AvailabilityRequest> slots)
         {
-            _availabilityService.SetAvailability(dentistId, slots);
+            _availabilityService.CreateAvailability(dentistId, slots);
             return Ok();
         }
+
+        [HttpPut("{slotId}")]
+        public IActionResult UpdateAvailability(int slotId, [FromBody] AvailabilityRequest updatedSlot)
+        {
+            _availabilityService.UpdateAvailability(slotId, updatedSlot);
+            return Ok();
+        }
+
     }
 }
 

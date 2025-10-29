@@ -19,6 +19,19 @@ namespace Domain.Entities
             SetPassword(password);
             IsActive = true;
         }
+
+        public void SetActiveStatus(bool isActive)
+        {
+            IsActive = isActive;
+        }
+
+        public void UpdateInfo(string? firstName, string? lastName, string? email, string? licenseNumber)
+        {
+            if (!string.IsNullOrEmpty(firstName)) FirstName = firstName;
+            if (!string.IsNullOrEmpty(lastName)) LastName = lastName;
+            if (!string.IsNullOrEmpty(email)) Email = email;
+            if (!string.IsNullOrEmpty(licenseNumber)) LicenseNumber = licenseNumber;
+        }
     }
 }
 

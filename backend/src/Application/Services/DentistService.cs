@@ -67,18 +67,11 @@ public class DentistService : IDentistService
         _dentistRepository.Update(dentist);
     }
 
-    private string GenerateTemporaryPassword()
-    {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        var random = new Random();
-        return "Tmp-" + new string(Enumerable.Repeat(chars, 10)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
-    }
 
     public DentistDto GetDentistById(int id)
     {
         var dentist = _dentistRepository.GetById(id)
-            ?? throw new AppValidationException("DENTIST_NOT_FOUND");
+            ?? throw new NotFoundException("DENTIST_NOT_FOUND");
 
         return DentistDto.Create(dentist);
     }
@@ -87,7 +80,7 @@ public class DentistService : IDentistService
     {
         var dentists = _dentistRepository.List();
         if (dentists == null || !dentists.Any())
-            throw new AppValidationException("NO_DENTISTS_FOUND");
+            throw new NotFoundException("NO_DENTISTS_FOUND");
 
         return dentists.Select(DentistDto.Create);
     }
@@ -95,22 +88,19 @@ public class DentistService : IDentistService
     public DentistDto UpdateDentist(int id, UpdateDentistRequest request)
     {
         var dentist = _dentistRepository.GetById(id)
-            ?? throw new AppValidationException("DENTIST_NOT_FOUND");
+            ?? throw new NotFoundException("DENTIST_NOT_FOUND");
 
-        if (!string.IsNullOrEmpty(request.Email) && 
+        if (!string.IsNullOrEmpty(request.Email) &&
             _userRepository.GetByEmail(request.Email) != null &&
             request.Email != dentist.Email)
             throw new AppValidationException("EMAIL_ALREADY_EXISTS");
 
-        if (!string.IsNullOrEmpty(request.LicenseNumber) && 
+        if (!string.IsNullOrEmpty(request.LicenseNumber) &&
             _dentistRepository.LicenseExists(request.LicenseNumber) &&
             request.LicenseNumber != dentist.LicenseNumber)
             throw new AppValidationException("LICENSE_ALREADY_EXISTS");
 
-        if (!string.IsNullOrEmpty(request.FirstName)) dentist.FirstName = request.FirstName;
-        if (!string.IsNullOrEmpty(request.LastName)) dentist.LastName = request.LastName;
-        if (!string.IsNullOrEmpty(request.Email)) dentist.Email = request.Email;
-        if (!string.IsNullOrEmpty(request.LicenseNumber)) dentist.LicenseNumber = request.LicenseNumber;
+        dentist.UpdateInfo(request.FirstName, request.LastName, request.Email, request.LicenseNumber);
 
         _dentistRepository.Update(dentist);
         return DentistDto.Create(dentist);
@@ -119,12 +109,20 @@ public class DentistService : IDentistService
     public DentistDto SetActiveStatusByAdmin(int id, bool isActive)
     {
         var dentist = _dentistRepository.GetById(id)
-            ?? throw new AppValidationException("DENTIST_NOT_FOUND");
+            ?? throw new NotFoundException("DENTIST_NOT_FOUND");
 
-        dentist.IsActive = isActive;
+        dentist.SetActiveStatus(isActive);
         _dentistRepository.Update(dentist);
 
         return DentistDto.Create(dentist);
+    }
+    
+     private string GenerateTemporaryPassword()
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var random = new Random();
+        return "Tmp-" + new string(Enumerable.Repeat(chars, 10)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 }
 

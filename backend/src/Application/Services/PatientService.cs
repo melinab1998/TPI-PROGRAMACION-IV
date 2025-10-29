@@ -95,7 +95,7 @@ public class PatientService : IPatientService
 
         int patientId = int.Parse(patientIdClaim.Value);
         var patient = _patientRepository.GetById(patientId)
-            ?? throw new AppValidationException("PATIENT_NOT_FOUND");
+            ?? throw new NotFoundException("PATIENT_NOT_FOUND");
 
         patient.SetPassword(_hasher.HashPassword(password));
         _patientRepository.Update(patient);
@@ -105,7 +105,7 @@ public class PatientService : IPatientService
     {
         var patients = _patientRepository.List();
         if (patients == null || !patients.Any())
-            throw new AppValidationException("NO_PATIENTS_FOUND");
+            throw new NotFoundException("NO_PATIENTS_FOUND");
 
         return patients.Select(PatientDto.Create);
     }
@@ -113,29 +113,25 @@ public class PatientService : IPatientService
     public PatientDto GetPatientById(int id)
     {
         var patient = _patientRepository.GetById(id)
-            ?? throw new AppValidationException("PATIENT_NOT_FOUND");
+            ?? throw new NotFoundException("PATIENT_NOT_FOUND");
         return PatientDto.Create(patient);
     }
 
     public PatientDto UpdatePatient(int id, UpdatePatientRequest request)
     {
         var patient = _patientRepository.GetById(id)
-            ?? throw new AppValidationException("PATIENT_NOT_FOUND");
+            ?? throw new NotFoundException("PATIENT_NOT_FOUND");
 
         if (!string.IsNullOrEmpty(request.Email) &&
             _userRepository.GetByEmail(request.Email) != null &&
             request.Email != patient.Email)
             throw new AppValidationException("EMAIL_ALREADY_EXISTS");
 
-        if (!string.IsNullOrEmpty(request.FirstName)) patient.FirstName = request.FirstName;
-        if (!string.IsNullOrEmpty(request.LastName)) patient.LastName = request.LastName;
-        if (!string.IsNullOrEmpty(request.Email)) patient.Email = request.Email;
-        if (!string.IsNullOrEmpty(request.Address)) patient.Address = request.Address;
-        if (!string.IsNullOrEmpty(request.PhoneNumber)) patient.PhoneNumber = request.PhoneNumber;
-        if (!string.IsNullOrEmpty(request.City)) patient.City = request.City;
-        if (!string.IsNullOrEmpty(request.MembershipNumber)) patient.MembershipNumber = request.MembershipNumber;
-        if (request.BirthDate.HasValue) patient.BirthDate = request.BirthDate;
-        if (request.HealthPlanId.HasValue) patient.HealthPlanId = request.HealthPlanId.Value;
+          patient.UpdatePersonalInfo(
+            request.FirstName, request.LastName, request.Email,
+            request.Address, request.PhoneNumber, request.City,
+            request.MembershipNumber, request.BirthDate, request.HealthPlanId
+        );
 
         _patientRepository.Update(patient);
 
@@ -147,7 +143,7 @@ public class PatientService : IPatientService
     public PatientDto UpdatePatientEmail(int id, UpdatePatientEmailRequest request)
     {
         var patient = _patientRepository.GetById(id)
-            ?? throw new AppValidationException("PATIENT_NOT_FOUND");
+            ?? throw new NotFoundException("PATIENT_NOT_FOUND");
 
         if (_userRepository.GetByEmail(request.Email) != null && request.Email != patient.Email)
             throw new AppValidationException("EMAIL_ALREADY_EXISTS");
@@ -163,7 +159,7 @@ public class PatientService : IPatientService
     public void UpdatePatientPassword(int id, UpdatePatientPasswordRequest request)
     {
         var patient = _patientRepository.GetById(id)
-            ?? throw new AppValidationException("PATIENT_NOT_FOUND");
+            ?? throw new NotFoundException("PATIENT_NOT_FOUND");
 
         if (!_hasher.VerifyPassword(request.CurrentPassword, patient.Password!))
             throw new AppValidationException("CURRENT_PASSWORD_INCORRECT");
