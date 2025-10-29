@@ -29,7 +29,7 @@ namespace Application.Services
             return availabilities.Select(AvailabilityDto.Create);
         }
 
-        public void SetAvailability(int dentistId, IEnumerable<AvailabilityRequest> slots)
+        public void CreateAvailability(int dentistId, IEnumerable<AvailabilityRequest> slots)
         {
             if (slots == null || !slots.Any())
                 throw new AppValidationException("MANDATORY_FIELDS");
@@ -56,6 +56,28 @@ namespace Application.Services
                 _availabilityRepository.Add(newSlot);
                 existingSlots.Add(newSlot); // para validar siguientes slots
             }
+        }
+        public void UpdateAvailability(int slotId, AvailabilityRequest updatedSlot)
+        {
+            // Traer el slot existente
+            var slot = _availabilityRepository.GetById(slotId);
+            if (slot == null)
+                throw new NotFoundException("SLOT_NOT_FOUND");
+
+            // Actualizar valores
+            slot.DayOfWeek = updatedSlot.DayOfWeek;
+            slot.StartTime = TimeSpan.Parse(updatedSlot.StartTime);
+            slot.EndTime = TimeSpan.Parse(updatedSlot.EndTime);
+
+            // Validar superposición con otros slots del mismo dentista
+            var otherSlots = _availabilityRepository.GetByDentistId(slot.DentistId)
+                            .Where(s => s.Id != slotId && s.DayOfWeek == slot.DayOfWeek);
+
+            bool overlaps = otherSlots.Any(s => !(slot.EndTime <= s.StartTime || slot.StartTime >= s.EndTime));
+            if (overlaps)
+                throw new AppValidationException("TIME_SLOT_OVERLAP");
+
+            _availabilityRepository.Update(slot);
         }
     }
 }
