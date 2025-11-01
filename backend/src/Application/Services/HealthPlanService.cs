@@ -15,6 +15,7 @@ namespace Application.Services
             _healthPlanRepository = healthPlanRepository;
         }
 
+        //Obtener todos los planes
         public IEnumerable<HealthPlanDto> GetAll()
         {
             var plans = _healthPlanRepository.GetAll();
@@ -25,6 +26,7 @@ namespace Application.Services
             return plans.Select(plan => new HealthPlanDto(plan.Id, plan.Name));
         }
 
+        //Obtener un plan en especifico(ID)
         public IEnumerable<HealthPlanDto> GetByInsuranceId(int healthInsuranceId)
         {
             var plans = _healthPlanRepository.GetByInsuranceId(healthInsuranceId);
