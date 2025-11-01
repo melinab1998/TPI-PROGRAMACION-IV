@@ -1,3 +1,5 @@
+using Domain.Exceptions;
+
 namespace Domain.Entities
 {
     public class VisitRecord
@@ -19,6 +21,9 @@ namespace Domain.Entities
 
         public VisitRecord(DateOnly visitDate, string treatment, string diagnosis, string? notes, string? prescription, int turnId)
         {
+            if (visitDate > DateOnly.FromDateTime(DateTime.Now))
+                throw new AppValidationException("La fecha de la visita no puede ser futura.");
+
             VisitDate = visitDate;
             Treatment = treatment;
             Diagnosis = diagnosis;
@@ -26,5 +31,23 @@ namespace Domain.Entities
             Prescription = prescription;
             TurnId = turnId;
         }
+
+        public void UpdateInfo(DateOnly? visitDate, string? treatment, string? diagnosis, string? notes, string? prescription, int? turnId)
+        {
+            if (visitDate.HasValue)
+            {
+                if (visitDate.Value > DateOnly.FromDateTime(DateTime.Now))
+                    throw new AppValidationException("La fecha de la visita no puede ser futura.");
+
+                VisitDate = visitDate.Value;
+            }
+
+            if (!string.IsNullOrEmpty(treatment)) Treatment = treatment;
+            if (!string.IsNullOrEmpty(diagnosis)) Diagnosis = diagnosis;
+            if (!string.IsNullOrEmpty(notes)) Notes = notes;
+            if (!string.IsNullOrEmpty(prescription)) Prescription = prescription;
+            int? TurnId = turnId;
+        }
     }
+
 }
