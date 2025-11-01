@@ -18,6 +18,15 @@ namespace Web.Controllers
             _availabilityService = availabilityService;
         }
 
+        //Devuelve horarios disponibles del dentista en x día.
+
+        [HttpGet("{dentistId}/available-slots")]
+        public ActionResult<IEnumerable<string>> GetAvailableSlots(int dentistId, [FromQuery] DateTime date)
+        {
+            var slots = _availabilityService.GetAvailableSlots(dentistId, date);
+            return Ok(slots);
+        }
+
         [HttpGet("{dentistId}")]
         public ActionResult<IEnumerable<AvailabilityDto>> GetByDentistId(int dentistId)
         {
@@ -38,7 +47,6 @@ namespace Web.Controllers
             _availabilityService.UpdateAvailability(slotId, updatedSlot);
             return Ok();
         }
-
     }
 }
 

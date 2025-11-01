@@ -13,10 +13,12 @@ namespace Application.Services
     public class AvailabilityService : IAvailabilityService
     {
         private readonly IAvailabilityRepository _availabilityRepository;
+        private readonly ITurnRepository _turnRepository;
 
-        public AvailabilityService(IAvailabilityRepository availabilityRepository)
+        public AvailabilityService(IAvailabilityRepository availabilityRepository, ITurnRepository turnRepository)
         {
             _availabilityRepository = availabilityRepository;
+            _turnRepository = turnRepository;
         }
 
         public IEnumerable<AvailabilityDto> GetByDentistId(int dentistId)
@@ -79,6 +81,41 @@ namespace Application.Services
 
             _availabilityRepository.Update(slot);
         }
+
+        public IEnumerable<string> GetAvailableSlots(int dentistId, DateTime date)
+        {
+            var dayOfWeek = date.DayOfWeek;
+            var availabilities = _availabilityRepository.GetByDentistAndDay(dentistId, dayOfWeek);
+            if (!availabilities.Any())
+                throw new NotFoundException("NO_AVAILABILITY_FOR_DAY");
+
+            // Obtener turnos ya reservados
+            var bookedTurns = _turnRepository.GetBookedTurns(dentistId, date);
+
+            var availableSlots = new List<string>();
+
+            foreach (var slot in availabilities)
+            {
+                var start = slot.StartTime;
+                while (start < slot.EndTime)
+                {
+                    // Turnos de 30 minutos
+                    var end = start.Add(TimeSpan.FromMinutes(30));
+
+                    // Verificar si ya hay un turno reservado a esa hora
+                    bool isBooked = bookedTurns.Any(t =>
+                        t.AppointmentDate.TimeOfDay == start);
+
+                    if (!isBooked)
+                        availableSlots.Add(start.ToString(@"hh\:mm"));
+
+                    start = end;
+                }
+            }
+
+            return availableSlots;
+        }
+
     }
 }
 
