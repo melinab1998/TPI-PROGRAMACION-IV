@@ -21,6 +21,7 @@ namespace Application.Services
             _jwtService = jwtService;
         }
 
+        //Autenticacion
         public User Authenticate(string email, string password)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
@@ -42,6 +43,7 @@ namespace Application.Services
             return user;
         }
 
+        //Creacion del SuperAdmin de manera automatica
         public void CreateSuperAdminOnce(string firstName, string lastName, string email, string password)
         {
             try

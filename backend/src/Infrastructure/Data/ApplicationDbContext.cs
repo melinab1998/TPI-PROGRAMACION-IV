@@ -10,7 +10,9 @@ namespace Infrastructure.Data
         public DbSet<Dentist> Dentists { get; set; }
         public DbSet<SuperAdmin> SuperAdmins { get; set; }
         public DbSet<Availability> Availabilities { get; set; }
-        public DbSet<Turn> Turns { get; set; }   
+        public DbSet<Turn> Turns { get; set; }
+
+        public DbSet<VisitRecord> VisitRecords { get; set; }
 
         // DbSets para obras sociales y planes
         public DbSet<HealthInsurance> HealthInsurances { get; set; }
@@ -33,7 +35,7 @@ namespace Infrastructure.Data
             modelBuilder.Entity<Patient>().ToTable("Patients");
             modelBuilder.Entity<Dentist>().ToTable("Dentists");
             modelBuilder.Entity<SuperAdmin>().ToTable("SuperAdmins");
-            modelBuilder.Entity<Turn>().ToTable("Turns");  
+            modelBuilder.Entity<Turn>().ToTable("Turns");
 
             // Configuración de Turn
             modelBuilder.Entity<Turn>()

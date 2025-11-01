@@ -30,6 +30,7 @@ namespace Application.Services
             _dentistRepository = dentistRepository;
         }
 
+        //Obtener todos los turnos
         public IEnumerable<TurnDto> GetAllTurns()
         {
             var turns = _turnRepository.List();
@@ -39,6 +40,7 @@ namespace Application.Services
             return turns.Select(TurnDto.Create);
         }
 
+        //Mostrar un turno en especifico por ID
         public TurnDto GetTurnById(int id)
         {
             var turn = _turnRepository.GetById(id)
@@ -47,14 +49,13 @@ namespace Application.Services
             return TurnDto.Create(turn);
         }
 
+        //Crear turno
         public TurnDto CreateTurn(CreateTurnRequest request)
         {
-            // Validar paciente
             var patient = _patientRepository.GetById(request.PatientId);
             if (patient == null)
                 throw new NotFoundException("PATIENT_NOT_FOUND");
 
-            // Validar dentista
             var dentist = _dentistRepository.GetById(request.DentistId);
             if (dentist == null)
                 throw new NotFoundException("DENTIST_NOT_FOUND");
@@ -63,7 +64,7 @@ namespace Application.Services
             var availabilities = _availabilityRepository.GetByDentistAndDay(request.DentistId, request.AppointmentDate.DayOfWeek);
             if (!availabilities.Any())
                 throw new AppValidationException("NO_AVAILABILITY_FOR_DAY");
-            
+
             // Validar que el paciente no tenga otro turno ese día
             var patientTurnsSameDay = _turnRepository.GetTurnsByPatient(request.PatientId)
                 .Where(t => t.AppointmentDate.Date == request.AppointmentDate.Date);
@@ -73,7 +74,7 @@ namespace Application.Services
 
             // Validar que no haya otro turno en esa hora
             var existingTurns = _turnRepository.GetTurnsByDentist(request.DentistId);
-           
+
             // Crear turno
             var turn = new Turn(
                 request.AppointmentDate,
@@ -89,6 +90,7 @@ namespace Application.Services
             return TurnDto.Create(turn);
         }
 
+        //Actualizar el turno
         public TurnDto UpdateTurn(int id, UpdateTurnRequest request)
         {
             var turn = _turnRepository.GetById(id)
@@ -100,10 +102,10 @@ namespace Application.Services
                 if (!availabilities.Any())
                     throw new AppValidationException("NO_AVAILABILITY_FOR_DAY");
 
-    
+
                 var existingTurns = _turnRepository.GetTurnsByDentist(turn.DentistId)
                     .Where(t => t.Id != id);
-                
+
 
                 turn.Reschedule(request.AppointmentDate.Value, availabilities, existingTurns);
             }

@@ -30,6 +30,25 @@ public class PatientService : IPatientService
         _jwtService = jwtService;
     }
 
+    //Obtener todos los pacientes
+    public IEnumerable<PatientDto> GetAllPatients()
+    {
+        var patients = _patientRepository.List();
+        if (patients == null || !patients.Any())
+            throw new NotFoundException("NO_PATIENTS_FOUND");
+
+        return patients.Select(PatientDto.Create);
+    }
+
+    //Obtener un paciente en especifico
+    public PatientDto GetPatientById(int id)
+    {
+        var patient = _patientRepository.GetById(id)
+            ?? throw new NotFoundException("PATIENT_NOT_FOUND");
+        return PatientDto.Create(patient);
+    }
+
+    //Registrar el paciente
     public PatientDto RegisterPatient(RegisterPatientRequest request)
     {
         if (_userRepository.GetByEmail(request.Email) != null)
@@ -48,6 +67,37 @@ public class PatientService : IPatientService
         return PatientDto.Create(saved!);
     }
 
+    //Actualizacion del email por parte del paciente
+    public PatientDto UpdatePatientEmail(int id, UpdatePatientEmailRequest request)
+    {
+        var patient = _patientRepository.GetById(id)
+            ?? throw new NotFoundException("PATIENT_NOT_FOUND");
+
+        if (_userRepository.GetByEmail(request.Email) != null && request.Email != patient.Email)
+            throw new AppValidationException("EMAIL_ALREADY_EXISTS");
+
+        patient.Email = request.Email;
+        _patientRepository.Update(patient);
+
+        var saved = _patientRepository.GetById(patient.Id);
+
+        return PatientDto.Create(saved!);
+    }
+
+    //Actualizacion de la contraseña por parte del paciente
+    public void UpdatePatientPassword(int id, UpdatePatientPasswordRequest request)
+    {
+        var patient = _patientRepository.GetById(id)
+            ?? throw new NotFoundException("PATIENT_NOT_FOUND");
+
+        if (!_hasher.VerifyPassword(request.CurrentPassword, patient.Password!))
+            throw new AppValidationException("CURRENT_PASSWORD_INCORRECT");
+
+        patient.SetPassword(_hasher.HashPassword(request.NewPassword));
+        _patientRepository.Update(patient);
+    }
+
+    //Creacion del paciente por parte del dentista
     public PatientDto CreatePatientByDentist(CreatePatientByDentistRequest request)
     {
         if (_userRepository.GetByEmail(request.Email) != null)
@@ -86,10 +136,11 @@ public class PatientService : IPatientService
         return "Tmp-" + new string(Enumerable.Repeat(chars, 10).Select(s => s[random.Next(s.Length)]).ToArray());
     }
 
+    //Activacion del paciente
     public void ActivatePatient(string token, string password)
     {
         var principal = _jwtService.ValidateToken(token);
-        var patientIdClaim = principal.FindFirst("patientId"); 
+        var patientIdClaim = principal.FindFirst("patientId");
         if (patientIdClaim == null)
             throw new AppValidationException("INVALID_TOKEN");
 
@@ -101,22 +152,7 @@ public class PatientService : IPatientService
         _patientRepository.Update(patient);
     }
 
-    public IEnumerable<PatientDto> GetAllPatients()
-    {
-        var patients = _patientRepository.List();
-        if (patients == null || !patients.Any())
-            throw new NotFoundException("NO_PATIENTS_FOUND");
-
-        return patients.Select(PatientDto.Create);
-    }
-
-    public PatientDto GetPatientById(int id)
-    {
-        var patient = _patientRepository.GetById(id)
-            ?? throw new NotFoundException("PATIENT_NOT_FOUND");
-        return PatientDto.Create(patient);
-    }
-
+    //Actualizacion del paciente por el dentista
     public PatientDto UpdatePatient(int id, UpdatePatientRequest request)
     {
         var patient = _patientRepository.GetById(id)
@@ -127,7 +163,7 @@ public class PatientService : IPatientService
             request.Email != patient.Email)
             throw new AppValidationException("EMAIL_ALREADY_EXISTS");
 
-          patient.UpdatePersonalInfo(
+        patient.UpdatePersonalInfo(
             request.FirstName, request.LastName, request.Email,
             request.Address, request.PhoneNumber, request.City,
             request.MembershipNumber, request.BirthDate, request.HealthPlanId
@@ -139,34 +175,7 @@ public class PatientService : IPatientService
 
         return PatientDto.Create(saved!);
     }
-
-    public PatientDto UpdatePatientEmail(int id, UpdatePatientEmailRequest request)
-    {
-        var patient = _patientRepository.GetById(id)
-            ?? throw new NotFoundException("PATIENT_NOT_FOUND");
-
-        if (_userRepository.GetByEmail(request.Email) != null && request.Email != patient.Email)
-            throw new AppValidationException("EMAIL_ALREADY_EXISTS");
-
-        patient.Email = request.Email;
-        _patientRepository.Update(patient);
-
-        var saved = _patientRepository.GetById(patient.Id);
-
-        return PatientDto.Create(saved!);
-    }
-
-    public void UpdatePatientPassword(int id, UpdatePatientPasswordRequest request)
-    {
-        var patient = _patientRepository.GetById(id)
-            ?? throw new NotFoundException("PATIENT_NOT_FOUND");
-
-        if (!_hasher.VerifyPassword(request.CurrentPassword, patient.Password!))
-            throw new AppValidationException("CURRENT_PASSWORD_INCORRECT");
-
-        patient.SetPassword(_hasher.HashPassword(request.NewPassword));
-        _patientRepository.Update(patient);
-    }
 }
+
 
 
