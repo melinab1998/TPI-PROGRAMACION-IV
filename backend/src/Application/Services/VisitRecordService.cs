@@ -23,6 +23,7 @@ namespace Application.Services
             _turnRepository = turnRepository;
         }
 
+        //Obtener todos los registros
         public List<VisitRecordDto> GetAllVisitRecord()
         {
             var visitRecords = _visitRecordRepository.List();
@@ -31,6 +32,7 @@ namespace Application.Services
             return VisitRecordDto.Create(visitRecords);
         }
 
+        //Obtener un registro en particular
         public VisitRecordDto GetVisitRecordById(int id)
         {
             var visitRecord = _visitRecordRepository.GetById(id)
@@ -38,6 +40,7 @@ namespace Application.Services
             return VisitRecordDto.Create(visitRecord);
         }
 
+        //Crear un registro
         public VisitRecordDto CreateVisitRecord(CreateVisitRecordRequest request)
         {
             var turn = _turnRepository.GetById(request.TurnId)
@@ -54,6 +57,7 @@ namespace Application.Services
             return VisitRecordDto.Create(visitRecord);
         }
 
+        //Actualizar un registro
         public VisitRecordDto UpdateVisitRecord(int id, UpdateVisitRecordRequest request)
         {
             var visitRecord = _visitRecordRepository.GetById(id)
