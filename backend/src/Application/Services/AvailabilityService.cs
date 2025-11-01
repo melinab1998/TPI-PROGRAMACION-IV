@@ -19,6 +19,7 @@ namespace Application.Services
             _availabilityRepository = availabilityRepository;
         }
 
+        //Obtener la disponibilidad un dentista en especifico
         public IEnumerable<AvailabilityDto> GetByDentistId(int dentistId)
         {
             var availabilities = _availabilityRepository.GetByDentistId(dentistId);
@@ -29,6 +30,7 @@ namespace Application.Services
             return availabilities.Select(AvailabilityDto.Create);
         }
 
+        //Creacion de la disponibilidad
         public void CreateAvailability(int dentistId, IEnumerable<AvailabilityRequest> slots)
         {
             if (slots == null || !slots.Any())
@@ -57,6 +59,8 @@ namespace Application.Services
                 existingSlots.Add(newSlot); // para validar siguientes slots
             }
         }
+
+        //Actualizacion de la disponibilidad
         public void UpdateAvailability(int slotId, AvailabilityRequest updatedSlot)
         {
             // Traer el slot existente
