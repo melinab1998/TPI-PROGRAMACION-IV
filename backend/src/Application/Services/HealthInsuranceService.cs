@@ -15,6 +15,7 @@ namespace Application.Services
             _healthInsuranceRepository = healthInsuranceRepository;
         }
 
+        //Obtener todas las obras sociales
         public IEnumerable<HealthInsuranceDto> GetAll()
         {
             var insurances = _healthInsuranceRepository.GetAll();
@@ -29,6 +30,7 @@ namespace Application.Services
             ));
         }
 
+        //Obtener una obra social en especifico
         public HealthInsuranceDto GetById(int id)
         {
             var insurance = _healthInsuranceRepository.GetByIdWithPlans(id);
