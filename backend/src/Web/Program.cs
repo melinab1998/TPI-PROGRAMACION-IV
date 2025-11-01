@@ -89,7 +89,8 @@ builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IHealthInsuranceService, HealthInsuranceService>();
 builder.Services.AddScoped<IHealthPlanService, HealthPlanService>();
 builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
-builder.Services.AddScoped<ITurnService, TurnService>();   
+builder.Services.AddScoped<ITurnService, TurnService>();
+builder.Services.AddScoped<IVisitRecordService, VisitRecordService>();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -98,8 +99,8 @@ builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IHealthInsuranceRepository, HealthInsuranceRepository>();
 builder.Services.AddScoped<IHealthPlanRepository, HealthPlanRepository>();
 builder.Services.AddScoped<IAvailabilityRepository, AvailabilityRepository>();
-builder.Services.AddScoped<ITurnRepository, TurnRepository>(); 
-
+builder.Services.AddScoped<ITurnRepository, TurnRepository>();
+builder.Services.AddScoped<IVisitRecordRepository, VisitRecordRepository>();
 
 builder.Services.AddHttpClient<IEmailService, EmailService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
@@ -123,7 +124,7 @@ using (var scope = app.Services.CreateScope())
         FirstName = config["FirstName"] ?? throw new Exception("Falta SuperAdmin:FirstName"),
         LastName = config["LastName"] ?? throw new Exception("Falta SuperAdmin:LastName"),
         Email = config["Email"] ?? throw new Exception("Falta SuperAdmin:Email"),
-        Password  = config["Password"]  ?? throw new Exception("Falta SuperAdmin:Password")
+        Password = config["Password"] ?? throw new Exception("Falta SuperAdmin:Password")
     };
 
     userService.CreateSuperAdminOnce(
