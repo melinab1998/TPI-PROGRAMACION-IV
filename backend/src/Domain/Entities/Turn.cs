@@ -21,7 +21,7 @@ namespace Domain.Entities
         public Turn(DateTime appointmentDate, TurnStatus status, string? consultationType, int patientId, int dentistId)
         {
             if (appointmentDate < DateTime.Now)
-                    throw new AppValidationException("CANNOT_CREATE_PAST_TURN");
+                throw new AppValidationException("CANNOT_CREATE_PAST_TURN");
 
             AppointmentDate = appointmentDate;
             Status = status;
@@ -29,8 +29,8 @@ namespace Domain.Entities
             PatientId = patientId;
             DentistId = dentistId;
         }
-        
-           public void Cancel()
+
+        public void Cancel()
         {
             if (Status == TurnStatus.Cancelled)
                 throw new AppValidationException("TURN_ALREADY_CANCELLED");

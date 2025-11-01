@@ -4,6 +4,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251101213354_SecondMigration")]
+    partial class SecondMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -217,41 +220,6 @@ namespace Infrastructure.Data.Migrations
                     b.UseTptMappingStrategy();
                 });
 
-            modelBuilder.Entity("Domain.Entities.VisitRecord", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Diagnosis")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Prescription")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Treatment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TurnId")
-                        .HasColumnType("int");
-
-                    b.Property<DateOnly>("VisitDate")
-                        .HasColumnType("date");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TurnId");
-
-                    b.ToTable("VisitRecords");
-                });
-
             modelBuilder.Entity("Domain.Entities.Dentist", b =>
                 {
                     b.HasBaseType("Domain.Entities.User");
@@ -343,17 +311,6 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("Dentist");
 
                     b.Navigation("Patient");
-                });
-
-            modelBuilder.Entity("Domain.Entities.VisitRecord", b =>
-                {
-                    b.HasOne("Domain.Entities.Turn", "Turn")
-                        .WithMany()
-                        .HasForeignKey("TurnId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Turn");
                 });
 
             modelBuilder.Entity("Domain.Entities.Dentist", b =>
