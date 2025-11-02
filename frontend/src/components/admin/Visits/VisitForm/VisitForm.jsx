@@ -109,19 +109,21 @@ export default function VisitForm({
               />
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">
-                Odontograma del Paciente
-                <span className="text-muted-foreground font-normal ml-1">(opcional)</span>
-              </Label>
-              <div onClick={(e) => e.stopPropagation()}>
-                <Odontogram
-                  initialData={watch("odontogramData") || {}}
-                  onSave={handleOdontogramChange}
-                  readOnly={false}
-                />
-              </div>
-            </div>
+            {/*
+          <div className="space-y-2">
+          <Label className="text-sm font-medium">
+          Odontograma del Paciente
+          <span className="text-muted-foreground font-normal ml-1">(opcional)</span>
+          </Label>
+          <div onClick={(e) => e.stopPropagation()}>
+          <Odontogram
+          initialData={watch("odontogramData") || {}}
+          onSave={handleOdontogramChange}
+          readOnly={false}
+          />
+          </div>
+          </div>
+          */}
 
             <div className="text-xs text-muted-foreground pt-2">* Campos obligatorios</div>
 
