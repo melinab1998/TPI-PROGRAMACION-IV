@@ -35,7 +35,8 @@ namespace Infrastructure.Services
                     _logger.LogError(ex, "Error while sending reminders");
                 }
 
-                await Task.Delay(TimeSpan.FromHours(24), stoppingToken); // Cambiar a FromMinutes(1) para test
+                // Para test, podés usar FromMinutes(1) o FromSeconds(30)
+                await Task.Delay(TimeSpan.FromHours(24), stoppingToken);
             }
         }
 
@@ -50,13 +51,15 @@ namespace Infrastructure.Services
 
             try
             {
+                // Solo turnos pendientes para mañana
                 var turns = turnService.GetAllTurns()
-                    .Where(t => t.AppointmentDate.Date == DateTime.Today.AddDays(1).Date)
+                    .Where(t => t.Status == Domain.Enums.TurnStatus.Pending
+                             && t.AppointmentDate.Date == DateTime.Today.AddDays(1))
                     .ToList();
 
                 if (!turns.Any())
                 {
-                    _logger.LogInformation("No turns found for tomorrow — skipping reminder job.");
+                    _logger.LogInformation("No pending turns for tomorrow — skipping reminder job.");
                     return;
                 }
 
