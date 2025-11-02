@@ -388,3 +388,21 @@ export const toggleDentistStatus = (id, isActive, token, onSuccess, onError) => 
         .then(onSuccess)
         .catch(onError);
 };
+
+export const getAvailableSlots = (token, dentistId, startDate, endDate, onSuccess, onError) => {
+    if (!token) {
+        onError({ message: "Token no proporcionado" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/availabilities/${dentistId}/available-slots?startDate=${startDate}&endDate=${endDate}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};

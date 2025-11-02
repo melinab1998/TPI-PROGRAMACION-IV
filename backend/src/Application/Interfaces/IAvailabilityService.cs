@@ -8,5 +8,6 @@ namespace Application.Interfaces
         IEnumerable<AvailabilityDto> GetByDentistId(int dentistId);
         void CreateAvailability(int dentistId, IEnumerable<AvailabilityRequest> slots);
         void UpdateAvailability(int slotId, AvailabilityRequest updatedSlot);
+        Dictionary<string, List<string>> GetAvailableSlots(int dentistId, DateTime startDate, DateTime endDate);
     }
 }

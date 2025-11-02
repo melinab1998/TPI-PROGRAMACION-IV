@@ -1,5 +1,6 @@
 using Domain.Entities;
 using Domain.Interfaces;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data
@@ -32,6 +33,16 @@ namespace Infrastructure.Data
                 .Include(t => t.Dentist)
                 .Include(t => t.Patient)
                 .Where(t => t.AppointmentDate.Date == date.Date)
+                .ToList();
+        }
+
+        public IEnumerable<Turn> GetBookedTurnsInRange(int dentistId, DateTime startDate, DateTime endDate)
+        {
+            return  _dbSet
+                .Where(t => t.DentistId == dentistId &&
+                            t.AppointmentDate.Date >= startDate.Date &&
+                            t.AppointmentDate.Date <= endDate.Date &&
+                            t.Status != TurnStatus.Cancelled) 
                 .ToList();
         }
     }
