@@ -125,7 +125,7 @@ namespace Infrastructure.Services
                 <p>Recuerde concurrir a su cita del día <b>{fecha}</b> a las <b>{hora} hs.</b></p>
                 <p><b>Profesional:</b> {dentistName}<br/>
                 <b>Lugar de atención:</b> {address}</p>
-                <p>Para <b>cancelar su turno</b> llame al <b>0341 4229700</b> o haga clic <a href='{_config["App:FrontendUrl"]}/cancelar-turno'>aquí</a>.</p>
+                <p>Si necesita cancelar su turno, <a href='{_config["App:FrontendUrl"]}/login'>inicie sesión en su cuenta</a> para gestionarlo desde su panel de usuario.</p>
                 <p>Muchas gracias,<br/>
                 Consultorio Odontológico</p>"
                 };
