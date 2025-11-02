@@ -18,7 +18,7 @@ const errorMessages = {
     DENTIST_NOT_ACTIVATED: "El dentista aún no está activado",
     INVALID_TOKEN: "Token inválido o paciente/dentista no encontrado",
     CURRENT_PASSWORD_INCORRECT: "La contraseña actual es incorrecta",
-    PATIENT_ALREADY_HAS_TURN_TODAY: "Ya tiene un turno reservado para hoy.",
+    PATIENT_ALREADY_HAS_TURN_TODAY: "Ya tiene un turno reservado para ese día.",
     TURN_NOT_AVAILABLE: "El horario seleccionado ya no está disponible. Elegí otro."
 };
 
@@ -447,5 +447,23 @@ export const getPatientTurns = (token, patientId, onSuccess, onError) => {
             const patientTurns = turns.filter(t => t.patientId === patientId);
             onSuccess(patientTurns);
         })
+        .catch(onError);
+};
+
+export const cancelTurn = (token, turnId, onSuccess, onError) => {
+    if (!token) {
+        onError({ message: "Token no proporcionado" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/turns/${turnId}/cancel`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    })
+        .then(handleResponse)
+        .then(onSuccess)
         .catch(onError);
 };

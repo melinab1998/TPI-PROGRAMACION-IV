@@ -23,7 +23,7 @@ namespace Infrastructure.Data
             return _dbSet
                 .Include(t => t.Dentist)
                 .Include(t => t.Patient)
-                .Where(t => t.PatientId == patientId)
+                .Where(t => t.PatientId == patientId) 
                 .ToList();
         }
 
@@ -38,11 +38,11 @@ namespace Infrastructure.Data
 
         public IEnumerable<Turn> GetBookedTurnsInRange(int dentistId, DateTime startDate, DateTime endDate)
         {
-            return  _dbSet
+            return _dbSet
                 .Where(t => t.DentistId == dentistId &&
                             t.AppointmentDate.Date >= startDate.Date &&
                             t.AppointmentDate.Date <= endDate.Date &&
-                            t.Status != TurnStatus.Cancelled) 
+                            t.Status != TurnStatus.Cancelled)
                 .ToList();
         }
     }

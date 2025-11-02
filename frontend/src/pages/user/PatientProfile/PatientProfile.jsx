@@ -19,7 +19,6 @@ export default function PatientProfile() {
 
     let dentistsMap = {};
 
-    // Primero traer dentistas para poder mostrar el nombre
     getAllDentists(
       token,
       (dentists) => {
@@ -28,24 +27,20 @@ export default function PatientProfile() {
           return acc;
         }, {});
 
-        // Traer datos del paciente
         getPatientById(
           userId,
           token,
           (data) => {
             setPatientData(data);
 
-            // Traer turnos del paciente
             getPatientTurns(
               token,
               data.id,
               (turns) => {
-                // Filtrar solo turnos completados
                 const completedTurns = turns
                   .filter(t => t.status === "Completed")
-                  .sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate)); // más recientes primero
+                  .sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate)); 
 
-                // Mapear para mostrar nombre del dentista y fechas en formato legible
                 const formattedAppointments = completedTurns.map(t => ({
                   id: t.id,
                   date: new Date(t.appointmentDate).toLocaleDateString("es-AR"),
@@ -74,7 +69,6 @@ export default function PatientProfile() {
     );
   }, [userId, token]);
 
-  // resto del componente igual...
   return (
     <div className="container mx-auto p-6 max-w-4xl space-y-10 mt-10">
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>

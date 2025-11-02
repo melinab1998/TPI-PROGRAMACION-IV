@@ -21,69 +21,62 @@ export default function UserHome() {
     const [nextTurn, setNextTurn] = useState(null);
 
     useEffect(() => {
-    if (!userId || !token) return;
+        if (!userId || !token) return;
 
-    const handleError = (err) => {
-        errorToast(err?.message || "Error del servidor");
-    };
+        const handleError = (err) => {
+            errorToast(err?.message || "Error del servidor");
+        };
 
-    let dentistsMap = {};
+        let dentistsMap = {};
 
-    getAllDentists(
-        token,
-        (dentists) => {
-            dentistsMap = dentists.reduce((acc, d) => {
-                acc[d.id] = `${d.firstName} ${d.lastName}`;
-                return acc;
-            }, {});
+        getAllDentists(
+            token,
+            (dentists) => {
+                dentistsMap = dentists.reduce((acc, d) => {
+                    acc[d.id] = `${d.firstName} ${d.lastName}`;
+                    return acc;
+                }, {});
 
-            getPatientById(
-                userId,
-                token,
-                (data) => {
-                    setPatientData(data);
+                getPatientById(
+                    userId,
+                    token,
+                    (data) => {
+                        setPatientData(data);
 
-                    getPatientTurns(
-                        token,
-                        data.id,
-                        (turns) => {
-                            const futureTurns = turns
-                                .filter(
-                                    (t) =>
-                                        new Date(t.appointmentDate) >= new Date() &&
-                                        t.status === "Pending"
-                                )
-                                .sort(
-                                    (a, b) =>
-                                        new Date(a.appointmentDate) -
-                                        new Date(b.appointmentDate)
-                                );
+                        getPatientTurns(
+                            token,
+                            data.id,
+                            (turns) => {
+                                const futureTurns = turns
+                                    .filter(
+                                        (t) =>
+                                            new Date(t.appointmentDate) >= new Date() &&
+                                            t.status === "Pending"
+                                    )
+                                    .sort((a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate));
 
-                            if (futureTurns.length > 0) {
-                                const next = futureTurns[0];
+                                if (futureTurns.length > 0) {
+                                    const next = futureTurns[0];
 
-                                setNextTurn({
-                                    date: format(
-                                        new Date(next.appointmentDate),
-                                        "d 'de' MMMM, yyyy",
-                                        { locale: es }
-                                    ),
-                                    time: format(new Date(next.appointmentDate), "HH:mm"),
-                                    dentist: dentistsMap[next.dentistId] || "Dentista desconocido",
-                                });
-                            } else {
-                                setNextTurn(null);
-                            }
-                        },
-                        handleError
-                    );
-                },
-                handleError
-            );
-        },
-        handleError
-    );
-}, [userId, token]);
+                                    setNextTurn({
+                                        id: next.id,
+                                        date: format(new Date(next.appointmentDate), "d 'de' MMMM, yyyy", { locale: es }),
+                                        time: format(new Date(next.appointmentDate), "HH:mm"),
+                                        dentist: dentistsMap[next.dentistId] || "Dentista desconocido",
+                                    });
+                                } else {
+                                    setNextTurn(null);
+                                }
+                            },
+                            handleError
+                        );
+                    },
+                    handleError
+                );
+            },
+            handleError
+        );
+    }, [userId, token]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
@@ -124,7 +117,10 @@ export default function UserHome() {
                     </div>
 
                     <motion.div initial="hidden" animate="show" variants={fadeInUp}>
-                        <NextAppointmentCard appointment={nextTurn} />
+                        <NextAppointmentCard
+                            appointment={nextTurn}
+                            onCancelled={() => setNextTurn(null)}
+                        />
                     </motion.div>
                 </motion.section>
 
