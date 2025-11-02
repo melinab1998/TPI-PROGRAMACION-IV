@@ -177,7 +177,7 @@ export default function AdminSchedule() {
     const appointmentsForSelectedDay = appointments.filter(
         (a) =>
             isSameDay(parseISO(a.appointment_date), selectedDate) &&
-            a.status === "Pending" 
+            a.status === "Pending"
     )
 
     const fadeSlideUp = {
@@ -273,8 +273,14 @@ export default function AdminSchedule() {
                     setCancelModalOpen(false)
                     setCancelingAppointment(null)
                 }}
-                onConfirm={handleConfirmCancel}
                 appointment={cancelingAppointment}
+                onCancelled={(id) => {
+                    setAppointments(prev =>
+                        prev.map(a => a.id_turn === id ? { ...a, status: "Cancelled" } : a)
+                    )
+                    setCancelModalOpen(false)
+                    setCancelingAppointment(null)
+                }}
             />
         </div>
     )
