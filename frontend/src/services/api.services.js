@@ -520,3 +520,16 @@ export const getAllTurns = (token, onSuccess, onError) => {
         .catch(onError);
 };
 
+export const updateTurn = (token, turnId, payload, onSuccess, onError) => {
+    if (!token) return onError({ message: "Token no proporcionado" });
+    if (!turnId) return onError({ message: "ID de turno no proporcionado" });
+
+    fetch(`${baseUrl}/api/turns/${turnId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify(payload),
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
