@@ -428,3 +428,24 @@ export const createTurn = (token, payload, onSuccess, onError) => {
         .then(onSuccess)
         .catch(onError);
 };
+
+export const getPatientTurns = (token, patientId, onSuccess, onError) => {
+    if (!token) {
+        onError({ message: "Token no proporcionado" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/turns`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    })
+        .then(handleResponse)
+        .then((turns) => {
+            const patientTurns = turns.filter(t => t.patientId === patientId);
+            onSuccess(patientTurns);
+        })
+        .catch(onError);
+};

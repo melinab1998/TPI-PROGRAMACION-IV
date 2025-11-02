@@ -33,8 +33,6 @@ export default function CalendarPage() {
                 const found = data.find(d => d.id === parseInt(id));
                 if (found) {
                     setDoctor(found);
-
-                    // ✅ Nuevo: usamos el endpoint /calendar-view
                     const startDate = new Date().toISOString().split("T")[0];
                     const nextMonth = new Date();
                     nextMonth.setMonth(nextMonth.getMonth() + 1);
