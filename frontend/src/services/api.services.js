@@ -77,6 +77,19 @@ export const getAllDentists = (token, onSuccess, onError) => {
         .catch(onError);
 };
 
+export const getDentistById = (id, token, onSuccess, onError) => {
+    fetch(`${baseUrl}/api/dentists/${id}`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
+
 export const createDentist = (payload, token, onSuccess, onError) => {
     if (!token) {
         onError({ message: "Token no proporcionado" });
@@ -488,3 +501,22 @@ export const getDentistTurns = (token, dentistId, onSuccess, onError) => {
         })
         .catch(onError);
 };
+
+export const getAllTurns = (token, onSuccess, onError) => {
+    if (!token) {
+        onError({ message: "Token no proporcionado" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/turns`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
+

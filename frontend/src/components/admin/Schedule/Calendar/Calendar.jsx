@@ -14,7 +14,9 @@ export default function Calendar({ selectedDate, onDateChange, appointments }) {
   const monthEnd = endOfMonth(currentMonth)
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd })
 
-  const daysWithAppointments = appointments.reduce((acc, appointment) => {
+  // Contar solo los turnos Pending para marcar en el calendario
+  const daysWithPendingAppointments = appointments.reduce((acc, appointment) => {
+    if (appointment.status !== "Pending") return acc  // solo Pending
     const date = format(parseISO(appointment.appointment_date), "yyyy-MM-dd")
     acc[date] = (acc[date] || 0) + 1
     return acc
@@ -29,12 +31,13 @@ export default function Calendar({ selectedDate, onDateChange, appointments }) {
           <ChevronLeft className="w-4 h-4" /> Anterior
         </Button>
         <h3 className="font-semibold text-xs sm:text-lg capitalize">
-  {format(currentMonth, "MMMM yyyy", { locale: es })}
-</h3>
+          {format(currentMonth, "MMMM yyyy", { locale: es })}
+        </h3>
         <Button variant="outline" size="sm" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
           Siguiente <ChevronRight className="w-4 h-4" />
         </Button>
       </div>
+
       <div className="grid grid-cols-7 gap-1 mb-2 flex-shrink-0">
         {weekdays.map((day) => (
           <div key={day} className="text-sm text-center text-muted-foreground font-medium py-1">
@@ -42,10 +45,11 @@ export default function Calendar({ selectedDate, onDateChange, appointments }) {
           </div>
         ))}
       </div>
+
       <div className="grid grid-cols-7 gap-1 flex-1 min-h-0 auto-rows-fr">
         {daysInMonth.map((day) => {
           const dayKey = format(day, "yyyy-MM-dd")
-          const appointmentCount = daysWithAppointments[dayKey]
+          const appointmentCount = daysWithPendingAppointments[dayKey] || 0
           const isSelected = isSameDay(day, selectedDate)
           const isCurrentMonth = isSameMonth(day, currentMonth)
           const isToday = isSameDay(day, new Date())

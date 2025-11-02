@@ -14,17 +14,21 @@ export default function Filters({ filters, setFilters }) {
                     className="pl-9"
                 />
             </div>
-            <Select value={filters.status} onValueChange={(value) => setFilters({ ...filters, status: value })}>
+            <Select 
+                value={filters.status} 
+                onValueChange={(value) => setFilters({ ...filters, status: value })}
+            >
                 <SelectTrigger>
                     <SelectValue placeholder="Estado del turno" />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="Todos">Todos</SelectItem>
-                    <SelectItem value="Activo">Activos</SelectItem>
-                    <SelectItem value="Cancelado">Cancelados</SelectItem>
-                    <SelectItem value="Completado">Completados</SelectItem>
+                    <SelectItem value="Pending">Activos</SelectItem>
+                    <SelectItem value="Cancelled">Cancelados</SelectItem>
+                    <SelectItem value="Completed">Completados</SelectItem>
                 </SelectContent>
             </Select>
         </div>
     )
 }
+

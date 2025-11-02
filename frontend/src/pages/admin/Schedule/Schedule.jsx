@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { parseISO, isSameDay } from "date-fns"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Calendar from "@/components/admin/Schedule/Calendar/Calendar"
@@ -9,23 +9,97 @@ import CancelAppointmentModal from "@/components/admin/Schedule/CancelAppointmen
 import { motion } from "framer-motion"
 import { Plus } from "lucide-react"
 import Header from "@/components/common/Header/Header"
-
-const initialAppointments = [
-    { id_turn: 101, appointment_date: "2025-09-30T09:00", status: "Activo", consultation_type: "Consulta", patient_name: "María López", patient_email: "maria@email.com", patient_dni: "41239736", dentist_name: "Dr. Suárez" },
-    { id_turn: 102, appointment_date: "2025-09-30T10:00", status: "Activo", consultation_type: "Tratamiento", patient_name: "Juan Pérez", patient_email: "juan@email.com", patient_dni: "41239736", dentist_name: "Dr. Suárez" },
-    { id_turn: 103, appointment_date: "2025-09-30T11:00", status: "Activo", consultation_type: "Tratamiento", patient_name: "Juan Pérez", patient_email: "juan@email.com", patient_dni: "41239736", dentist_name: "Dr. Suárez" },
-    { id_turn: 104, appointment_date: "2025-11-30T12:00", status: "Activo", consultation_type: "Tratamiento", patient_name: "Juan Pérez", patient_email: "juan@email.com", patient_dni: "41239736", dentist_name: "Dr. Suárez" }
-]
+import { getAllTurns, getPatientById, getDentistById, createTurn, cancelTurn } from "@/services/api.services" // Ajusta la ruta según tu estructura
 
 export default function AdminSchedule() {
     const today = new Date()
     const [selectedDate, setSelectedDate] = useState(today)
-    const [appointments, setAppointments] = useState(initialAppointments)
+    const [appointments, setAppointments] = useState([])
+    const [loading, setLoading] = useState(true)
     const [filters, setFilters] = useState({ patient: "", status: "Todos" })
     const [modalOpen, setModalOpen] = useState(false)
     const [cancelModalOpen, setCancelModalOpen] = useState(false)
     const [editingAppointment, setEditingAppointment] = useState(null)
     const [cancelingAppointment, setCancelingAppointment] = useState(null)
+
+
+    // Obtener el token (ajusta según tu implementación de auth)
+    const token = localStorage.getItem('token') // o como manejes el token
+
+    // Función para enriquecer los datos del turno
+    const enrichTurnData = async (turn) => {
+        try {
+            // Obtener datos del paciente
+            const patientData = await new Promise((resolve, reject) => {
+                getPatientById(turn.patientId, token, resolve, reject)
+            })
+
+            // Obtener datos del dentista
+            const dentistData = await new Promise((resolve, reject) => {
+                getDentistById(turn.dentistId, token, resolve, reject)
+            })
+
+            return {
+                id_turn: turn.id,
+                appointment_date: turn.appointmentDate,
+                status: turn.status,
+                consultation_type: turn.consultationType || "Consulta",
+                patient_name: `${patientData.firstName} ${patientData.lastName}`,
+                patient_email: patientData.email,
+                patient_dni: patientData.dni,
+                dentist_name: `Dr. ${dentistData.firstName} ${dentistData.lastName}`,
+                // Mantener los IDs originales por si los necesitas
+                patientId: turn.patientId,
+                dentistId: turn.dentistId
+            }
+        } catch (error) {
+            console.error('Error enriqueciendo datos del turno:', error)
+            // Retornar datos básicos si hay error
+            return {
+                id_turn: turn.id,
+                appointment_date: turn.appointmentDate,
+                status: turn.status,
+                consultation_type: turn.consultationType || "Consulta",
+                patient_name: "Paciente no encontrado",
+                patient_email: "",
+                patient_dni: "",
+                dentist_name: "Dentista no encontrado",
+                patientId: turn.patientId,
+                dentistId: turn.dentistId
+            }
+        }
+    }
+
+    // Cargar turnos al montar el componente
+    useEffect(() => {
+        loadAppointments()
+    }, [])
+
+    const loadAppointments = async () => {
+        if (!token) {
+            console.error('No hay token disponible')
+            setLoading(false)
+            return
+        }
+
+        try {
+            setLoading(true)
+            const turns = await new Promise((resolve, reject) => {
+                getAllTurns(token, resolve, reject)
+            })
+
+            // Enriquecer todos los turnos con datos de pacientes y dentistas
+            const enrichedAppointments = await Promise.all(
+                turns.map(turn => enrichTurnData(turn))
+            )
+
+            setAppointments(enrichedAppointments)
+        } catch (error) {
+            console.error('Error cargando turnos:', error)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const handleCancelClick = (id) => {
         const appointment = appointments.find(a => a.id_turn === id)
@@ -33,12 +107,21 @@ export default function AdminSchedule() {
         setCancelModalOpen(true)
     }
 
-    const handleConfirmCancel = (id) => {
-        setAppointments(prev => prev.map(a =>
-            a.id_turn === id ? { ...a, status: "Cancelado" } : a
-        ))
-        setCancelModalOpen(false)
-        setCancelingAppointment(null)
+    const handleConfirmCancel = async (id) => {
+        try {
+            await new Promise((resolve, reject) => {
+                cancelTurn(token, id, resolve, reject)
+            })
+
+            // Actualizar estado local al valor correcto en inglés
+            setAppointments(prev => prev.map(a =>
+                a.id_turn === id ? { ...a, status: "Cancelled" } : a
+            ))
+            setCancelModalOpen(false)
+            setCancelingAppointment(null)
+        } catch (error) {
+            console.error('Error cancelando turno:', error)
+        }
     }
 
     const handleEdit = (id) => {
@@ -52,12 +135,34 @@ export default function AdminSchedule() {
         setModalOpen(true)
     }
 
-    const handleSave = (data) => {
-        if (data.id_turn) {
-            setAppointments(prev => prev.map(a => a.id_turn === data.id_turn ? data : a))
-        } else {
-            const newAppt = { ...data, id_turn: Date.now(), status: "Activo" }
-            setAppointments(prev => [...prev, newAppt])
+    const handleSave = async (data) => {
+        try {
+            if (data.id_turn) {
+                // Editar turno existente (implementar si tu backend lo permite)
+                console.log('Editar turno:', data)
+                // Actualizar estado local temporalmente
+                setAppointments(prev => prev.map(a => a.id_turn === data.id_turn ? data : a))
+            } else {
+                // Crear nuevo turno
+                const turnData = {
+                    appointmentDate: data.appointment_date,
+                    consultationType: data.consultation_type,
+                    patientId: data.patientId,
+                    dentistId: data.dentistId
+                }
+
+                const newTurn = await new Promise((resolve, reject) => {
+                    createTurn(token, turnData, resolve, reject)
+                })
+
+                // Enriquecer el nuevo turno con datos de paciente y dentista
+                const enrichedTurn = await enrichTurnData(newTurn)
+
+                setAppointments(prev => [...prev, enrichedTurn])
+            }
+        } catch (error) {
+            console.error('Error guardando turno:', error)
+            throw error // Para que el modal pueda manejar el error
         }
     }
 
@@ -69,8 +174,10 @@ export default function AdminSchedule() {
         return true
     })
 
-    const appointmentsForSelectedDay = appointments.filter(a =>
-        isSameDay(parseISO(a.appointment_date), selectedDate)
+    const appointmentsForSelectedDay = appointments.filter(
+        (a) =>
+            isSameDay(parseISO(a.appointment_date), selectedDate) &&
+            a.status === "Pending" 
     )
 
     const fadeSlideUp = {
@@ -81,6 +188,16 @@ export default function AdminSchedule() {
     const fadeSlideDown = {
         hidden: { opacity: 0, y: -20 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+    }
+
+    if (loading) {
+        return (
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div className="flex justify-center items-center h-64">
+                    <div className="text-lg">Cargando turnos...</div>
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -148,6 +265,7 @@ export default function AdminSchedule() {
                 onClose={() => setModalOpen(false)}
                 onSave={handleSave}
                 appointment={editingAppointment}
+                onAppointmentCreated={loadAppointments} // Recargar después de crear
             />
             <CancelAppointmentModal
                 open={cancelModalOpen}
