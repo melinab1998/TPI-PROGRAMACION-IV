@@ -533,3 +533,54 @@ export const updateTurn = (token, turnId, payload, onSuccess, onError) => {
         .then(onSuccess)
         .catch(onError);
 };
+
+/* VISIT RECORDS */
+export const getAllVisitRecords = (token, onSuccess, onError) => {
+    if (!token) return onError({ message: "Token no proporcionado" });
+
+    fetch(`${baseUrl}/api/visitRecords`, {
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
+
+export const getVisitRecordById = (token, id, onSuccess, onError) => {
+    if (!token) return onError({ message: "Token no proporcionado" });
+    if (!id) return onError({ message: "ID de registro no proporcionado" });
+
+    fetch(`${baseUrl}/api/visitRecords/${id}`, {
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
+
+export const createVisitRecord = (token, payload, onSuccess, onError) => {
+    if (!token) return onError({ message: "Token no proporcionado" });
+
+    fetch(`${baseUrl}/api/visitRecords`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify(payload),
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
+
+export const updateVisitRecord = (token, id, payload, onSuccess, onError) => {
+    if (!token) return onError({ message: "Token no proporcionado" });
+    if (!id) return onError({ message: "ID de registro no proporcionado" });
+
+    fetch(`${baseUrl}/api/visitRecords/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify(payload),
+    })
+        .then(handleResponse)
+        .then(onSuccess)
+        .catch(onError);
+};
