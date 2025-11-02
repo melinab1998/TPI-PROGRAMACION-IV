@@ -1,28 +1,18 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CalendarDays, Users, Clock, User, FileText, ArrowRight, X, Rocket, Plus } from "lucide-react"
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
 import Header from "@/components/common/Header/Header"
-import { getAllDentists } from "@/services/api.services"
+import { AuthContext } from "@/services/auth/AuthContextProvider";
+import { getAllDentists, getDentistTurns, getPatientById } from "@/services/api.services"
 
 export default function AdminHome() {
   const [dentistName, setDentistName] = useState("Dentista")
-  const token = localStorage.getItem("token")
-
-  const nextAppointment = {
-    paciente: "Juan Pérez",
-    fecha: "Hoy, 30/09/2025",
-    hora: "15:30",
-    tipo: "Consulta",
-  }
-
-  const todayStats = {
-    total: 5,
-    pending: 2,
-    cancelled: 1,
-  }
+  const [todayStats, setTodayStats] = useState({ total: 0, pending: 0, cancelled: 0 })
+  const [nextAppointment, setNextAppointment] = useState(null)
+  const { token } = useContext(AuthContext);
 
   const quickActions = [
     { title: "Agenda", description: "Gestionar turnos", icon: CalendarDays, href: "/schedule" },
@@ -31,31 +21,65 @@ export default function AdminHome() {
     { title: "Horarios", description: "Configurar disponibilidad", icon: Clock, href: "/availability" }
   ]
 
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
-  }
+  const cardVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
+  const actionVariants = { hidden: { opacity: 0, y: 10 }, visible: i => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.3 } }) }
 
-  const actionVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: i => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.3 } })
-  }
+useEffect(() => {
+  if (!token) return
 
-  // --- Traer solo el firstName desde la API ---
-  useEffect(() => {
-    if (!token) return
+  const handleError = (err) => console.error(err)
 
-    getAllDentists(
-      token,
-      (data) => {
-        if (data && data.length > 0) {
-          const firstDentist = data[0]
-          setDentistName(firstDentist.firstName) // <-- solo el nombre
-        }
-      },
-      (err) => console.error("Error cargando dentista:", err)
-    )
-  }, [token])
+  // Traemos dentistas
+  getAllDentists(token, (dentists) => {
+    if (!dentists || dentists.length === 0) return
+    const firstDentist = dentists[0]
+    setDentistName(firstDentist.firstName)
+
+    // Traemos los turnos del dentista
+    getDentistTurns(token, firstDentist.id, (turns) => {
+      const todayStr = new Date().toISOString().split("T")[0]
+
+      // Estadísticas de hoy
+      const todaysTurns = turns.filter(t => t.appointmentDate.startsWith(todayStr))
+      const total = todaysTurns.length
+      const pending = todaysTurns.filter(t => t.status === "Pending").length
+      const cancelled = todaysTurns.filter(t => t.status === "Cancelled").length
+      setTodayStats({ total, pending, cancelled })
+
+      // Próximo turno pendiente (cualquier fecha futura)
+      const futurePendingTurns = turns
+        .filter(t => t.status === "Pending" && new Date(t.appointmentDate) >= new Date())
+        .sort((a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate))
+
+      const next = futurePendingTurns[0]
+
+      if (next) {
+        const fechaObj = new Date(next.appointmentDate)
+
+        // --- Traemos el paciente por su id ---
+        getPatientById(next.patientId, token, (patient) => {
+          setNextAppointment({
+            paciente: `${patient.firstName} ${patient.lastName}`,
+            tipo: next.consultationType,
+            fecha: fechaObj.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" }),
+            hora: fechaObj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })
+          })
+        }, (err) => {
+          console.error("Error cargando paciente del próximo turno:", err)
+          // fallback
+          setNextAppointment({
+            paciente: "Paciente",
+            tipo: next.consultationType,
+            fecha: fechaObj.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" }),
+            hora: fechaObj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })
+          })
+        })
+      } else {
+        setNextAppointment(null)
+      }
+    }, handleError)
+  }, handleError)
+}, [token])
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-10 max-w-6xl mx-auto">

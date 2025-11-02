@@ -27,13 +27,13 @@ const handleResponse = async (res) => {
 
     try {
         data = await res.json();
-    } catch {}
+    } catch { }
 
     if (!res.ok) {
         const code = data?.message || data?.detail || `HTTP_${res.status}`;
         const message = errorMessages[code] || code || `Error ${res.status}`;
 
-        throw { 
+        throw {
             message,
             status: res.status,
             details: data
@@ -465,5 +465,26 @@ export const cancelTurn = (token, turnId, onSuccess, onError) => {
     })
         .then(handleResponse)
         .then(onSuccess)
+        .catch(onError);
+};
+
+export const getDentistTurns = (token, dentistId, onSuccess, onError) => {
+    if (!token) {
+        onError({ message: "Token no proporcionado" });
+        return;
+    }
+
+    fetch(`${baseUrl}/api/turns`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    })
+        .then(handleResponse)
+        .then((turns) => {
+            const dentistTurns = turns.filter(t => t.dentistId === dentistId);
+            onSuccess(dentistTurns);
+        })
         .catch(onError);
 };
