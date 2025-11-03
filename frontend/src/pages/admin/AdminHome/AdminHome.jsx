@@ -12,7 +12,7 @@ export default function AdminHome() {
   const [dentistName, setDentistName] = useState("Dentista")
   const [todayStats, setTodayStats] = useState({ total: 0, pending: 0, cancelled: 0 })
   const [nextAppointment, setNextAppointment] = useState(null)
-  const { token } = useContext(AuthContext);
+  const { token, userId } = useContext(AuthContext);
 
   const quickActions = [
     { title: "Agenda", description: "Gestionar turnos", icon: CalendarDays, href: "/schedule" },
@@ -24,70 +24,54 @@ export default function AdminHome() {
   const cardVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
   const actionVariants = { hidden: { opacity: 0, y: 10 }, visible: i => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.3 } }) }
 
-useEffect(() => {
-  if (!token) return;
+  useEffect(() => {
+    if (!token || !userId) return;
 
-  const handleError = (err) => console.error(err);
+    const handleError = (err) => console.error(err);
 
-  // Traemos dentistas
-  getAllDentists(token, (dentists) => {
-    if (!dentists || dentists.length === 0) return;
-    const firstDentist = dentists[0];
-    setDentistName(firstDentist.firstName);
-
-    // Traemos los turnos del dentista
-    getDentistTurns(token, firstDentist.id, (turns) => {
-      const today = new Date();
-
-      // --- Filtrar turnos de hoy ---
-      const todaysTurns = turns.filter(t => {
-        const turnDate = new Date(t.appointmentDate);
-        return turnDate.getFullYear() === today.getFullYear() &&
-               turnDate.getMonth() === today.getMonth() &&
-               turnDate.getDate() === today.getDate();
-      });
-
-      // Estadísticas
-      const total = todaysTurns.length;
-      const pending = todaysTurns.filter(t => t.status === "Pending").length;
-      const cancelled = todaysTurns.filter(t => t.status === "Cancelled").length;
-      setTodayStats({ total, pending, cancelled });
-
-      // --- Próximo turno pendiente ---
-      const now = new Date();
-      const futurePendingTurns = turns
-        .filter(t => t.status === "Pending" && new Date(t.appointmentDate) >= now)
-        .sort((a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate));
-
-      const next = futurePendingTurns[0];
-
-      if (next) {
-        const fechaObj = new Date(next.appointmentDate);
-
-        // Traemos el paciente por su id
-        getPatientById(next.patientId, token, (patient) => {
-          setNextAppointment({
-            paciente: `${patient.firstName} ${patient.lastName}`,
-            tipo: next.consultationType,
-            fecha: fechaObj.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" }),
-            hora: fechaObj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })
-          });
-        }, (err) => {
-          console.error("Error cargando paciente del próximo turno:", err);
-          // fallback
-          setNextAppointment({
-            paciente: "Paciente",
-            tipo: next.consultationType,
-            fecha: fechaObj.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" }),
-            hora: fechaObj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })
-          });
+    getAllDentists(token, (dentists) => {
+      const currentDentist = dentists.find(d => d.id === parseInt(userId));
+      if (!currentDentist) return console.warn("No se encontró el dentista logueado");
+      setDentistName(currentDentist.firstName);
+      getDentistTurns(token, currentDentist.id, (turns) => {
+        const today = new Date();
+        const todaysTurns = turns.filter(t => {
+          const turnDate = new Date(t.appointmentDate);
+          return (
+            turnDate.getFullYear() === today.getFullYear() &&
+            turnDate.getMonth() === today.getMonth() &&
+            turnDate.getDate() === today.getDate()
+          );
         });
-      } else {
-        setNextAppointment(null);
-      }
+
+        const total = todaysTurns.length;
+        const pending = todaysTurns.filter(t => t.status === "Pending").length;
+        const cancelled = todaysTurns.filter(t => t.status === "Cancelled").length;
+        setTodayStats({ total, pending, cancelled });
+
+        const now = new Date();
+        const next = turns
+          .filter(t => t.status === "Pending" && new Date(t.appointmentDate) >= now)
+          .sort((a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate))[0];
+
+        if (next) {
+          const fechaObj = new Date(next.appointmentDate);
+          getPatientById(next.patientId, token, (patient) => {
+            setNextAppointment({
+              paciente: `${patient.firstName} ${patient.lastName}`,
+              tipo: next.consultationType,
+              fecha: fechaObj.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" }),
+              hora: fechaObj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })
+            });
+          }, (err) => {
+            console.error("Error cargando paciente del próximo turno:", err);
+          });
+        } else {
+          setNextAppointment(null);
+        }
+      }, handleError);
     }, handleError);
-  }, handleError);
-}, [token]);
+  }, [token, userId]);
 
 
   return (
@@ -98,7 +82,7 @@ useEffect(() => {
         animate="visible"
       >
         <Header
-          title={`¡Bienvenido/a, ${dentistName}!`} 
+          title={`¡Bienvenido/a, ${dentistName}!`}
           subtitle={new Date().toLocaleDateString("es-ES", {
             weekday: "long",
             day: "numeric",
