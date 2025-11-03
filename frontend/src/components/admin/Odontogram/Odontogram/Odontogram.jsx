@@ -25,17 +25,17 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
   };
 
   const handleSaveToothData = (toothNumber, data) => {
-    console.log("Recibiendo datos guardados:", toothNumber, data); //Para debug
+    console.log("Recibiendo datos guardados:", toothNumber, data);
     const newToothData = {
       ...toothData,
       [toothNumber]: {
-        ...toothData[toothNumber], // Mantener datos existentes de esta pieza
-        ...data, // Sobrescribir con nuevos datos
+        ...toothData[toothNumber],
+        ...data,
       },
     };
 
     setToothData(newToothData);
-    console.log("📝 Estado actualizado:", newToothData); //para debug
+    console.log("📝 Estado actualizado:", newToothData);
     if (onSave) {
       setTimeout(() => {
         onSave(newToothData);
@@ -52,7 +52,6 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
   const getToothObservations = () => {
     const observations = [];
     Object.entries(toothData).forEach(([toothNumber, data]) => {
-      // Observaciones de secciones (existente)
       if (data && data.sections) {
         Object.entries(data.sections).forEach(([section, sectionData]) => {
           if (sectionData.color !== "white" && sectionData.observation) {
@@ -67,7 +66,6 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
         });
       }
 
-      // Observaciones de estado de pieza (nuevo)
       if (data && data.status) {
         const statusInfo = {
           ausente: "Pieza Ausente",
@@ -82,7 +80,7 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
             section: "estado",
             color:
               data.status.type.includes("ausente") ||
-              data.status.type.includes("corona")
+                data.status.type.includes("corona")
                 ? "red"
                 : "blue",
             observation: statusInfo[data.status.type],
@@ -120,9 +118,8 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
       <div className="w-full max-w-full overflow-x-auto">
         <div className="min-w-max mx-auto px-2">
           <div
-            className={`flex justify-center mb-3 sm:mb-4 ${
-              readOnly ? "opacity-80" : ""
-            }`}
+            className={`flex justify-center mb-3 sm:mb-4 ${readOnly ? "opacity-80" : ""
+              }`}
           >
             {topRowRight.map((t) => (
               <Tooth
@@ -145,9 +142,8 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
             ))}
           </div>
           <div
-            className={`flex justify-center mb-6 sm:mb-8 ${
-              readOnly ? "opacity-80" : ""
-            }`}
+            className={`flex justify-center mb-6 sm:mb-8 ${readOnly ? "opacity-80" : ""
+              }`}
           >
             {bottomRowRight.map((t) => (
               <Tooth
@@ -170,9 +166,8 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
             ))}
           </div>
           <div
-            className={`flex justify-center mb-3 sm:mb-4 ${
-              readOnly ? "opacity-80" : ""
-            }`}
+            className={`flex justify-center mb-3 sm:mb-4 ${readOnly ? "opacity-80" : ""
+              }`}
           >
             {topChildRight.map((t) => (
               <Tooth
@@ -195,9 +190,8 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
             ))}
           </div>
           <div
-            className={`flex justify-center mb-6 sm:mb-8 ${
-              readOnly ? "opacity-80" : ""
-            }`}
+            className={`flex justify-center mb-6 sm:mb-8 ${readOnly ? "opacity-80" : ""
+              }`}
           >
             {bottomChildRight.map((t) => (
               <Tooth
@@ -240,10 +234,10 @@ const Odontogram = ({ initialData = {}, onSave, readOnly = false }) => {
                       obs.color === "blue"
                         ? "#1E3A8A"
                         : obs.color === "red"
-                        ? "#B22222"
-                        : obs.color === "green"
-                        ? "#2E7D32"
-                        : "white",
+                          ? "#B22222"
+                          : obs.color === "green"
+                            ? "#2E7D32"
+                            : "white",
                   }}
                 />
                 <span className="font-semibold text-gray-700 text-sm sm:text-base">

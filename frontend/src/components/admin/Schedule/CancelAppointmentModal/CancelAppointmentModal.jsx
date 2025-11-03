@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button"
 import { AlertTriangle, Calendar, User, Clock } from "lucide-react"
 import { format, parseISO } from "date-fns"
 import { es } from "date-fns/locale"
+import { useContext } from "react"
 import { successToast, errorToast } from "@/utils/notifications"
 import { cancelTurn } from "@/services/api.services"
+import { AuthContext } from "@/services/auth/AuthContextProvider"
 
 export default function CancelAppointmentModal({
     open,
@@ -19,7 +21,7 @@ export default function CancelAppointmentModal({
     const formattedTime = format(appointmentDate, "HH:mm")
 
     const handleConfirm = async () => {
-        const token = localStorage.getItem("token") // o como manejes el token
+        const { token } = useContext(AuthContext);
         if (!token) {
             errorToast("No hay token disponible")
             return
@@ -30,7 +32,7 @@ export default function CancelAppointmentModal({
             appointment.id_turn,
             () => {
                 successToast("Turno cancelado exitosamente")
-                onCancelled(appointment.id_turn) // actualizar estado en el componente padre
+                onCancelled(appointment.id_turn) 
                 onClose()
             },
             (err) => {

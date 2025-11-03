@@ -12,7 +12,7 @@ export default function DayRow({ day, slots, errors, timeSlots, onToggleDay, onT
     return (
         <motion.div variants={fadeSlideUp} initial="hidden" animate="visible"
             className={`grid grid-cols-1 sm:grid-cols-3 items-center gap-4 p-3 border rounded-lg ${dayHasErrors ? 'border-destructive/50 bg-destructive/5' : ''}`}>
-            
+
             <div className="flex items-center gap-2">
                 <Switch checked={isEnabled} onCheckedChange={(c) => onToggleDay(day.id, c)} />
                 <Label className="font-medium">{day.name}</Label>
@@ -24,7 +24,7 @@ export default function DayRow({ day, slots, errors, timeSlots, onToggleDay, onT
                     <TimeSlot
                         key={slot.id_availability}
                         slot={slot}
-                        daySlots={slots}       // Todos los slots del día
+                        daySlots={slots}
                         errors={errors}
                         timeSlots={timeSlots}
                         onTimeChange={onTimeChange}

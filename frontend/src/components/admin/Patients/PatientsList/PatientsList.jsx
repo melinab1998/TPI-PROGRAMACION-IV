@@ -70,8 +70,6 @@ export default function PatientsList({ patients, onView, onEdit, onViewVisits })
                                 <span className="sr-only sm:not-sr-only sm:ml-2">Editar</span>
                             </Button>
                         </div>
-
-                        {/* Menú dropdown para mobile */}
                         <div className="sm:hidden flex justify-end">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>

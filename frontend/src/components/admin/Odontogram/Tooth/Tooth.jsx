@@ -19,12 +19,10 @@ const Tooth = ({ label, data, onClick }) => {
     }
   };
 
-  // Verificar si la pieza está marcada con alguna cruz
   const hasCross =
     data?.status?.type === "ausente" || data?.status?.type === "extraccion";
   const crossColor = data?.status?.type === "ausente" ? "#B22222" : "#1E3A8A";
 
-  // Verificar si tiene corona
   const hasCrown =
     data?.status?.type === "corona" || data?.status?.type === "necesitaCorona";
   const crownColor = data?.status?.type === "corona" ? "#B22222" : "#1E3A8A";
@@ -43,7 +41,6 @@ const Tooth = ({ label, data, onClick }) => {
           viewBox="0 0 100 100"
           className="drop-shadow-sm"
         >
-          {/* Pieza dental base */}
           <polygon
             points="20,20 80,20 60,40 40,40"
             fill={getFillColor(getColor("top"))}
@@ -74,8 +71,6 @@ const Tooth = ({ label, data, onClick }) => {
             stroke="black"
             strokeWidth="1"
           />
-
-          {/* Cruz para piezas ausentes o extracción */}
           {hasCross && (
             <>
               <line
@@ -98,8 +93,6 @@ const Tooth = ({ label, data, onClick }) => {
               />
             </>
           )}
-
-          {/* Círculo para corona */}
           {hasCrown && (
             <circle
               cx="50"
@@ -113,7 +106,6 @@ const Tooth = ({ label, data, onClick }) => {
           )}
         </svg>
 
-        {/* Indicadores visuales */}
         {(hasCross || hasCrown) && (
           <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
         )}
@@ -124,63 +116,4 @@ const Tooth = ({ label, data, onClick }) => {
 
 export default Tooth;
 
-/*import React from "react";
 
-const Tooth = ({ label, data, onClick }) => {
-  const getColor = (section) => {
-    if (!data || !data.sections || !data.sections[section]) return "white";
-    return data.sections[section].color || "white";
-  };
-
-  const getFillColor = (color) => {
-    switch (color) {
-      case "blue": return "#1E3A8A";
-      case "red": return "#B22222";
-      case "green": return "#2E7D32";
-      default: return "white";
-    }
-  };
-
-  return (
-    <div
-      className="flex flex-col items-center m-1 cursor-pointer transition-transform hover:scale-105"
-      onClick={onClick}
-    >
-      <span className="text-xs font-medium mb-1">{label}</span>
-      <svg width="40" height="40" viewBox="0 0 100 100" className="drop-shadow-sm">
-        <polygon
-          points="20,20 80,20 60,40 40,40"
-          fill={getFillColor(getColor("top"))}
-          stroke="black"
-          strokeWidth="1"
-        />
-        <polygon
-          points="20,80 80,80 60,60 40,60"
-          fill={getFillColor(getColor("bottom"))}
-          stroke="black"
-          strokeWidth="1"
-        />
-        <polygon
-          points="20,20 20,80 40,60 40,40"
-          fill={getFillColor(getColor("left"))}
-          stroke="black"
-          strokeWidth="1"
-        />
-        <polygon
-          points="80,20 80,80 60,60 60,40"
-          fill={getFillColor(getColor("right"))}
-          stroke="black"
-          strokeWidth="1"
-        />
-        <polygon
-          points="40,40 60,40 60,60 40,60"
-          fill={getFillColor(getColor("center"))}
-          stroke="black"
-          strokeWidth="1"
-        />
-      </svg>
-    </div>
-  );
-};
-
-export default Tooth;*/

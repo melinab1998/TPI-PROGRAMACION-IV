@@ -203,8 +203,6 @@ export default function NavBar() {
 
           <ModeToggle />
         </div>
-
-        {/* Mobile Menu */}
         <div className="flex md:hidden gap-3 items-center">
           <ModeToggle />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>

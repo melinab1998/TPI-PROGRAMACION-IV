@@ -31,7 +31,6 @@ export default function DentistForm({ isOpen, onClose, onSubmit, dentist }) {
     },
   });
 
-  // Resetea los valores cada vez que cambie el dentista a editar o se abra el modal
   useEffect(() => {
     if (dentist) {
       reset({

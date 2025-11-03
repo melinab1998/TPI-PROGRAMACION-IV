@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { parseISO, isSameDay } from "date-fns"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Calendar from "@/components/admin/Schedule/Calendar/Calendar"
@@ -9,7 +9,8 @@ import CancelAppointmentModal from "@/components/admin/Schedule/CancelAppointmen
 import { motion } from "framer-motion"
 import { Plus } from "lucide-react"
 import Header from "@/components/common/Header/Header"
-import { getAllTurns, getPatientById, getDentistById, createTurn, cancelTurn } from "@/services/api.services"
+import { getAllTurns, getPatientById, getDentistById, cancelTurn } from "@/services/api.services"
+import { AuthContext } from "@/services/auth/AuthContextProvider"
 
 export default function AdminSchedule() {
     const today = new Date()
@@ -22,9 +23,8 @@ export default function AdminSchedule() {
     const [editingAppointment, setEditingAppointment] = useState(null)
     const [cancelingAppointment, setCancelingAppointment] = useState(null)
 
-    const token = localStorage.getItem('token')
+    const { token } = useContext(AuthContext);
 
-    // Función para enriquecer los datos del turno
     const enrichTurnData = async (turn) => {
         try {
             const patientData = await new Promise((resolve, reject) => {
@@ -64,7 +64,6 @@ export default function AdminSchedule() {
         }
     }
 
-    // Cargar turnos al montar el componente
     useEffect(() => {
         loadAppointments()
     }, [])
@@ -127,28 +126,23 @@ export default function AdminSchedule() {
         setModalOpen(true)
     }
 
-    // ✅ CORREGIDO: Función handleSave actualizada
     const handleSave = async (turnFromBackend) => {
         try {
-            // Enriquecer los datos del turno que viene del backend
             const enrichedTurn = await enrichTurnData(turnFromBackend)
-            
+
             if (editingAppointment) {
-                // Modo edición: actualizar el turno existente
-                setAppointments(prev => 
-                    prev.map(a => 
+                setAppointments(prev =>
+                    prev.map(a =>
                         a.id_turn === enrichedTurn.id_turn ? enrichedTurn : a
                     )
                 )
             } else {
-                // Modo creación: agregar nuevo turno
                 setAppointments(prev => [...prev, enrichedTurn])
             }
-            
-            // Cerrar modal y resetear estado
+
             setModalOpen(false)
             setEditingAppointment(null)
-            
+
         } catch (error) {
             console.error('Error guardando turno:', error)
             throw error
@@ -249,7 +243,6 @@ export default function AdminSchedule() {
                 </motion.div>
             </div>
 
-            {/* ✅ CORREGIDO: Modal con la función handleSave corregida */}
             <AppointmentFormModal
                 open={modalOpen}
                 onClose={() => {
@@ -259,7 +252,7 @@ export default function AdminSchedule() {
                 onSave={handleSave}
                 appointment={editingAppointment}
             />
-            
+
             <CancelAppointmentModal
                 open={cancelModalOpen}
                 onClose={() => {

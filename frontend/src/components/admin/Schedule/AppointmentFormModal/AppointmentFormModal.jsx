@@ -38,7 +38,6 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
     return new Date(year, month - 1, day);
   }
 
-  // -------------------- Cargar pacientes --------------------
   useEffect(() => {
     if (!token) return;
     getAllPatients(token,
@@ -50,7 +49,6 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
     );
   }, [token]);
 
-  // -------------------- Cargar slots disponibles --------------------
   useEffect(() => {
     if (!open || !userId || !token) return;
 
@@ -66,13 +64,11 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
       endDate.toISOString().split("T")[0],
       (slots) => {
         setAvailableSlots(slots || {});
-        console.log("✅ Slots cargados:", slots);
       },
       (err) => console.error("Error cargando slots:", err)
     );
   }, [open, userId, token]);
 
-  // -------------------- Precargar formulario en edición --------------------
   useEffect(() => {
     if (!open) return;
 
@@ -90,11 +86,6 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
 
     if (allPatients.length === 0 || Object.keys(availableSlots).length === 0) return;
 
-    console.log("🔹 Ejecutando precarga del formulario", { appointment, editMode, open });
-    console.log("🔹 Pacientes cargados:", allPatients.length);
-    console.log("🔹 Slots disponibles:", Object.keys(availableSlots).length);
-
-    // -------------------- Paciente --------------------
     let patient;
     if (appointment.patientId) {
       patient = allPatients.find(p => p.id === appointment.patientId);
@@ -102,14 +93,12 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
     if (!patient) {
       patient = allPatients.find(p => `${p.firstName} ${p.lastName}` === appointment.patient_name);
     }
-    console.log("🔹 Paciente encontrado:", patient);
 
     if (patient) {
       setPatientSearch(`${patient.firstName} ${patient.lastName} - ${patient.dni}`);
       setValue("patient_id", patient.id, { shouldValidate: true });
     }
 
-    // -------------------- Fecha y Hora --------------------
     if (appointment.appointment_date) {
       const dateObj = new Date(appointment.appointment_date);
 
@@ -120,7 +109,6 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
       const minutes = dateObj.getMinutes().toString().padStart(2, "0");
       const appointmentTime = `${hours}:${minutes}`;
 
-      // --- MODIFICACIÓN: agregar la hora del turno a los slots si no está ---
       const currentSlots = availableSlots[date] || [];
       if (!currentSlots.includes(appointmentTime)) {
         setAvailableSlots(prev => ({
@@ -129,18 +117,13 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
         }));
       }
 
-      // Setear el valor del turno
       setValue("appointment_time", appointmentTime, { shouldValidate: true });
-
-      console.log("🔹 Fecha del turno:", date, "Hora:", appointmentTime);
     }
 
-    // -------------------- Tipo de consulta --------------------
     setValue("consultation_type", appointment.consultation_type || "Consulta", { shouldValidate: true });
 
   }, [open, editMode, appointment, allPatients, availableSlots, setValue, reset]);
 
-  // -------------------- Filtrado de pacientes --------------------
   useEffect(() => {
     if (!patientSearch) {
       setFilteredPatients(allPatients);
@@ -165,7 +148,6 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
     setPatientSearch("");
   }
 
-  // -------------------- Submit --------------------
   const onSubmit = async (data) => {
     if (isSubmitting) return;
     setIsSubmitting(true);
@@ -220,8 +202,6 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
           <DialogTitle>{editMode ? "Editar Turno" : "Nuevo Turno"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
-          {/* Fecha */}
           <div className="space-y-2">
             <Label>Fecha</Label>
             <Select
@@ -248,8 +228,6 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
             <input type="hidden" {...register("appointment_date", appointmentValidations.appointment_date)} />
             {errors.appointment_date && <p className="text-red-500 text-xs">{errors.appointment_date.message}</p>}
           </div>
-
-          {/* Hora */}
           <div className="space-y-2">
             <Label>Hora</Label>
             <Select
@@ -269,8 +247,6 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
             <input type="hidden" {...register("appointment_time", appointmentValidations.appointment_time)} />
             {errors.appointment_time && <p className="text-red-500 text-xs">{errors.appointment_time.message}</p>}
           </div>
-
-          {/* Paciente */}
           <div className="space-y-2">
             <Label>Paciente *</Label>
             {!watchPatientId ? (
@@ -312,8 +288,6 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
             <input type="hidden" {...register("patient_id", appointmentValidations.patient_id)} />
             {errors.patient_id && <p className="text-red-500 text-xs">{errors.patient_id.message}</p>}
           </div>
-
-          {/* Tipo de Turno */}
           <div className="space-y-2">
             <Label>Tipo de Turno</Label>
             <Select

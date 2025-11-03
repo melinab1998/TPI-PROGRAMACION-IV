@@ -1,22 +1,10 @@
 import { useEffect, useState, useContext } from "react";
 import { useForm } from "react-hook-form";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogFooter,} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import {Select,SelectContent,SelectItem,SelectTrigger,SelectValue,} from "@/components/ui/select";
 import { AuthContext } from "@/services/auth/AuthContextProvider";
 import { getHealthPlansByInsurance } from "@/services/api.services";
 import { successToast, errorToast } from "@/utils/notifications";
@@ -59,7 +47,6 @@ export default function PatientFormModal({
   const selectedInsurance = watch("healthInsuranceId");
   const selectedPlan = watch("healthPlanId");
 
-  // Cargar datos del paciente al abrir el modal
   useEffect(() => {
     if (patient) {
       reset({
@@ -93,7 +80,6 @@ export default function PatientFormModal({
     }
   }, [patient, open, reset]);
 
-  // Cargar planes cuando abrimos el modal con un paciente existente
   useEffect(() => {
     const insuranceId = patient?.healthInsuranceId?.toString();
     if (insuranceId && token) {
@@ -114,7 +100,6 @@ export default function PatientFormModal({
     }
   }, [patient, token, setValue]);
 
-  // Cargar planes cuando el usuario selecciona otra obra social
   useEffect(() => {
     if (!selectedInsurance || !token) {
       setPlans([]);
@@ -180,7 +165,6 @@ export default function PatientFormModal({
             </div>
           </div>
 
-          {/* DNI y Fecha de nacimiento */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="dni">DNI *</Label>
@@ -204,7 +188,6 @@ export default function PatientFormModal({
             </div>
           </div>
 
-          {/* Email y Teléfono */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email *</Label>
@@ -229,7 +212,6 @@ export default function PatientFormModal({
             </div>
           </div>
 
-          {/* Ciudad y Dirección */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="city">Ciudad</Label>
@@ -253,7 +235,6 @@ export default function PatientFormModal({
             </div>
           </div>
 
-          {/* Obra social y Plan */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="healthInsuranceId">Obra Social</Label>
@@ -304,7 +285,6 @@ export default function PatientFormModal({
             </div>
           </div>
 
-          {/* Número de afiliado */}
           <div className="space-y-2">
             <Label htmlFor="membershipNumber">Número de afiliado</Label>
             <Input
