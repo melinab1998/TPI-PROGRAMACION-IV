@@ -119,60 +119,101 @@ export default function VisitsPage() {
     };
 
     const onSubmit = async (data) => {
-        if (!selectedTurn) return;
+    if (!selectedTurn) {
+        errorToast("No hay turno seleccionado");
+        return;
+    }
 
-        const isValid = await trigger(["treatment", "diagnosis"]);
-        if (!isValid) {
-            errorToast("Por favor, complete los campos obligatorios");
+    // Validación manual de campos obligatorios
+    if (!data.treatment?.trim() || !data.diagnosis?.trim()) {
+        errorToast("Por favor, complete tratamiento y diagnóstico");
+        return;
+    }
+
+    setIsSubmitting(true);
+
+    const existingRecord = getVisitRecordForTurn(selectedTurn.id);
+
+    // Asegúrate que turnId sea número
+    const payload = {
+        visitDate: new Date().toISOString().split("T")[0],
+        treatment: data.treatment.trim(),
+        diagnosis: data.diagnosis.trim(),
+        notes: data.notes?.trim() || "",
+        prescription: data.prescription?.trim() || "",
+        turnId: Number(selectedTurn.id) // ← Conversión a número
+    };
+
+    console.log("Enviando payload:", payload); // ← Para debug
+
+    const handleSuccess = (savedRecord) => {
+        console.log("Respuesta del servidor:", savedRecord);
+        
+        if (!savedRecord) {
+            errorToast("Error: No se recibió respuesta del servidor");
             return;
         }
 
-        setIsSubmitting(true);
-
-        const existingRecord = getVisitRecordForTurn(selectedTurn.id);
-
-        const payload = {
-            visitDate: new Date().toISOString().split("T")[0], 
-            treatment: data.treatment,
-            diagnosis: data.diagnosis,
-            notes: data.notes,
-            prescription: data.prescription,
-            turnId: selectedTurn.id
+        // Asegúrate que el registro tenga los campos necesarios
+        const processedRecord = {
+            ...savedRecord,
+            id_turn: savedRecord.turnId || selectedTurn.id
         };
 
-        const handleSuccess = (savedRecord) => {
-            setVisitRecords(prev =>
-                existingRecord
-                    ? prev.map(r => r.id_turn === selectedTurn.id ? savedRecord : r)
-                    : [...prev, savedRecord]
-            );
+        setVisitRecords(prev =>
+            existingRecord
+                ? prev.map(r => r.id_turn === selectedTurn.id ? processedRecord : r)
+                : [...prev, processedRecord]
+        );
 
-            successToast(
-                existingRecord
-                    ? "Registro de visita actualizado exitosamente."
-                    : "Registro de visita creado exitosamente."
-            );
+        successToast(
+            existingRecord
+                ? "Registro actualizado exitosamente."
+                : "Registro creado exitosamente."
+        );
 
-            setShowVisitForm(false);
-            setSelectedTurn(null);
-            reset();
-        };
-
-        const handleError = (err) => {
-            console.error(err);
-            errorToast("Error al guardar el registro de visita.");
-        };
-
-        try {
-            if (existingRecord) {
-                updateVisitRecord(token, existingRecord.id_visit_record, payload, handleSuccess, handleError);
-            } else {
-                createVisitRecord(token, payload, handleSuccess, handleError);
-            }
-        } finally {
-            setIsSubmitting(false);
-        }
+        setShowVisitForm(false);
+        setSelectedTurn(null);
+        reset();
     };
+
+    const handleError = (err) => {
+        console.error("Error detallado:", err);
+        let errorMessage = "Error al guardar el registro";
+        
+        if (err.response?.data?.message) {
+            errorMessage = err.response.data.message;
+        } else if (err.message) {
+            errorMessage = err.message;
+        }
+        
+        errorToast(errorMessage);
+    };
+
+    try {
+        if (existingRecord && existingRecord.id_visit_record) {
+            await updateVisitRecord(
+                token, 
+                existingRecord.id_visit_record, 
+                payload, 
+                handleSuccess, 
+                handleError
+            );
+        } else {
+            await createVisitRecord(
+                token, 
+                payload, 
+                handleSuccess, 
+                handleError
+            );
+        }
+    } catch (error) {
+        console.error("Error inesperado:", error);
+        errorToast("Error inesperado al procesar la solicitud");
+    } finally {
+        setIsSubmitting(false);
+    }
+};
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">

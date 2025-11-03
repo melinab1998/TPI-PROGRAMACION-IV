@@ -220,12 +220,42 @@ export const patientValidations = {
 
 export const visitValidations = {
     treatment: {
-        required: "El tratamiento realizado es obligatorio",
-        minLength: { value: 3, message: "Debe tener al menos 3 caracteres" }
+        required: "El tratamiento es obligatorio",
+        minLength: {
+            value: 10,
+            message: "El tratamiento debe tener al menos 10 caracteres"
+        },
+        validate: (value) => {
+            if (value && value.trim().length < 10) {
+                return "El tratamiento debe tener al menos 10 caracteres";
+            }
+            return true;
+        }
     },
     diagnosis: {
         required: "El diagnóstico es obligatorio",
-        minLength: { value: 3, message: "Debe tener al menos 3 caracteres" }
+        minLength: {
+            value: 10,
+            message: "El diagnóstico debe tener al menos 10 caracteres"
+        },
+        validate: (value) => {
+            if (value && value.trim().length < 10) {
+                return "El diagnóstico debe tener al menos 10 caracteres";
+            }
+            return true;
+        }
+    },
+    notes: {
+        maxLength: {
+            value: 500,
+            message: "Las notas no pueden exceder los 500 caracteres"
+        }
+    },
+    prescription: {
+        maxLength: {
+            value: 500,
+            message: "La prescripción no puede exceder los 500 caracteres"
+        }
     }
 };
 
