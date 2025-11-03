@@ -25,61 +25,70 @@ export default function AdminHome() {
   const actionVariants = { hidden: { opacity: 0, y: 10 }, visible: i => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.3 } }) }
 
 useEffect(() => {
-  if (!token) return
+  if (!token) return;
 
-  const handleError = (err) => console.error(err)
+  const handleError = (err) => console.error(err);
 
   // Traemos dentistas
   getAllDentists(token, (dentists) => {
-    if (!dentists || dentists.length === 0) return
-    const firstDentist = dentists[0]
-    setDentistName(firstDentist.firstName)
+    if (!dentists || dentists.length === 0) return;
+    const firstDentist = dentists[0];
+    setDentistName(firstDentist.firstName);
 
     // Traemos los turnos del dentista
     getDentistTurns(token, firstDentist.id, (turns) => {
-      const todayStr = new Date().toISOString().split("T")[0]
+      const today = new Date();
 
-      // Estadísticas de hoy
-      const todaysTurns = turns.filter(t => t.appointmentDate.startsWith(todayStr))
-      const total = todaysTurns.length
-      const pending = todaysTurns.filter(t => t.status === "Pending").length
-      const cancelled = todaysTurns.filter(t => t.status === "Cancelled").length
-      setTodayStats({ total, pending, cancelled })
+      // --- Filtrar turnos de hoy ---
+      const todaysTurns = turns.filter(t => {
+        const turnDate = new Date(t.appointmentDate);
+        return turnDate.getFullYear() === today.getFullYear() &&
+               turnDate.getMonth() === today.getMonth() &&
+               turnDate.getDate() === today.getDate();
+      });
 
-      // Próximo turno pendiente (cualquier fecha futura)
+      // Estadísticas
+      const total = todaysTurns.length;
+      const pending = todaysTurns.filter(t => t.status === "Pending").length;
+      const cancelled = todaysTurns.filter(t => t.status === "Cancelled").length;
+      setTodayStats({ total, pending, cancelled });
+
+      // --- Próximo turno pendiente ---
+      const now = new Date();
       const futurePendingTurns = turns
-        .filter(t => t.status === "Pending" && new Date(t.appointmentDate) >= new Date())
-        .sort((a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate))
+        .filter(t => t.status === "Pending" && new Date(t.appointmentDate) >= now)
+        .sort((a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate));
 
-      const next = futurePendingTurns[0]
+      const next = futurePendingTurns[0];
 
       if (next) {
-        const fechaObj = new Date(next.appointmentDate)
+        const fechaObj = new Date(next.appointmentDate);
 
-        // --- Traemos el paciente por su id ---
+        // Traemos el paciente por su id
         getPatientById(next.patientId, token, (patient) => {
           setNextAppointment({
             paciente: `${patient.firstName} ${patient.lastName}`,
             tipo: next.consultationType,
             fecha: fechaObj.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" }),
             hora: fechaObj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })
-          })
+          });
         }, (err) => {
-          console.error("Error cargando paciente del próximo turno:", err)
+          console.error("Error cargando paciente del próximo turno:", err);
           // fallback
           setNextAppointment({
             paciente: "Paciente",
             tipo: next.consultationType,
             fecha: fechaObj.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" }),
             hora: fechaObj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })
-          })
-        })
+          });
+        });
       } else {
-        setNextAppointment(null)
+        setNextAppointment(null);
       }
-    }, handleError)
-  }, handleError)
-}, [token])
+    }, handleError);
+  }, handleError);
+}, [token]);
+
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-10 max-w-6xl mx-auto">
