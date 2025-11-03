@@ -8,13 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search } from "lucide-react"
 import { successToast } from "@/utils/notifications"
 import { appointmentValidations } from "@/utils/validations"
-
-const mockPatients = [
-  { id: 1, name: "María López", dni: "41239736" },
-  { id: 2, name: "Juan Pérez", dni: "38987654" },
-  { id: 3, name: "Ana Gómez", dni: "35123456" },
-  { id: 4, name: "Carlos Rodríguez", dni: "28765432" }
-]
+import { getAllPatients } from "@/services/api.services"
 
 export default function AppointmentFormModal({ open, onClose, onSave, appointment = null, dentist }) {
   const editMode = !!appointment
@@ -27,36 +21,54 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
     }
   })
 
+  const token = localStorage.getItem('token')
+
   const [patientSearch, setPatientSearch] = useState("")
-  const [filteredPatients, setFilteredPatients] = useState(mockPatients)
+  const [allPatients, setAllPatients] = useState([])
+  const [filteredPatients, setFilteredPatients] = useState([])
   const watchPatientId = watch("patient_id")
+
+  // Cargar pacientes reales desde backend
+  useEffect(() => {
+    if (!token) return
+    getAllPatients(token,
+      (patients) => {
+        setAllPatients(patients)
+        setFilteredPatients(patients)
+      },
+      (err) => console.error('Error cargando pacientes:', err)
+    )
+  }, [token])
 
   useEffect(() => {
     reset({
       appointment_date: appointment?.appointment_date?.split("T")[0] || "",
-      appointment_time: appointment?.appointment_date?.split("T")[1]?.substring(0,5) || "",
+      appointment_time: appointment?.appointment_date?.split("T")[1]?.substring(0, 5) || "",
       patient_id: appointment?.patient_id || "",
       consultation_type: appointment?.consultation_type || "Consulta"
     })
     if (appointment?.patient_id) {
-      const p = mockPatients.find(p => p.id === appointment.patient_id)
+      const p = allPatients.find(p => p.id === appointment.patient_id)
       if (p) setPatientSearch(p.dni)
     } else {
       setPatientSearch("")
     }
-  }, [appointment, reset])
+  }, [appointment, allPatients, reset])
 
+  // Filtrado en tiempo real
   useEffect(() => {
-    if (!patientSearch) return setFilteredPatients(mockPatients)
-    const filtered = mockPatients.filter(p =>
-      p.name.toLowerCase().includes(patientSearch.toLowerCase()) || p.dni.includes(patientSearch)
+    if (!patientSearch) return setFilteredPatients(allPatients)
+    const filtered = allPatients.filter(p =>
+      p.firstName.toLowerCase().includes(patientSearch.toLowerCase()) ||
+      p.lastName.toLowerCase().includes(patientSearch.toLowerCase()) ||
+      p.dni.includes(patientSearch)
     )
     setFilteredPatients(filtered)
-  }, [patientSearch])
+  }, [patientSearch, allPatients])
 
   const handlePatientSelect = (id) => {
     setValue("patient_id", id)
-    const p = mockPatients.find(p => p.id === id)
+    const p = allPatients.find(p => p.id === id)
     if (p) setPatientSearch(p.dni)
   }
 
@@ -64,7 +76,7 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
     const slots = []
     for (let h = 8; h <= 19; h++) {
       for (let m = 0; m < 60; m += 30) {
-        slots.push(`${h.toString().padStart(2,"0")}:${m.toString().padStart(2,"0")}`)
+        slots.push(`${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`)
       }
     }
     return slots
@@ -73,12 +85,12 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
   const timeSlots = generateTimeSlots()
 
   const onSubmit = (data) => {
-    const patient = mockPatients.find(p => p.id === parseInt(data.patient_id))
+    const patient = allPatients.find(p => p.id === parseInt(data.patient_id))
     if (!patient) return alert("Seleccione un paciente")
     const appointmentData = {
       appointment_date: `${data.appointment_date}T${data.appointment_time}:00`,
       patient_id: patient.id,
-      patient_name: patient.name,
+      patient_name: `${patient.firstName} ${patient.lastName}`,
       dentist_id: dentist.id,
       dentist_name: dentist.name,
       consultation_type: data.consultation_type,
@@ -117,37 +129,56 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Paciente *</Label>
-            {!watchPatientId ? (
-              <>
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar por DNI o nombre"
-                    value={patientSearch}
-                    onChange={e => setPatientSearch(e.target.value)}
-                    className="pl-9"
-                  />
-                </div>
-                {patientSearch && (
-                  <div className="border rounded-md max-h-32 overflow-y-auto">
-                    {filteredPatients.map(p => (
-                      <div key={p.id} className="p-2 cursor-pointer hover:bg-muted" onClick={() => handlePatientSelect(p.id)}>
-                        {p.name} - DNI: {p.dni}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="p-2 border rounded-md bg-muted/20">
-                {mockPatients.find(p => p.id === parseInt(watchPatientId))?.name} - DNI: {mockPatients.find(p => p.id === parseInt(watchPatientId))?.dni}
-                <Button type="button" size="sm" variant="outline" onClick={() => {setValue("patient_id", ""); setPatientSearch("")}}>Cambiar</Button>
+       <div className="space-y-2">
+  <Label>Paciente *</Label>
+  {!watchPatientId ? (
+    <>
+      <div className="relative">
+        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Buscar por DNI o nombre"
+          value={patientSearch}
+          onChange={e => setPatientSearch(e.target.value)}
+          className="pl-9"
+        />
+      </div>
+      {patientSearch && (
+        <div className="border rounded-md max-h-40 overflow-y-auto mt-1 bg-white shadow-sm">
+          {filteredPatients.length > 0 ? (
+            filteredPatients.map(p => (
+              <div
+                key={p.id}
+                className="p-2 cursor-pointer hover:bg-gray-100 text-sm text-gray-700"
+                onClick={() => handlePatientSelect(p.id)}
+              >
+                {p.firstName} {p.lastName} - DNI: {p.dni}
               </div>
-            )}
-            <input type="hidden" {...register("patient_id", appointmentValidations.patient_id)} />
-          </div>
+            ))
+          ) : (
+            <div className="p-2 text-sm text-gray-500">No se encontraron pacientes con ese nombre o DNI</div>
+          )}
+        </div>
+      )}
+    </>
+  ) : (
+    <div className="p-2 border rounded-md bg-muted/20 flex items-center justify-between text-sm text-gray-700">
+      <span>
+        {allPatients.find(p => p.id === parseInt(watchPatientId))?.firstName}{" "}
+        {allPatients.find(p => p.id === parseInt(watchPatientId))?.lastName} - DNI:{" "}
+        {allPatients.find(p => p.id === parseInt(watchPatientId))?.dni}
+      </span>
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        onClick={() => { setValue("patient_id", ""); setPatientSearch(""); }}
+      >
+        x
+      </Button>
+    </div>
+  )}
+  <input type="hidden" {...register("patient_id", appointmentValidations.patient_id)} />
+</div>
 
           <div className="space-y-2">
             <Label>Tipo de Turno</Label>
