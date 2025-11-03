@@ -100,7 +100,6 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
       patient = allPatients.find(p => p.id === appointment.patientId);
     }
     if (!patient) {
-      // fallback: buscar por nombre completo
       patient = allPatients.find(p => `${p.firstName} ${p.lastName}` === appointment.patient_name);
     }
     console.log("🔹 Paciente encontrado:", patient);
@@ -111,27 +110,30 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
     }
 
     // -------------------- Fecha y Hora --------------------
-if (appointment.appointment_date) {
-  const dateObj = new Date(appointment.appointment_date);
+    if (appointment.appointment_date) {
+      const dateObj = new Date(appointment.appointment_date);
 
-  // extraer fecha en formato YYYY-MM-DD
-  const date = dateObj.toISOString().split("T")[0];
-  setValue("appointment_date", date, { shouldValidate: true });
+      const date = dateObj.toISOString().split("T")[0];
+      setValue("appointment_date", date, { shouldValidate: true });
 
-  // extraer hora y minuto en HH:MM
-  const hours = dateObj.getHours().toString().padStart(2, "0");
-  const minutes = dateObj.getMinutes().toString().padStart(2, "0");
-  const appointmentTime = `${hours}:${minutes}`;
+      const hours = dateObj.getHours().toString().padStart(2, "0");
+      const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+      const appointmentTime = `${hours}:${minutes}`;
 
-  if (availableSlots[date]?.includes(appointmentTime)) {
-    setValue("appointment_time", appointmentTime, { shouldValidate: true });
-  } else {
-    console.warn("⚠️ La hora del turno no está en los slots disponibles", appointmentTime);
-    setValue("appointment_time", "", { shouldValidate: true });
-  }
+      // --- MODIFICACIÓN: agregar la hora del turno a los slots si no está ---
+      const currentSlots = availableSlots[date] || [];
+      if (!currentSlots.includes(appointmentTime)) {
+        setAvailableSlots(prev => ({
+          ...prev,
+          [date]: [appointmentTime, ...currentSlots]
+        }));
+      }
 
-  console.log("🔹 Fecha del turno:", date, "Hora:", appointmentTime);
-}
+      // Setear el valor del turno
+      setValue("appointment_time", appointmentTime, { shouldValidate: true });
+
+      console.log("🔹 Fecha del turno:", date, "Hora:", appointmentTime);
+    }
 
     // -------------------- Tipo de consulta --------------------
     setValue("consultation_type", appointment.consultation_type || "Consulta", { shouldValidate: true });
@@ -232,7 +234,7 @@ if (appointment.appointment_date) {
               <SelectContent className="max-h-60">
                 {Object.keys(availableSlots).length > 0 ? (
                   Object.keys(availableSlots)
-                    .sort((a,b) => parseDateAsLocal(a) - parseDateAsLocal(b))
+                    .sort((a, b) => parseDateAsLocal(a) - parseDateAsLocal(b))
                     .map(date => (
                       <SelectItem key={date} value={date}>
                         {parseDateAsLocal(date).toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "short" })}
@@ -287,8 +289,8 @@ if (appointment.appointment_date) {
                     {filteredPatients.length > 0 ? (
                       filteredPatients.map(p => (
                         <div key={p.id} className="p-2 cursor-pointer hover:bg-gray-100 text-sm text-gray-700"
-                             onClick={() => handlePatientSelect(p.id)}>
-                        {p.firstName} {p.lastName} - DNI: {p.dni}
+                          onClick={() => handlePatientSelect(p.id)}>
+                          {p.firstName} {p.lastName} - DNI: {p.dni}
                         </div>
                       ))
                     ) : (
