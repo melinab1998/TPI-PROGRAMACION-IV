@@ -27,7 +27,7 @@ namespace Infrastructure.Services
         {
             try
             {
-                Console.WriteLine("=== 🔍 INICIANDO ENVÍO DE EMAIL ===");
+                Console.WriteLine("=== INICIANDO ENVÍO DE EMAIL ===");
 
                 var activationLink = $"{_config["App:FrontendUrl"]}/reset-password?token={activationToken}";
 
@@ -47,10 +47,10 @@ namespace Infrastructure.Services
 
                 using var client = new SmtpClient();
 
-                Console.WriteLine("📡 Conectando a SMTP...");
+                Console.WriteLine("Conectando a SMTP...");
                 await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
 
-                Console.WriteLine("🔑 Obteniendo Access Token (via HttpClient)...");
+                Console.WriteLine("Obteniendo Access Token (via HttpClient)...");
                 var accessToken = await GetAccessTokenAsync();
 
                 if (string.IsNullOrEmpty(accessToken))
@@ -59,20 +59,18 @@ namespace Infrastructure.Services
                 var oauth2 = new SaslMechanismOAuth2(_config["Email:From"]!, accessToken);
                 await client.AuthenticateAsync(oauth2);
 
-                Console.WriteLine("📤 Enviando email...");
+                Console.WriteLine("Enviando email...");
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
 
-                Console.WriteLine($"✅ Email enviado exitosamente a: {email}");
+                Console.WriteLine($"Email enviado exitosamente a: {email}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"💥 ERROR en SendActivationEmailAsync: {ex.Message}");
+                Console.WriteLine($"ERROR en SendActivationEmailAsync: {ex.Message}");
                 throw;
             }
         }
-
-        // === Nuevo método usando HttpClientFactory ===
         private async Task<string> GetAccessTokenAsync()
         {
             var clientId = _config["Email:ClientId"]!;
@@ -102,8 +100,51 @@ namespace Infrastructure.Services
 
             var accessToken = tokenData.GetProperty("access_token").GetString();
 
-            Console.WriteLine($"✅ Access Token obtenido correctamente (primeros 20 chars): {accessToken?.Substring(0, 20)}...");
+            Console.WriteLine($"Access Token obtenido correctamente (primeros 20 chars): {accessToken?.Substring(0, 20)}...");
             return accessToken!;
+        }
+
+        public async Task SendAppointmentReminderAsync(string toEmail, string patientName, string dentistName, DateTime appointmentDate, string address)
+        {
+            try
+            {
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress("Consultorio Odontológico", _config["Email:From"]!));
+                message.To.Add(MailboxAddress.Parse(toEmail));
+                message.Subject = "Recordatorio de turno";
+
+                var fecha = appointmentDate.ToString("dddd dd/MM/yyyy", new System.Globalization.CultureInfo("es-AR"));
+                var hora = appointmentDate.ToString("HH:mm");
+
+                message.Body = new TextPart("html")
+                {
+                    Text = $@"
+                <p>Estimado/a {patientName},</p>
+                <p>Recuerde concurrir a su cita del día <b>{fecha}</b> a las <b>{hora} hs.</b></p>
+                <p><b>Profesional:</b> {dentistName}<br/>
+                <b>Lugar de atención:</b> {address}</p>
+                <p>Si necesita cancelar su turno, <a href='{_config["App:FrontendUrl"]}/login'>inicie sesión en su cuenta</a> para gestionarlo desde su panel de usuario.</p>
+                <p>Muchas gracias,<br/>
+                Consultorio Odontológico</p>"
+                };
+
+                using var client = new SmtpClient();
+                await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+
+                var accessToken = await GetAccessTokenAsync();
+                var oauth2 = new SaslMechanismOAuth2(_config["Email:From"]!, accessToken);
+
+                await client.AuthenticateAsync(oauth2);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
+
+                Console.WriteLine($"Recordatorio enviado correctamente a {toEmail}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR al enviar recordatorio: {ex.Message}");
+                throw;
+            }
         }
     }
 }

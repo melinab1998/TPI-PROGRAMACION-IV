@@ -1,372 +1,314 @@
-import { useState, useEffect } from "react"
-import { useForm } from "react-hook-form"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search } from "lucide-react"
-import { useNavigate } from "react-router-dom";
-import { successToast } from "@/utils/notifications"
-import { appointmentValidations } from "@/utils/validations"
+import { useState, useEffect, useContext } from "react";
+import { useForm } from "react-hook-form";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search } from "lucide-react";
+import { errorToast, successToast } from "@/utils/notifications";
+import { appointmentValidations } from "@/utils/validations";
+import { getAllPatients, getAvailableSlots, createTurn, updateTurn } from "@/services/api.services";
+import { AuthContext } from "@/services/auth/AuthContextProvider";
 
-const mockPatients = [
-    { id: 1, name: "María López", email: "maria@email.com", dni: "41239736", phone: "1122334455" },
-    { id: 2, name: "Juan Pérez", email: "juan@email.com", dni: "38987654", phone: "1166778899" },
-    { id: 3, name: "Ana Gómez", email: "ana@email.com", dni: "35123456", phone: "1133445566" },
-    { id: 4, name: "Carlos Rodríguez", email: "carlos@email.com", dni: "28765432", phone: "1155667788" },
-    { id: 5, name: "Laura Martínez", email: "laura@email.com", dni: "40123456", phone: "1144556677" },
-    { id: 6, name: "Diego Sánchez", email: "diego@email.com", dni: "36543210", phone: "1177889900" }
-]
+export default function AppointmentFormModal({ open, onClose, onSave, appointment = null }) {
+  const { token, userId } = useContext(AuthContext);
+  const editMode = !!appointment;
 
-const mockDentists = [
-    { id: 1, name: "Dr. Alejandro Suárez", specialty: "Ortodoncia" },
-    { id: 2, name: "Dra. Carolina Mendoza", specialty: "Endodoncia" },
-    { id: 3, name: "Dr. Roberto Díaz", specialty: "Cirugía" },
-    { id: 4, name: "Dra. Laura Fernández", specialty: "Periodoncia" }
-]
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm({
+    defaultValues: {
+      appointment_date: "",
+      appointment_time: "",
+      patient_id: "",
+      consultation_type: "Consulta"
+    }
+  });
 
-export default function AppointmentFormModal({
-    open,
-    onClose,
-    onSave,
-    appointment = null
-}) {
-    const editMode = !!appointment
+  const [patientSearch, setPatientSearch] = useState("");
+  const [allPatients, setAllPatients] = useState([]);
+  const [filteredPatients, setFilteredPatients] = useState([]);
+  const [availableSlots, setAvailableSlots] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitted },
-        setValue,
-        watch,
-        reset,
-        trigger,
-        setError,
-        clearErrors
-    } = useForm({
-        defaultValues: {
-            appointment_date: "",
-            appointment_time: "",
-            patient_id: "",
-            dentist_id: "",
-            consultation_type: "Consulta"
-        }
-    })
+  const watchPatientId = watch("patient_id");
+  const watchDate = watch("appointment_date");
 
-    const [patientSearch, setPatientSearch] = useState("")
-    const [filteredPatients, setFilteredPatients] = useState(mockPatients)
-    const [patientFieldTouched, setPatientFieldTouched] = useState(false)
-    const navigate = useNavigate();
+  const parseDateAsLocal = (dateString) => {
+    const [year, month, day] = dateString.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  }
 
-    const watchPatientId = watch("patient_id")
+  useEffect(() => {
+    if (!token) return;
+    getAllPatients(token,
+      (patients) => {
+        setAllPatients(patients);
+        setFilteredPatients(patients);
+      },
+      (err) => console.error("Error cargando pacientes:", err)
+    );
+  }, [token]);
 
-    const handleNewPatient = () => {
-        onClose();
-        navigate("/patients", { state: { openNewPatientModal: true } });
+  useEffect(() => {
+    if (!open || !userId || !token) return;
+
+    const today = new Date();
+    const startDate = today.toISOString().split("T")[0];
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + 30);
+
+    getAvailableSlots(
+      token,
+      userId,
+      startDate,
+      endDate.toISOString().split("T")[0],
+      (slots) => {
+        setAvailableSlots(slots || {});
+      },
+      (err) => console.error("Error cargando slots:", err)
+    );
+  }, [open, userId, token]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    reset({
+      appointment_date: "",
+      appointment_time: "",
+      patient_id: "",
+      consultation_type: "Consulta"
+    });
+
+    if (!editMode) {
+      setPatientSearch("");
+      return;
+    }
+
+    if (allPatients.length === 0 || Object.keys(availableSlots).length === 0) return;
+
+    let patient;
+    if (appointment.patientId) {
+      patient = allPatients.find(p => p.id === appointment.patientId);
+    }
+    if (!patient) {
+      patient = allPatients.find(p => `${p.firstName} ${p.lastName}` === appointment.patient_name);
+    }
+
+    if (patient) {
+      setPatientSearch(`${patient.firstName} ${patient.lastName} - ${patient.dni}`);
+      setValue("patient_id", patient.id, { shouldValidate: true });
+    }
+
+    if (appointment.appointment_date) {
+      const dateObj = new Date(appointment.appointment_date);
+
+      const date = dateObj.toISOString().split("T")[0];
+      setValue("appointment_date", date, { shouldValidate: true });
+
+      const hours = dateObj.getHours().toString().padStart(2, "0");
+      const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+      const appointmentTime = `${hours}:${minutes}`;
+
+      const currentSlots = availableSlots[date] || [];
+      if (!currentSlots.includes(appointmentTime)) {
+        setAvailableSlots(prev => ({
+          ...prev,
+          [date]: [appointmentTime, ...currentSlots]
+        }));
+      }
+
+      setValue("appointment_time", appointmentTime, { shouldValidate: true });
+    }
+
+    setValue("consultation_type", appointment.consultation_type || "Consulta", { shouldValidate: true });
+
+  }, [open, editMode, appointment, allPatients, availableSlots, setValue, reset]);
+
+  useEffect(() => {
+    if (!patientSearch) {
+      setFilteredPatients(allPatients);
+    } else {
+      const filtered = allPatients.filter(p =>
+        p.firstName.toLowerCase().includes(patientSearch.toLowerCase()) ||
+        p.lastName.toLowerCase().includes(patientSearch.toLowerCase()) ||
+        p.dni.includes(patientSearch)
+      );
+      setFilteredPatients(filtered);
+    }
+  }, [patientSearch, allPatients]);
+
+  const handlePatientSelect = (id) => {
+    setValue("patient_id", id, { shouldValidate: true });
+    const patient = allPatients.find(p => p.id === id);
+    if (patient) setPatientSearch(`${patient.firstName} ${patient.lastName} - ${patient.dni}`);
+  }
+
+  const handleClearPatient = () => {
+    setValue("patient_id", "", { shouldValidate: true });
+    setPatientSearch("");
+  }
+
+  const onSubmit = async (data) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
+    const patient = allPatients.find(p => p.id === parseInt(data.patient_id));
+    if (!patient) {
+      errorToast("Seleccione un paciente");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const payload = {
+      appointmentDate: `${data.appointment_date}T${data.appointment_time}:00`,
+      consultationType: data.consultation_type,
+      patientId: patient.id,
+      dentistId: userId
     };
 
-    useEffect(() => {
-        if (patientSearch.trim() === "") {
-            setFilteredPatients(mockPatients.slice(0, 5))
-        } else {
-            const filtered = mockPatients.filter(patient =>
-                patient.dni.includes(patientSearch) ||
-                patient.name.toLowerCase().includes(patientSearch.toLowerCase())
-            )
-            setFilteredPatients(filtered)
-        }
-    }, [patientSearch])
-
-    useEffect(() => {
-        if (appointment) {
-            const dateTime = appointment.appointment_date.split('T')
-            reset({
-                appointment_date: dateTime[0] || "",
-                appointment_time: dateTime[1]?.substring(0, 5) || "",
-                patient_id: appointment.patient_id || "",
-                dentist_id: appointment.dentist_id || "",
-                consultation_type: appointment.consultation_type || "Consulta"
-            })
-
-            if (appointment.patient_id) {
-                const patient = mockPatients.find(p => p.id === parseInt(appointment.patient_id))
-                if (patient) {
-                    setPatientSearch(patient.dni)
-                }
-            }
-        } else {
-            reset({
-                appointment_date: "",
-                appointment_time: "",
-                patient_id: "",
-                dentist_id: "",
-                consultation_type: "Consulta"
-            })
-            setPatientSearch("")
-            setPatientFieldTouched(false)
-        }
-    }, [appointment, open, reset])
-
-    const handlePatientSelect = (patientId) => {
-        setValue("patient_id", patientId, { shouldValidate: true })
-        const patient = mockPatients.find(p => p.id === parseInt(patientId))
-        if (patient) {
-            setPatientSearch(patient.dni)
-        }
-        setPatientFieldTouched(true)
-        clearErrors("patient_id")
+    try {
+      if (editMode) {
+        await updateTurn(token, appointment.id_turn, payload,
+          (turnFromBackend) => {
+            successToast("Turno actualizado con éxito");
+            onSave(turnFromBackend);
+            onClose();
+          },
+          (err) => errorToast(err.message || "Error al actualizar turno")
+        );
+      } else {
+        await createTurn(token, payload,
+          (turnFromBackend) => {
+            successToast("Turno creado con éxito");
+            onSave(turnFromBackend);
+            onClose();
+          },
+          (err) => errorToast(err.message || "Error al crear turno")
+        );
+      }
+    } catch (error) {
+      errorToast("Error inesperado");
+    } finally {
+      setIsSubmitting(false);
     }
+  };
 
-    const handlePatientSearchBlur = () => {
-        setPatientFieldTouched(true)
-        trigger("patient_id")
-    }
+  const slotsForSelectedDate = watchDate ? availableSlots[watchDate] || [] : [];
 
-    const onSubmit = (data) => {
-        trigger().then(isValid => {
-            if (!isValid) {
-                if (!data.patient_id) {
-                    setError("patient_id", {
-                        type: "manual",
-                        message: "Seleccione un paciente"
-                    })
-                }
-                return
-            }
-
-            const appointmentDateTime = `${data.appointment_date}T${data.appointment_time}:00`
-
-            const selectedPatient = mockPatients.find(p => p.id === parseInt(data.patient_id))
-            const selectedDentist = mockDentists.find(d => d.id === parseInt(data.dentist_id))
-
-            const appointmentData = {
-                ...data,
-                patient_name: selectedPatient?.name || "",
-                patient_email: selectedPatient?.email || "",
-                patient_dni: selectedPatient?.dni || "",
-                patient_phone: selectedPatient?.phone || "",
-                appointment_date: appointmentDateTime,
-                dentist_name: selectedDentist?.name || "",
-                dentist_id: data.dentist_id
-            }
-
-            if (appointment) {
-                appointmentData.id_turn = appointment.id_turn
-                appointmentData.status = appointment.status
-            }
-
-            onSave(appointmentData)
-
-            successToast(editMode ? "Turno actualizado exitosamente" : "Turno creado exitosamente")
-            onClose()
-        })
-    }
-
-    const generateTimeSlots = () => {
-        const slots = []
-        for (let hour = 8; hour <= 19; hour++) {
-            for (let minute = 0; minute < 60; minute += 30) {
-                const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
-                slots.push(timeString)
-            }
-        }
-        return slots
-    }
-
-    const timeSlots = generateTimeSlots()
-    const showPatientError = errors.patient_id && (patientFieldTouched || isSubmitted)
-
-    return (
-        <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                    <DialogTitle className="text-xl">
-                        {editMode ? "Editar Turno" : "Nuevo Turno"}
-                    </DialogTitle>
-                </DialogHeader>
-
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-2">
-                            <Label htmlFor="appointment_date">Fecha</Label>
-                            <Input
-                                id="appointment_date"
-                                type="date"
-                                {...register("appointment_date", appointmentValidations.appointment_date)}
-                                className={errors.appointment_date ? "border-red-500" : ""}
-                            />
-                            {errors.appointment_date && (
-                                <p className="text-red-500 text-xs">{errors.appointment_date.message}</p>
-                            )}
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{editMode ? "Editar Turno" : "Nuevo Turno"}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-2">
+            <Label>Fecha</Label>
+            <Select
+              onValueChange={val => setValue("appointment_date", val, { shouldValidate: true })}
+              value={watch("appointment_date")}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccione una fecha" />
+              </SelectTrigger>
+              <SelectContent className="max-h-60">
+                {Object.keys(availableSlots).length > 0 ? (
+                  Object.keys(availableSlots)
+                    .sort((a, b) => parseDateAsLocal(a) - parseDateAsLocal(b))
+                    .map(date => (
+                      <SelectItem key={date} value={date}>
+                        {parseDateAsLocal(date).toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "short" })}
+                      </SelectItem>
+                    ))
+                ) : (
+                  <SelectItem disabled>No hay fechas disponibles</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+            <input type="hidden" {...register("appointment_date", appointmentValidations.appointment_date)} />
+            {errors.appointment_date && <p className="text-red-500 text-xs">{errors.appointment_date.message}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label>Hora</Label>
+            <Select
+              onValueChange={val => setValue("appointment_time", val, { shouldValidate: true })}
+              value={watch("appointment_time")}
+              disabled={!watchDate || slotsForSelectedDate.length === 0}
+            >
+              <SelectTrigger><SelectValue placeholder="HH:MM" /></SelectTrigger>
+              <SelectContent className="max-h-60">
+                {slotsForSelectedDate.length > 0 ? (
+                  slotsForSelectedDate.map(time => <SelectItem key={time} value={time}>{time}</SelectItem>)
+                ) : (
+                  <SelectItem disabled>No hay horarios disponibles</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+            <input type="hidden" {...register("appointment_time", appointmentValidations.appointment_time)} />
+            {errors.appointment_time && <p className="text-red-500 text-xs">{errors.appointment_time.message}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label>Paciente *</Label>
+            {!watchPatientId ? (
+              <>
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar por DNI o nombre"
+                    value={patientSearch}
+                    onChange={e => setPatientSearch(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+                {patientSearch && (
+                  <div className="border rounded-md max-h-40 overflow-y-auto mt-1 bg-white shadow-sm">
+                    {filteredPatients.length > 0 ? (
+                      filteredPatients.map(p => (
+                        <div key={p.id} className="p-2 cursor-pointer hover:bg-gray-100 text-sm text-gray-700"
+                          onClick={() => handlePatientSelect(p.id)}>
+                          {p.firstName} {p.lastName} - DNI: {p.dni}
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="appointment_time">Hora</Label>
-                            <Select
-                                onValueChange={(value) => setValue("appointment_time", value, { shouldValidate: true })}
-                                defaultValue={watch("appointment_time")}
-                            >
-                                <SelectTrigger className={errors.appointment_time ? "border-red-500" : ""}>
-                                    <SelectValue placeholder="HH:MM" />
-                                </SelectTrigger>
-                                <SelectContent className="max-h-60">
-                                    {timeSlots.map(time => (
-                                        <SelectItem key={time} value={time}>
-                                            {time}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <input
-                                type="hidden"
-                                {...register("appointment_time", appointmentValidations.appointment_time)}
-                            />
-                            {errors.appointment_time && (
-                                <p className="text-red-500 text-xs">{errors.appointment_time.message}</p>
-                            )}
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="dentist_id">Dentista</Label>
-                        <Select
-                            onValueChange={(value) => setValue("dentist_id", value, { shouldValidate: true })}
-                            defaultValue={watch("dentist_id")}
-                        >
-                            <SelectTrigger className={errors.dentist_id ? "border-red-500" : ""}>
-                                <SelectValue placeholder="Seleccione dentista" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {mockDentists.map(dentist => (
-                                    <SelectItem key={dentist.id} value={dentist.id.toString()}>
-                                        {dentist.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <input
-                            type="hidden"
-                            {...register("dentist_id", appointmentValidations.dentist_id)}
-                        />
-                        {errors.dentist_id && (
-                            <p className="text-red-500 text-xs">{errors.dentist_id.message}</p>
-                        )}
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="patient_search">Paciente *</Label>
+                      ))
+                    ) : (
+                      <div className="p-2 text-sm text-gray-500">No se encontraron pacientes</div>
+                    )}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="p-2 border rounded-md bg-muted/20 flex items-center justify-between text-sm text-gray-700">
+                <span>
+                  {allPatients.find(p => p.id === parseInt(watchPatientId))?.firstName}{" "}
+                  {allPatients.find(p => p.id === parseInt(watchPatientId))?.lastName} - DNI:{" "}
+                  {allPatients.find(p => p.id === parseInt(watchPatientId))?.dni}
+                </span>
+                <Button type="button" size="sm" variant="outline" onClick={handleClearPatient}>x</Button>
+              </div>
+            )}
+            <input type="hidden" {...register("patient_id", appointmentValidations.patient_id)} />
+            {errors.patient_id && <p className="text-red-500 text-xs">{errors.patient_id.message}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label>Tipo de Turno</Label>
+            <Select
+              onValueChange={val => setValue("consultation_type", val, { shouldValidate: true })}
+              value={watch("consultation_type")}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Consulta">Consulta</SelectItem>
+                <SelectItem value="Tratamiento">Tratamiento</SelectItem>
+              </SelectContent>
+            </Select>
+            <input type="hidden" {...register("consultation_type")} />
+          </div>
 
-                        {!watchPatientId ? (
-                            <>
-                                <div className="relative">
-                                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        id="patient_search"
-                                        placeholder="Buscar por DNI o nombre..."
-                                        value={patientSearch}
-                                        onChange={(e) => setPatientSearch(e.target.value)}
-                                        className={`pl-9 ${showPatientError ? "border-red-500" : ""}`}
-                                        onBlur={handlePatientSearchBlur}
-                                    />
-                                </div>
-                                {showPatientError && (
-                                    <p className="text-red-500 text-xs">{errors.patient_id.message}</p>
-                                )}
-                                {patientSearch && (
-                                    <div className="border rounded-md max-h-32 overflow-y-auto">
-                                        {filteredPatients.length > 0 ? (
-                                            filteredPatients.map(patient => (
-                                                <div
-                                                    key={patient.id}
-                                                    className="p-2 cursor-pointer hover:bg-muted"
-                                                    onClick={() => handlePatientSelect(patient.id.toString())}
-                                                >
-                                                    <div className="font-medium">{patient.name}</div>
-                                                    <div className="text-sm text-muted-foreground">
-                                                        DNI: {patient.dni}
-                                                    </div>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className="p-2 text-sm text-muted-foreground text-center">
-                                                No se encontraron pacientes
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </>
-                        ) : (
-                            <div className="space-y-2">
-                                <div className="p-2 border rounded-md bg-muted/20">
-                                    <div className="text-sm font-medium">
-                                        {mockPatients.find(p => p.id === parseInt(watchPatientId))?.name}
-                                    </div>
-                                    <div className="text-xs text-muted-foreground">
-                                        DNI: {mockPatients.find(p => p.id === parseInt(watchPatientId))?.dni}
-                                    </div>
-                                </div>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                        setValue("patient_id", "", { shouldValidate: true })
-                                        setPatientSearch("")
-                                        setPatientFieldTouched(true)
-                                    }}
-                                >
-                                    Cambiar paciente
-                                </Button>
-                            </div>
-                        )}
-
-                        <input
-                            type="hidden"
-                            {...register("patient_id", appointmentValidations.patient_id)}
-                        />
-                        {!watchPatientId && (
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                className="w-full text-xs"
-                                onClick={handleNewPatient}
-                            >
-                                + Nuevo Paciente
-                            </Button>
-                        )}
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="consultation_type">Tipo de Turno</Label>
-                        <Select
-                            onValueChange={(value) => setValue("consultation_type", value, { shouldValidate: true })}
-                            defaultValue={watch("consultation_type")}
-                        >
-                            <SelectTrigger className={errors.consultation_type ? "border-red-500" : ""}>
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Consulta">Consulta</SelectItem>
-                                <SelectItem value="Tratamiento">Tratamiento</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <input
-                            type="hidden"
-                            {...register("consultation_type", appointmentValidations.consultation_type)}
-                        />
-                        {errors.consultation_type && (
-                            <p className="text-red-500 text-xs">{errors.consultation_type.message}</p>
-                        )}
-                    </div>
-
-                    <DialogFooter className="gap-2 sm:gap-0">
-                        <Button type="button" variant="outline" onClick={onClose}>
-                            Cancelar
-                        </Button>
-                        <Button type="submit">
-                            {editMode ? "Guardar Cambios" : "Crear Turno"}
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
-    )
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>Cancelar</Button>
+            <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Guardando..." : (editMode ? "Guardar" : "Crear Turno")}</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
 }

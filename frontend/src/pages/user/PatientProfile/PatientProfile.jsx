@@ -6,51 +6,68 @@ import PersonalInfoCard from "@/components/user/PatientProfile/PersonalInfoCard/
 import UpdateEmailDialog from "@/components/user/PatientProfile/UpdateEmailDialog/UpdateEmailDialog";
 import UpdatePasswordDialog from "@/components/user/PatientProfile/UpdatePasswordDialog/UpdatePasswordDialog";
 import AppointmentsCard from "@/components/user/PatientProfile/AppointmentsCard/AppointmentsCard";
-import { getPatientById } from "@/services/api.services";
+import { getPatientById, getPatientTurns, getAllDentists } from "@/services/api.services";
 import { errorToast } from "@/utils/notifications";
 
 export default function PatientProfile() {
   const { userId, token } = useContext(AuthContext);
-  const [patientData, setPatientData] = useState({
-    name: "",
-    surname: "",
-    email: "",
-  });
-
-  const [appointments] = useState([
-    { id: 1, date: "15/08/2023", time: "10:30", dentist: "Dra. Laura Martínez" },
-    { id: 2, date: "22/06/2023", time: "16:00", dentist: "Dr. Carlos Rodríguez" },
-    { id: 3, date: "10/04/2023", time: "11:15", dentist: "Dra. Laura Martínez" },
-  ]);
+  const [patientData, setPatientData] = useState({ name: "", surname: "", email: "" });
+  const [appointments, setAppointments] = useState([]);
 
   useEffect(() => {
     if (!userId || !token) return;
 
-    getPatientById(
-      userId,
+    let dentistsMap = {};
+
+    getAllDentists(
       token,
-      (data) => setPatientData(data),
+      (dentists) => {
+        dentistsMap = dentists.reduce((acc, d) => {
+          acc[d.id] = `${d.firstName} ${d.lastName}`;
+          return acc;
+        }, {});
+
+        getPatientById(
+          userId,
+          token,
+          (data) => {
+            setPatientData(data);
+
+            getPatientTurns(
+              token,
+              data.id,
+              (turns) => {
+                const completedTurns = turns
+                  .filter(t => t.status === "Completed")
+                  .sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate)); 
+
+                const formattedAppointments = completedTurns.map(t => ({
+                  id: t.id,
+                  date: new Date(t.appointmentDate).toLocaleDateString("es-AR"),
+                  time: new Date(t.appointmentDate).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }),
+                  dentist: dentistsMap[t.dentistId] || "Dentista desconocido",
+                }));
+
+                setAppointments(formattedAppointments);
+              },
+              (err) => {
+                console.error(err);
+                errorToast(err.message || "Error del servidor");
+              }
+            );
+          },
+          (err) => {
+            console.error(err);
+            errorToast(err.message || "Error del servidor");
+          }
+        );
+      },
       (err) => {
         console.error(err);
-        errorToast("Error al cargar los datos del paciente");
+        errorToast(err.message || "Error del servidor");
       }
     );
   }, [userId, token]);
-
-  const handleEmailUpdate = (newEmail) => {
-    setPatientData((prev) => ({ ...prev, email: newEmail }));
-  };
-
-  const handlePasswordUpdate = (newPassword) => {
-    console.log("Nueva contraseña:", newPassword);
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.2 } },
-  };
-
-  const itemVariants = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
 
   return (
     <div className="container mx-auto p-6 max-w-4xl space-y-10 mt-10">
@@ -58,15 +75,12 @@ export default function PatientProfile() {
         <Header />
       </motion.div>
 
-      <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-6">
-        <motion.div variants={itemVariants}>
-          <PersonalInfoCard patientData={patientData} />
-        </motion.div>
-
-        <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 mt-4 pt-6 border-t border-border">
-          <UpdateEmailDialog currentEmail={patientData.email} onUpdate={handleEmailUpdate} />
-          <UpdatePasswordDialog onUpdate={handlePasswordUpdate} />
-        </motion.div>
+      <motion.div className="space-y-6">
+        <PersonalInfoCard patientData={patientData} />
+        <div className="flex flex-col sm:flex-row gap-3 mt-4 pt-6 border-t border-border">
+          <UpdateEmailDialog currentEmail={patientData.email} onUpdate={newEmail => setPatientData(prev => ({ ...prev, email: newEmail }))} />
+          <UpdatePasswordDialog onUpdate={newPassword => console.log("Nueva contraseña:", newPassword)} />
+        </div>
       </motion.div>
 
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, delay: 0.3 }}>

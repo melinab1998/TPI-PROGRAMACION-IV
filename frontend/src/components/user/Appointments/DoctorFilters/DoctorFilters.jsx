@@ -14,7 +14,6 @@ export default function DoctorFilters({
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       
-      {/* Profesional */}
       <Select value={selectedProfessional || ""} onValueChange={setSelectedProfessional}>
         <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
           <SelectValue placeholder="Buscar por Profesional..." />
@@ -28,7 +27,6 @@ export default function DoctorFilters({
         </SelectContent>
       </Select>
 
-      {/* Obra Social */}
       <Select value={selectedSocial || ""} onValueChange={setSelectedSocial}>
         <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
           <SelectValue placeholder="Buscar por Obra Social..." />
@@ -42,7 +40,6 @@ export default function DoctorFilters({
         </SelectContent>
       </Select>
 
-      {/* Botón */}
       <div className="flex items-end">
         <Button className="w-full" onClick={handleSearch}>
           Buscar

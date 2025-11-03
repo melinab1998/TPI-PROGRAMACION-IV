@@ -13,13 +13,17 @@ namespace Application.Services
     public class AvailabilityService : IAvailabilityService
     {
         private readonly IAvailabilityRepository _availabilityRepository;
+        private readonly ITurnRepository _turnRepository; 
 
-        public AvailabilityService(IAvailabilityRepository availabilityRepository)
+        public AvailabilityService(
+            IAvailabilityRepository availabilityRepository,
+            ITurnRepository turnRepository) 
         {
             _availabilityRepository = availabilityRepository;
+            _turnRepository = turnRepository;
         }
 
-        //Obtener la disponibilidad un dentista en especifico
+        // Obtener la disponibilidad de un dentista en específico
         public IEnumerable<AvailabilityDto> GetByDentistId(int dentistId)
         {
             var availabilities = _availabilityRepository.GetByDentistId(dentistId);
@@ -30,7 +34,7 @@ namespace Application.Services
             return availabilities.Select(AvailabilityDto.Create);
         }
 
-        //Creacion de la disponibilidad
+        // Creación de la disponibilidad
         public void CreateAvailability(int dentistId, IEnumerable<AvailabilityRequest> slots)
         {
             if (slots == null || !slots.Any())
@@ -56,26 +60,23 @@ namespace Application.Services
                     throw new AppValidationException("TIME_SLOT_OVERLAP");
 
                 _availabilityRepository.Add(newSlot);
-                existingSlots.Add(newSlot); // para validar siguientes slots
+                existingSlots.Add(newSlot);
             }
         }
 
-        //Actualizacion de la disponibilidad
+        // Actualización de la disponibilidad
         public void UpdateAvailability(int slotId, AvailabilityRequest updatedSlot)
         {
-            // Traer el slot existente
             var slot = _availabilityRepository.GetById(slotId);
             if (slot == null)
                 throw new NotFoundException("SLOT_NOT_FOUND");
 
-            // Actualizar valores
             slot.DayOfWeek = updatedSlot.DayOfWeek;
             slot.StartTime = TimeSpan.Parse(updatedSlot.StartTime);
             slot.EndTime = TimeSpan.Parse(updatedSlot.EndTime);
 
-            // Validar superposición con otros slots del mismo dentista
             var otherSlots = _availabilityRepository.GetByDentistId(slot.DentistId)
-                            .Where(s => s.Id != slotId && s.DayOfWeek == slot.DayOfWeek);
+                .Where(s => s.Id != slotId && s.DayOfWeek == slot.DayOfWeek);
 
             bool overlaps = otherSlots.Any(s => !(slot.EndTime <= s.StartTime || slot.StartTime >= s.EndTime));
             if (overlaps)
@@ -83,6 +84,55 @@ namespace Application.Services
 
             _availabilityRepository.Update(slot);
         }
+
+        //Obtiene los horarios disponibles para un dentista dentro de un rango de fechas especificado (FRONT).
+        public Dictionary<string, List<string>> GetAvailableSlots(int dentistId, DateTime startDate, DateTime endDate)
+        {
+            if (startDate > endDate)
+                throw new AppValidationException("INVALID_DATE_RANGE");
+
+            var availabilities = _availabilityRepository.GetByDentistId(dentistId).ToList();
+            if (!availabilities.Any())
+                throw new NotFoundException("NO_AVAILABILITY_DEFINED");
+
+            var bookedTurns = _turnRepository.GetBookedTurnsInRange(dentistId, startDate, endDate).ToList();
+
+            var result = new Dictionary<string, List<string>>();
+
+            for (var date = startDate.Date; date <= endDate.Date; date = date.AddDays(1))
+            {
+                var weekday = date.DayOfWeek;
+                var dayAvailability = availabilities.Where(a => a.DayOfWeek == weekday).ToList();
+
+                if (!dayAvailability.Any())
+                    continue; 
+
+                var availableHours = new List<string>();
+
+                foreach (var slot in dayAvailability)
+                {
+                    var current = slot.StartTime;
+                    while (current < slot.EndTime)
+                    {
+                        var next = current.Add(TimeSpan.FromMinutes(30)); 
+
+                        bool isBooked = bookedTurns.Any(t =>
+                            t.AppointmentDate.Date == date &&
+                            t.AppointmentDate.TimeOfDay >= current &&
+                            t.AppointmentDate.TimeOfDay < next);
+
+                        if (!isBooked)
+                            availableHours.Add(current.ToString(@"hh\:mm"));
+
+                        current = next;
+                    }
+                }
+
+                if (availableHours.Any())
+                    result[date.ToString("yyyy-MM-dd")] = availableHours;
+            }
+
+            return result;
+        }
     }
 }
-

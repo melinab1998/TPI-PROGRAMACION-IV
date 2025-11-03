@@ -8,7 +8,6 @@ namespace Web.Controllers
 {
     [ApiController]
     [Route("api/availabilities")]
-    [Authorize(Roles = "Dentist, SuperAdmin")]
     public class AvailabilityController : ControllerBase
     {
         private readonly IAvailabilityService _availabilityService;
@@ -37,6 +36,13 @@ namespace Web.Controllers
         {
             _availabilityService.UpdateAvailability(slotId, updatedSlot);
             return Ok();
+        }
+
+        [HttpGet("{dentistId}/available-slots")]
+        public ActionResult<Dictionary<string, List<string>>> GetAvailableSlots(int dentistId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            var availableSlots = _availabilityService.GetAvailableSlots(dentistId, startDate, endDate);
+            return Ok(availableSlots);
         }
 
     }

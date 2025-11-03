@@ -1,38 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useForm } from "react-hook-form";
 import Header from "@/components/admin/Visits/Header/Header";
 import SearchBar from "@/components/common/SearchBar/SearchBar";
 import TurnsList from "@/components/admin/Visits/TurnsList/TurnsList";
 import VisitForm from "@/components/admin/Visits/VisitForm/VisitForm";
 import { successToast, errorToast } from "@/utils/notifications";
-
-const mockTurns = [
-    { id_turn: 1, patient_name: "María González", patient_dni: "12345678A", scheduled_time: "09:00" },
-    { id_turn: 2, patient_name: "Carlos Rodríguez", patient_dni: "87654321B", scheduled_time: "10:30" },
-    { id_turn: 3, patient_name: "Ana Martínez", patient_dni: "11223344C", scheduled_time: "11:15" },
-    { id_turn: 4, patient_name: "Pedro López", patient_dni: "44332211D", scheduled_time: "14:00" }
-];
-
-const mockVisitRecords = [
-    {
-        id_visit_record: 1,
-        visit_date: new Date().toISOString(),
-        treatment: "Limpieza dental completa",
-        diagnosis: "Gingivitis leve",
-        notes: "Paciente con buena higiene bucal, necesita mejorar técnica de cepillado",
-        prescription: "Enjuague bucal con clorhexidina 2 veces al día por 7 días",
-        id_turn: 1,
-        odontogramData: {}
-    }
-];
+import { AuthContext } from "@/services/auth/AuthContextProvider";
+import { getDentistTurns, getPatientById, createVisitRecord, updateVisitRecord } from "@/services/api.services";
 
 export default function VisitsPage() {
-    const [turns, setTurns] = useState(mockTurns);
-    const [visitRecords, setVisitRecords] = useState(mockVisitRecords);
+    const { token, userId } = useContext(AuthContext);
+
+    const [turns, setTurns] = useState([]);
+    const [visitRecords, setVisitRecords] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedTurn, setSelectedTurn] = useState(null);
     const [showVisitForm, setShowVisitForm] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [patientsData, setPatientsData] = useState({}); // { patientId: { name, dni } }
 
     const {
         register,
@@ -52,17 +37,72 @@ export default function VisitsPage() {
         }
     });
 
-    const filteredTurns = turns.filter(turn =>
-        turn.patient_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        turn.patient_dni.includes(searchTerm)
-    );
+    // Cargar datos de paciente
+    const loadPatientData = (patientId) => {
+        if (!token || patientsData[patientId]) return;
+
+        getPatientById(
+            patientId,
+            token,
+            (patient) => {
+                setPatientsData(prev => ({
+                    ...prev,
+                    [patientId]: {
+                        name: `${patient.firstName} ${patient.lastName}`,
+                        dni: patient.dni
+                    }
+                }));
+            },
+            (err) => {
+                console.error(err);
+                setPatientsData(prev => ({
+                    ...prev,
+                    [patientId]: {
+                        name: `ID: ${patientId}`,
+                        dni: 'No disponible'
+                    }
+                }));
+            }
+        );
+    };
+
+    // Cargar turnos del dentista
+    useEffect(() => {
+        if (!token || !userId) return;
+
+        getDentistTurns(token, userId,
+            (fetchedTurns) => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const todaysTurns = fetchedTurns.filter(turn => {
+                    const turnDate = new Date(turn.appointmentDate);
+                    turnDate.setHours(0, 0, 0, 0);
+                    const isToday = turnDate.getTime() === today.getTime();
+                    const isValidStatus = turn.status === 'Pending' || turn.status === 'Completed';
+                    return isToday && isValidStatus;
+                });
+
+                setTurns(todaysTurns);
+
+                // Cargar pacientes
+                todaysTurns.forEach(turn => loadPatientData(turn.patientId));
+            },
+            (err) => {
+                errorToast("No se pudieron cargar los turnos.");
+                console.error(err);
+            }
+        );
+    }, [token, userId]);
+
+    const filteredTurns = turns;
 
     const getVisitRecordForTurn = (turnId) =>
         visitRecords.find(record => record.id_turn === turnId);
 
     const handleCreateVisitRecord = (turn) => {
         setSelectedTurn(turn);
-        const existingRecord = getVisitRecordForTurn(turn.id_turn);
+        const existingRecord = getVisitRecordForTurn(turn.id);
         const formData = existingRecord ? { ...existingRecord } : {
             treatment: "",
             diagnosis: "",
@@ -79,51 +119,101 @@ export default function VisitsPage() {
     };
 
     const onSubmit = async (data) => {
-        if (!selectedTurn) return;
+    if (!selectedTurn) {
+        errorToast("No hay turno seleccionado");
+        return;
+    }
 
-        // Validar campos requeridos
-        const isValid = await trigger(["treatment", "diagnosis"]);
-        if (!isValid) {
-            errorToast("Por favor, complete los campos obligatorios");
+    // Validación manual de campos obligatorios
+    if (!data.treatment?.trim() || !data.diagnosis?.trim()) {
+        errorToast("Por favor, complete tratamiento y diagnóstico");
+        return;
+    }
+
+    setIsSubmitting(true);
+
+    const existingRecord = getVisitRecordForTurn(selectedTurn.id);
+
+    // Asegúrate que turnId sea número
+    const payload = {
+        visitDate: new Date().toISOString().split("T")[0],
+        treatment: data.treatment.trim(),
+        diagnosis: data.diagnosis.trim(),
+        notes: data.notes?.trim() || "",
+        prescription: data.prescription?.trim() || "",
+        turnId: Number(selectedTurn.id) // ← Conversión a número
+    };
+
+    console.log("Enviando payload:", payload); // ← Para debug
+
+    const handleSuccess = (savedRecord) => {
+        console.log("Respuesta del servidor:", savedRecord);
+        
+        if (!savedRecord) {
+            errorToast("Error: No se recibió respuesta del servidor");
             return;
         }
 
-        setIsSubmitting(true);
+        // Asegúrate que el registro tenga los campos necesarios
+        const processedRecord = {
+            ...savedRecord,
+            id_turn: savedRecord.turnId || selectedTurn.id
+        };
 
-        try {
-            await new Promise(resolve => setTimeout(resolve, 1000));
+        setVisitRecords(prev =>
+            existingRecord
+                ? prev.map(r => r.id_turn === selectedTurn.id ? processedRecord : r)
+                : [...prev, processedRecord]
+        );
 
-            const existingRecord = getVisitRecordForTurn(selectedTurn.id_turn);
-            const newVisitRecord = {
-                id_visit_record: existingRecord ? existingRecord.id_visit_record : Date.now(),
-                visit_date: new Date().toISOString(),
-                ...data,
-                id_turn: selectedTurn.id_turn
-            };
+        successToast(
+            existingRecord
+                ? "Registro actualizado exitosamente."
+                : "Registro creado exitosamente."
+        );
 
-            setVisitRecords(prev =>
-                existingRecord
-                    ? prev.map(r => r.id_turn === selectedTurn.id_turn ? newVisitRecord : r)
-                    : [...prev, newVisitRecord]
-            );
-
-            successToast(
-                existingRecord
-                    ? "Registro de visita actualizado exitosamente."
-                    : "Registro de visita creado exitosamente."
-            );
-
-            setShowVisitForm(false);
-            setSelectedTurn(null);
-            reset();
-
-        } catch (error) {
-            console.error(error);
-            errorToast("Error al guardar el registro de visita.");
-        } finally {
-            setIsSubmitting(false);
-        }
+        setShowVisitForm(false);
+        setSelectedTurn(null);
+        reset();
     };
+
+    const handleError = (err) => {
+        console.error("Error detallado:", err);
+        let errorMessage = "Error al guardar el registro";
+        
+        if (err.response?.data?.message) {
+            errorMessage = err.response.data.message;
+        } else if (err.message) {
+            errorMessage = err.message;
+        }
+        
+        errorToast(errorMessage);
+    };
+
+    try {
+        if (existingRecord && existingRecord.id_visit_record) {
+            await updateVisitRecord(
+                token, 
+                existingRecord.id_visit_record, 
+                payload, 
+                handleSuccess, 
+                handleError
+            );
+        } else {
+            await createVisitRecord(
+                token, 
+                payload, 
+                handleSuccess, 
+                handleError
+            );
+        }
+    } catch (error) {
+        console.error("Error inesperado:", error);
+        errorToast("Error inesperado al procesar la solicitud");
+    } finally {
+        setIsSubmitting(false);
+    }
+};
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
@@ -135,6 +225,7 @@ export default function VisitsPage() {
             />
             <TurnsList
                 turns={filteredTurns}
+                patientsData={patientsData}
                 getVisitRecordForTurn={getVisitRecordForTurn}
                 handleCreateVisitRecord={handleCreateVisitRecord}
             />
@@ -150,8 +241,8 @@ export default function VisitsPage() {
                 setShowVisitForm={setShowVisitForm}
                 isSubmitting={isSubmitting}
                 getVisitRecordForTurn={getVisitRecordForTurn}
+                patientData={patientsData[selectedTurn?.patientId]} // <-- aquí
             />
         </div>
     );
 }
-

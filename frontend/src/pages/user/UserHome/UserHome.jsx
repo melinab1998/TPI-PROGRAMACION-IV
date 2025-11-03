@@ -5,8 +5,10 @@ import NextAppointmentCard from "@/components/user/UserHome/NextAppointmentCard/
 import QuickActions from "@/components/user/UserHome/QuickActions/QuickActions";
 import { Sparkles, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
-import { getPatientById } from "@/services/api.services";
+import { getPatientById, getPatientTurns, getAllDentists } from "@/services/api.services";
 import { errorToast } from "@/utils/notifications";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -16,21 +18,63 @@ const fadeInUp = {
 export default function UserHome() {
     const { userId, token } = useContext(AuthContext);
     const [patientData, setPatientData] = useState(null);
+    const [nextTurn, setNextTurn] = useState(null);
 
     useEffect(() => {
         if (!userId || !token) return;
 
-        getPatientById(
-            userId,
+        const handleError = (err) => {
+            errorToast(err?.message || "Error del servidor");
+        };
+
+        let dentistsMap = {};
+
+        getAllDentists(
             token,
-            (data) => {
-                console.log("🩺 Datos del paciente:", data);
-                setPatientData(data);
+            (dentists) => {
+                dentistsMap = dentists.reduce((acc, d) => {
+                    acc[d.id] = `${d.firstName} ${d.lastName}`;
+                    return acc;
+                }, {});
+
+                getPatientById(
+                    userId,
+                    token,
+                    (data) => {
+                        setPatientData(data);
+
+                        getPatientTurns(
+                            token,
+                            data.id,
+                            (turns) => {
+                                const futureTurns = turns
+                                    .filter(
+                                        (t) =>
+                                            new Date(t.appointmentDate) >= new Date() &&
+                                            t.status === "Pending"
+                                    )
+                                    .sort((a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate));
+
+                                if (futureTurns.length > 0) {
+                                    const next = futureTurns[0];
+
+                                    setNextTurn({
+                                        id: next.id,
+                                        date: format(new Date(next.appointmentDate), "d 'de' MMMM, yyyy", { locale: es }),
+                                        time: format(new Date(next.appointmentDate), "HH:mm"),
+                                        dentist: dentistsMap[next.dentistId] || "Dentista desconocido",
+                                    });
+                                } else {
+                                    setNextTurn(null);
+                                }
+                            },
+                            handleError
+                        );
+                    },
+                    handleError
+                );
             },
-            (err) => {
-                console.error(err);
-                errorToast("Error al cargar los datos del paciente");
-            }
+            handleError
         );
     }, [userId, token]);
 
@@ -46,6 +90,8 @@ export default function UserHome() {
                         }
                     />
                 </motion.div>
+
+                {/* Próximo turno */}
                 <motion.section
                     className="space-y-6"
                     initial="hidden"
@@ -71,16 +117,14 @@ export default function UserHome() {
                     </div>
 
                     <motion.div initial="hidden" animate="show" variants={fadeInUp}>
-                        <NextAppointmentCard appointment={null}/>
-                        {/* <NextAppointmentCard
-                            appointment={{
-                                date: "15 de Septiembre, 2024",
-                                time: "10:30 AM",
-                                dentist: "Dr. Juan Pérez",
-                            }}
-                        /> */}
+                        <NextAppointmentCard
+                            appointment={nextTurn}
+                            onCancelled={() => setNextTurn(null)}
+                        />
                     </motion.div>
                 </motion.section>
+
+                {/* Acciones rápidas */}
                 <motion.section
                     className="space-y-8"
                     initial="hidden"

@@ -1,27 +1,46 @@
-import React from "react"
-import { motion } from "framer-motion"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Button } from "@/components/ui/button"
-import { successToast } from "@/utils/notifications"
+import React, { useContext } from "react";
+import { motion } from "framer-motion";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@/components/ui/button";
+import { successToast, errorToast } from "@/utils/notifications";
+import { createTurn } from "@/services/api.services";
+import { AuthContext } from "@/services/auth/AuthContextProvider";
 
-export default function BookingModal({ time, date, doctor, formData, setFormData, handleSubmit, setTime }) {
-    
+export default function BookingModal({ time, date, doctor, formData, setFormData, setTime }) {
+    const { token, userId } = useContext(AuthContext);
+
     const handleConfirmSubmit = (e) => {
-        e.preventDefault()
+        e.preventDefault();
 
-        console.log("Turno reservado:", {
-            doctor: `${doctor.firstName} ${doctor.lastName}`,
-            date: format(date, "yyyy-MM-dd"),
-            time,
-            ...formData,
-        })
+        if (!token || !userId) {
+            errorToast("Debe iniciar sesión para reservar un turno.");
+            return;
+        }
 
-        successToast(`Turno confirmado con éxito.`)
-        handleSubmit(e)
-    }
+        const newTurn = {
+            patientId: userId,
+            dentistId: doctor.id,
+            appointmentDate: `${format(date, "yyyy-MM-dd")}T${time}:00`,
+            consultationType: formData.motivoConsulta,
+        };
+
+        createTurn(
+            token,
+            newTurn,
+            (res) => {
+                successToast("Turno confirmado con éxito.");
+                console.log("Turno creado:", res);
+                setTime(null);
+            },
+            (err) => {
+                errorToast(err.message || "Error al confirmar el turno.");
+                console.error("Error creando turno:", err);
+            }
+        );
+    };
 
     return (
         <motion.div
@@ -81,5 +100,5 @@ export default function BookingModal({ time, date, doctor, formData, setFormData
                 </form>
             </motion.div>
         </motion.div>
-    )
+    );
 }

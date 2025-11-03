@@ -32,7 +32,7 @@ export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
               <p className="text-muted-foreground">DNI: {patient.dni}</p>
             </div>
           </div>
-          
+
           <div className="space-y-4">
             <h3 className="font-semibold flex items-center gap-2">
               <User className="w-4 h-4" />
@@ -49,7 +49,7 @@ export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
               </div>
             </div>
           </div>
-          
+
           <div className="space-y-4">
             <h3 className="font-semibold flex items-center gap-2">
               <Phone className="w-4 h-4" />
@@ -70,7 +70,7 @@ export default function PatientDetailModal({ open, onClose, patient, onEdit }) {
               </div>
             </div>
           </div>
-          
+
           <div className="space-y-4">
             <h3 className="font-semibold flex items-center gap-2">
               <FileText className="w-4 h-4" />

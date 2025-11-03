@@ -3,13 +3,16 @@ import { Button } from "@/components/ui/button"
 import { AlertTriangle, Calendar, User, Clock } from "lucide-react"
 import { format, parseISO } from "date-fns"
 import { es } from "date-fns/locale"
-import { successToast } from "@/utils/notifications"
+import { useContext } from "react"
+import { successToast, errorToast } from "@/utils/notifications"
+import { cancelTurn } from "@/services/api.services"
+import { AuthContext } from "@/services/auth/AuthContextProvider"
 
 export default function CancelAppointmentModal({
     open,
     onClose,
-    onConfirm,
-    appointment
+    appointment,
+    onCancelled 
 }) {
     if (!appointment) return null
 
@@ -17,10 +20,26 @@ export default function CancelAppointmentModal({
     const formattedDate = format(appointmentDate, "EEEE, d 'de' MMMM 'de' yyyy", { locale: es })
     const formattedTime = format(appointmentDate, "HH:mm")
 
-    const handleConfirm = () => {
-        onConfirm(appointment.id_turn)
-        onClose()
-        successToast("Turno cancelado exitosamente")
+    const handleConfirm = async () => {
+        const { token } = useContext(AuthContext);
+        if (!token) {
+            errorToast("No hay token disponible")
+            return
+        }
+
+        cancelTurn(
+            token,
+            appointment.id_turn,
+            () => {
+                successToast("Turno cancelado exitosamente")
+                onCancelled(appointment.id_turn) 
+                onClose()
+            },
+            (err) => {
+                console.error("Error al cancelar turno:", err)
+                errorToast(err.message || "No se pudo cancelar el turno")
+            }
+        )
     }
 
     return (
@@ -29,9 +48,7 @@ export default function CancelAppointmentModal({
                 <DialogHeader>
                     <div className="flex items-center gap-2 text-destructive">
                         <AlertTriangle className="h-5 w-5" />
-                        <DialogTitle className="text-destructive">
-                            Cancelar Turno
-                        </DialogTitle>
+                        <DialogTitle className="text-destructive">Cancelar Turno</DialogTitle>
                     </div>
                 </DialogHeader>
 

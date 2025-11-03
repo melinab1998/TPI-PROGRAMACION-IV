@@ -105,6 +105,9 @@ builder.Services.AddScoped<IVisitRecordRepository, VisitRecordRepository>();
 builder.Services.AddHttpClient<IEmailService, EmailService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasherService>();
+builder.Services.AddHostedService<AppointmentReminderJob>();
+builder.Services.AddHostedService<CompletePendingTurnsJob>();
+
 
 builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 

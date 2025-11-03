@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import DoctorFilters from "@/components/user/Appointments/DoctorFilters/DoctorFilters";
 import DoctorCard from "@/components/user/Appointments/DoctorCard/DoctorCard";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  getAllDentists,
-  getAllHealthInsurances,
-  getHealthInsuranceById,
-} from "@/services/api.services";
+import {getAllDentists,getAllHealthInsurances,getHealthInsuranceById,} from "@/services/api.services";
+import { AuthContext } from "@/services/auth/AuthContextProvider";
 
 export default function Appointments() {
   const [dentists, setDentists] = useState([]);
@@ -21,7 +18,7 @@ export default function Appointments() {
   const [selectedPlan, setSelectedPlan] = useState("");
 
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const { token } = useContext(AuthContext);
 
   // Traer dentistas
   useEffect(() => {

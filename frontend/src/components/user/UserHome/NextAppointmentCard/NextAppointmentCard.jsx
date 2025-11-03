@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, ArrowRight, X } from "lucide-react";
+import { Calendar, Clock, User, X } from "lucide-react";
 import { Link } from "react-router-dom";
-import { successToast } from "@/utils/notifications";
+import { successToast, errorToast } from "@/utils/notifications";
+import { AuthContext } from "@/services/auth/AuthContextProvider";
+import { cancelTurn } from "@/services/api.services";
 
-export default function NextAppointmentCard({ appointment }) {
+export default function NextAppointmentCard({ appointment, onCancelled }) {
+    const { token } = useContext(AuthContext);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     if (!appointment) {
@@ -38,9 +41,21 @@ export default function NextAppointmentCard({ appointment }) {
     }
 
     const handleCancelAppointment = () => {
-        console.log("Turno cancelado:", appointment);
-        successToast("Turno cancelado con éxito");
-        setIsModalOpen(false);
+        if (!appointment) return;
+
+        cancelTurn(
+            token,
+            appointment.id,
+            () => {
+                successToast("Turno cancelado con éxito");
+                setIsModalOpen(false);
+                if (onCancelled) onCancelled(appointment.id);
+            },
+            (err) => {
+                console.error(err);
+                errorToast(err?.message || "Error al cancelar el turno");
+            }
+        );
     };
 
     return (
@@ -51,10 +66,7 @@ export default function NextAppointmentCard({ appointment }) {
                         <Calendar className="h-7 w-7 text-white" />
                     </div>
                     <div className="flex-1 text-center md:text-left space-y-3">
-                        <div>
-                            <p className="font-semibold text-xl text-foreground">{appointment.date}</p>
-                        </div>
-
+                        <p className="font-semibold text-xl text-foreground">{appointment.date}</p>
                         <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                             <span className="inline-flex items-center px-3 py-1.5 text-xs rounded-full bg-primary/10 text-primary border border-primary/20">
                                 <Clock className="h-3.5 w-3.5 mr-1.5" />
@@ -79,6 +91,7 @@ export default function NextAppointmentCard({ appointment }) {
                     </div>
                 </CardContent>
             </Card>
+
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
                     <div className="bg-background p-6 rounded-lg shadow-lg w-80 space-y-5 border border-border">

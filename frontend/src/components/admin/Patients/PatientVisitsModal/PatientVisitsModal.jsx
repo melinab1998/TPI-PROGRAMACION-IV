@@ -6,19 +6,6 @@ import { format, parseISO } from "date-fns"
 import { es } from "date-fns/locale"
 import PatientOdontogramModal from "../PatientOdontogramModal/PatientOdontogramModal"
 
-const mockVisitRecords = [
-    {
-        id_visit_record: 1,
-        visit_date: "2024-01-15T10:00:00Z",
-        treatment: "Limpieza dental completa y fluoración",
-        diagnosis: "Gingivitis leve, cálculo dental moderado",
-        notes: "Paciente con buena higiene bucal general, necesita mejorar técnica de cepillado en molares",
-        prescription: "Enjuague bucal con clorhexidina 0.12% 2 veces al día por 7 días. Cepillo interdental para limpieza de espacios.",
-        id_turn: 1,
-        odontogramData: {}
-    }
-]
-
 export default function PatientVisitsModal({ open, onClose, patient }) {
     const [isOdontogramOpen, setIsOdontogramOpen] = useState(false)
 
