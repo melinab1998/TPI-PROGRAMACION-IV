@@ -1,38 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useForm } from "react-hook-form";
 import Header from "@/components/admin/Visits/Header/Header";
 import SearchBar from "@/components/common/SearchBar/SearchBar";
 import TurnsList from "@/components/admin/Visits/TurnsList/TurnsList";
 import VisitForm from "@/components/admin/Visits/VisitForm/VisitForm";
 import { successToast, errorToast } from "@/utils/notifications";
-
-const mockTurns = [
-    { id_turn: 1, patient_name: "María González", patient_dni: "12345678A", scheduled_time: "09:00" },
-    { id_turn: 2, patient_name: "Carlos Rodríguez", patient_dni: "87654321B", scheduled_time: "10:30" },
-    { id_turn: 3, patient_name: "Ana Martínez", patient_dni: "11223344C", scheduled_time: "11:15" },
-    { id_turn: 4, patient_name: "Pedro López", patient_dni: "44332211D", scheduled_time: "14:00" }
-];
-
-const mockVisitRecords = [
-    {
-        id_visit_record: 1,
-        visit_date: new Date().toISOString(),
-        treatment: "Limpieza dental completa",
-        diagnosis: "Gingivitis leve",
-        notes: "Paciente con buena higiene bucal, necesita mejorar técnica de cepillado",
-        prescription: "Enjuague bucal con clorhexidina 2 veces al día por 7 días",
-        id_turn: 1,
-        odontogramData: {}
-    }
-];
+import { AuthContext } from "@/services/auth/AuthContextProvider";
+import { getDentistTurns, getPatientById } from "@/services/api.services";
 
 export default function VisitsPage() {
-    const [turns, setTurns] = useState(mockTurns);
-    const [visitRecords, setVisitRecords] = useState(mockVisitRecords);
+    console.log("VisitsPage montado");
+
+    const { token, userId } = useContext(AuthContext);
+    console.log("Token:", token);
+    console.log("UserId:", userId);
+
+    const [turns, setTurns] = useState([]);
+    const [visitRecords, setVisitRecords] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedTurn, setSelectedTurn] = useState(null);
     const [showVisitForm, setShowVisitForm] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [patientsData, setPatientsData] = useState({}); // { patientId: { name, dni } }
 
     const {
         register,
@@ -52,17 +41,92 @@ export default function VisitsPage() {
         }
     });
 
-    const filteredTurns = turns.filter(turn =>
-        turn.patient_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        turn.patient_dni.includes(searchTerm)
-    );
+    // Función para cargar datos del paciente
+    const loadPatientData = (patientId) => {
+        if (!token || patientsData[patientId]) return;
+
+        getPatientById(
+            patientId,
+            token,
+            (patient) => {
+                console.log(`Datos del paciente ${patientId}:`, patient);
+                setPatientsData(prev => ({
+                    ...prev,
+                    [patientId]: {
+                        name: `${patient.firstName} ${patient.lastName}`,
+                        dni: patient.dni
+                    }
+                }));
+            },
+            (err) => {
+                console.error(`Error cargando paciente ${patientId}:`, err);
+                // Si falla, al menos guardamos el ID como fallback
+                setPatientsData(prev => ({
+                    ...prev,
+                    [patientId]: {
+                        name: `ID: ${patientId}`,
+                        dni: 'No disponible'
+                    }
+                }));
+            }
+        );
+    };
+
+    // ------------------ Cargar turnos ------------------
+    useEffect(() => {
+        if (!token || !userId) return;
+
+        getDentistTurns(token, userId,
+            (fetchedTurns) => {
+                console.log("Turnos traídos del back (raw):", fetchedTurns);
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                console.log("Fecha de hoy (normalizada):", today.toLocaleString());
+
+                const todaysTurns = fetchedTurns.filter(turn => {
+                    const turnDate = new Date(turn.appointmentDate);
+                    turnDate.setHours(0, 0, 0, 0);
+                    
+                    const isToday = turnDate.getTime() === today.getTime();
+                    const isValidStatus = turn.status === 'Pending' || turn.status === 'Completed';
+                    
+                    console.log(`Turno id ${turn.id} - fecha: ${turnDate.toLocaleString()} - es hoy?`, isToday);
+                    console.log(`Turno id ${turn.id} - estado: ${turn.status} - es válido?`, isValidStatus);
+                    
+                    return isToday && isValidStatus;
+                });
+
+                console.log("Turnos filtrados de hoy (solo Pendientes y Completados):", todaysTurns);
+                setTurns(todaysTurns);
+
+                // Cargar datos de todos los pacientes de los turnos
+                todaysTurns.forEach(turn => {
+                    loadPatientData(turn.patientId);
+                });
+            },
+            (err) => {
+                errorToast("No se pudieron cargar los turnos.");
+                console.error(err);
+            }
+        );
+    }, [token, userId]);
+
+    // Effect para debug
+    useEffect(() => {
+        console.log("Turnos actualizados:", turns);
+        console.log("Datos de pacientes cargados:", patientsData);
+    }, [turns, patientsData]);
+
+    // Filtrado temporal - mostrar todos los turnos de hoy
+    const filteredTurns = turns;
 
     const getVisitRecordForTurn = (turnId) =>
         visitRecords.find(record => record.id_turn === turnId);
 
     const handleCreateVisitRecord = (turn) => {
         setSelectedTurn(turn);
-        const existingRecord = getVisitRecordForTurn(turn.id_turn);
+        const existingRecord = getVisitRecordForTurn(turn.id);
         const formData = existingRecord ? { ...existingRecord } : {
             treatment: "",
             diagnosis: "",
@@ -81,7 +145,6 @@ export default function VisitsPage() {
     const onSubmit = async (data) => {
         if (!selectedTurn) return;
 
-        // Validar campos requeridos
         const isValid = await trigger(["treatment", "diagnosis"]);
         if (!isValid) {
             errorToast("Por favor, complete los campos obligatorios");
@@ -91,19 +154,17 @@ export default function VisitsPage() {
         setIsSubmitting(true);
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            const existingRecord = getVisitRecordForTurn(selectedTurn.id_turn);
+            const existingRecord = getVisitRecordForTurn(selectedTurn.id);
             const newVisitRecord = {
                 id_visit_record: existingRecord ? existingRecord.id_visit_record : Date.now(),
                 visit_date: new Date().toISOString(),
                 ...data,
-                id_turn: selectedTurn.id_turn
+                id_turn: selectedTurn.id
             };
 
             setVisitRecords(prev =>
                 existingRecord
-                    ? prev.map(r => r.id_turn === selectedTurn.id_turn ? newVisitRecord : r)
+                    ? prev.map(r => r.id_turn === selectedTurn.id ? newVisitRecord : r)
                     : [...prev, newVisitRecord]
             );
 
@@ -135,6 +196,7 @@ export default function VisitsPage() {
             />
             <TurnsList
                 turns={filteredTurns}
+                patientsData={patientsData}
                 getVisitRecordForTurn={getVisitRecordForTurn}
                 handleCreateVisitRecord={handleCreateVisitRecord}
             />
@@ -154,4 +216,3 @@ export default function VisitsPage() {
         </div>
     );
 }
-

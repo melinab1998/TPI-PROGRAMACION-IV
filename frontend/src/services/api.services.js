@@ -496,7 +496,10 @@ export const getDentistTurns = (token, dentistId, onSuccess, onError) => {
     })
         .then(handleResponse)
         .then((turns) => {
-            const dentistTurns = turns.filter(t => t.dentistId === dentistId);
+            console.log("Todos los turnos recibidos:", turns);
+            const dentistTurns = turns.filter(t => t.dentistId === parseInt(dentistId));
+            console.log(`Turnos del dentista ${dentistId}:`, dentistTurns);
+            
             onSuccess(dentistTurns);
         })
         .catch(onError);
