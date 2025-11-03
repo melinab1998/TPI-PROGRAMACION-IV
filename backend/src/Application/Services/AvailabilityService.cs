@@ -60,7 +60,7 @@ namespace Application.Services
                     throw new AppValidationException("TIME_SLOT_OVERLAP");
 
                 _availabilityRepository.Add(newSlot);
-                existingSlots.Add(newSlot); // para validar los siguientes slots
+                existingSlots.Add(newSlot);
             }
         }
 
@@ -85,31 +85,27 @@ namespace Application.Services
             _availabilityRepository.Update(slot);
         }
 
-        // 🔹 Nuevo: Obtener los horarios disponibles (no ocupados)
+        //Obtiene los horarios disponibles para un dentista dentro de un rango de fechas especificado (FRONT).
         public Dictionary<string, List<string>> GetAvailableSlots(int dentistId, DateTime startDate, DateTime endDate)
         {
             if (startDate > endDate)
                 throw new AppValidationException("INVALID_DATE_RANGE");
 
-            // 1️⃣ Obtener disponibilidad semanal
             var availabilities = _availabilityRepository.GetByDentistId(dentistId).ToList();
             if (!availabilities.Any())
                 throw new NotFoundException("NO_AVAILABILITY_DEFINED");
 
-            // 2️⃣ Obtener turnos ya reservados (desde TurnRepository)
             var bookedTurns = _turnRepository.GetBookedTurnsInRange(dentistId, startDate, endDate).ToList();
 
-            // 3️⃣ Resultado final
             var result = new Dictionary<string, List<string>>();
 
-            // 4️⃣ Iterar los días del rango
             for (var date = startDate.Date; date <= endDate.Date; date = date.AddDays(1))
             {
                 var weekday = date.DayOfWeek;
                 var dayAvailability = availabilities.Where(a => a.DayOfWeek == weekday).ToList();
 
                 if (!dayAvailability.Any())
-                    continue; // ese día no trabaja
+                    continue; 
 
                 var availableHours = new List<string>();
 
@@ -118,7 +114,7 @@ namespace Application.Services
                     var current = slot.StartTime;
                     while (current < slot.EndTime)
                     {
-                        var next = current.Add(TimeSpan.FromMinutes(30)); // intervalos de 30 minutos
+                        var next = current.Add(TimeSpan.FromMinutes(30)); 
 
                         bool isBooked = bookedTurns.Any(t =>
                             t.AppointmentDate.Date == date &&

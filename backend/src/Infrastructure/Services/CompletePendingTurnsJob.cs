@@ -29,15 +29,14 @@ namespace Infrastructure.Services
             {
                 try
                 {
-                    _logger.LogInformation("Chequeando turns pendientes a las {Time}", DateTime.Now);
+                    _logger.LogInformation("Verificando turnos pendientes a las {Time}", DateTime.Now);
                     MarkPendingTurnsAsCompleted();
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error al actualizar turns pendientes");
+                    _logger.LogError(ex, "Error al actualizar turnos pendientes");
                 }
-
-                // Espera un minuto antes del próximo chequeo
+                
                 await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             }
         }
@@ -47,24 +46,22 @@ namespace Infrastructure.Services
             using var scope = _scopeFactory.CreateScope();
             var turnService = scope.ServiceProvider.GetRequiredService<ITurnService>();
 
-            var allTurns = turnService.GetAllTurns(); // Lista completa
+            var allTurns = turnService.GetAllTurns(); 
 
-            // Usa DateTime.Now si tus fechas están en horario local
             var now = DateTime.Now;
 
             var pendingTurns = allTurns
                 .Where(t => t.Status == TurnStatus.Pending && t.AppointmentDate <= now)
                 .ToList();
 
-            _logger.LogInformation("Turns pendientes encontrados: {Count}", pendingTurns.Count);
+            _logger.LogInformation("Turnos pendientes encontrados: {Count}", pendingTurns.Count);
 
             foreach (var turn in pendingTurns)
             {
-                _logger.LogInformation("Marcando turno {Id} de {AppointmentDate} como Completed", turn.Id, turn.AppointmentDate);
+                _logger.LogInformation("Marcando turno {Id} de {AppointmentDate} como Completado", turn.Id, turn.AppointmentDate);
 
                 turn.Status = TurnStatus.Completed;
 
-                // Actualiza el turno en la base
                 turnService.UpdateTurn(turn.Id, new Application.Models.Requests.UpdateTurnRequest
                 {
                     Status = TurnStatus.Completed
@@ -75,4 +72,5 @@ namespace Infrastructure.Services
         }
     }
 }
+
 

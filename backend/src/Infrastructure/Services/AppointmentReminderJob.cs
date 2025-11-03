@@ -32,10 +32,8 @@ namespace Infrastructure.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error while sending reminders");
+                    _logger.LogError(ex, "Error al enviar recordatorios de turnos");
                 }
-
-                // Para test, podés usar FromMinutes(1) o FromSeconds(30)
                 await Task.Delay(TimeSpan.FromHours(24), stoppingToken);
             }
         }
@@ -51,15 +49,14 @@ namespace Infrastructure.Services
 
             try
             {
-                // Solo turnos pendientes para mañana
                 var turns = turnService.GetAllTurns()
                     .Where(t => t.Status == Domain.Enums.TurnStatus.Pending
-                             && t.AppointmentDate.Date == DateTime.Today.AddDays(1))
+                    && t.AppointmentDate.Date == DateTime.Today.AddDays(1))
                     .ToList();
 
                 if (!turns.Any())
                 {
-                    _logger.LogInformation("No pending turns for tomorrow — skipping reminder job.");
+                    _logger.LogInformation("No hay turnos pendientes para mañana — se omite el envío de recordatorios.");
                     return;
                 }
 
@@ -78,18 +75,19 @@ namespace Infrastructure.Services
                             "Mitre 959"
                         );
 
-                        _logger.LogInformation($"Reminder sent to {patient.Email} for {turn.AppointmentDate}");
+                        _logger.LogInformation($"Recordatorio enviado a {patient.Email} para el turno del {turn.AppointmentDate}");
                     }
                 }
             }
             catch (NotFoundException ex)
             {
-                _logger.LogWarning("No turns found: {Message}", ex.Message);
+                _logger.LogWarning("No se encontraron turnos: {Message}", ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error while sending appointment reminders");
+                _logger.LogError(ex, "Error inesperado al enviar recordatorios de turnos");
             }
         }
     }
 }
+

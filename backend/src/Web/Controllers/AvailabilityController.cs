@@ -39,10 +39,7 @@ namespace Web.Controllers
         }
 
         [HttpGet("{dentistId}/available-slots")]
-        public ActionResult<Dictionary<string, List<string>>> GetAvailableSlots(
-        int dentistId,
-        [FromQuery] DateTime startDate,
-        [FromQuery] DateTime endDate)
+        public ActionResult<Dictionary<string, List<string>>> GetAvailableSlots(int dentistId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
             var availableSlots = _availabilityService.GetAvailableSlots(dentistId, startDate, endDate);
             return Ok(availableSlots);
