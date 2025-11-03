@@ -6,14 +6,10 @@ import TurnsList from "@/components/admin/Visits/TurnsList/TurnsList";
 import VisitForm from "@/components/admin/Visits/VisitForm/VisitForm";
 import { successToast, errorToast } from "@/utils/notifications";
 import { AuthContext } from "@/services/auth/AuthContextProvider";
-import { getDentistTurns, getPatientById } from "@/services/api.services";
+import { getDentistTurns, getPatientById, createVisitRecord, updateVisitRecord } from "@/services/api.services";
 
 export default function VisitsPage() {
-    console.log("VisitsPage montado");
-
     const { token, userId } = useContext(AuthContext);
-    console.log("Token:", token);
-    console.log("UserId:", userId);
 
     const [turns, setTurns] = useState([]);
     const [visitRecords, setVisitRecords] = useState([]);
@@ -41,7 +37,7 @@ export default function VisitsPage() {
         }
     });
 
-    // Función para cargar datos del paciente
+    // Cargar datos de paciente
     const loadPatientData = (patientId) => {
         if (!token || patientsData[patientId]) return;
 
@@ -49,7 +45,6 @@ export default function VisitsPage() {
             patientId,
             token,
             (patient) => {
-                console.log(`Datos del paciente ${patientId}:`, patient);
                 setPatientsData(prev => ({
                     ...prev,
                     [patientId]: {
@@ -59,8 +54,7 @@ export default function VisitsPage() {
                 }));
             },
             (err) => {
-                console.error(`Error cargando paciente ${patientId}:`, err);
-                // Si falla, al menos guardamos el ID como fallback
+                console.error(err);
                 setPatientsData(prev => ({
                     ...prev,
                     [patientId]: {
@@ -72,38 +66,27 @@ export default function VisitsPage() {
         );
     };
 
-    // ------------------ Cargar turnos ------------------
+    // Cargar turnos del dentista
     useEffect(() => {
         if (!token || !userId) return;
 
         getDentistTurns(token, userId,
             (fetchedTurns) => {
-                console.log("Turnos traídos del back (raw):", fetchedTurns);
-
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
-                console.log("Fecha de hoy (normalizada):", today.toLocaleString());
 
                 const todaysTurns = fetchedTurns.filter(turn => {
                     const turnDate = new Date(turn.appointmentDate);
                     turnDate.setHours(0, 0, 0, 0);
-                    
                     const isToday = turnDate.getTime() === today.getTime();
                     const isValidStatus = turn.status === 'Pending' || turn.status === 'Completed';
-                    
-                    console.log(`Turno id ${turn.id} - fecha: ${turnDate.toLocaleString()} - es hoy?`, isToday);
-                    console.log(`Turno id ${turn.id} - estado: ${turn.status} - es válido?`, isValidStatus);
-                    
                     return isToday && isValidStatus;
                 });
 
-                console.log("Turnos filtrados de hoy (solo Pendientes y Completados):", todaysTurns);
                 setTurns(todaysTurns);
 
-                // Cargar datos de todos los pacientes de los turnos
-                todaysTurns.forEach(turn => {
-                    loadPatientData(turn.patientId);
-                });
+                // Cargar pacientes
+                todaysTurns.forEach(turn => loadPatientData(turn.patientId));
             },
             (err) => {
                 errorToast("No se pudieron cargar los turnos.");
@@ -112,13 +95,6 @@ export default function VisitsPage() {
         );
     }, [token, userId]);
 
-    // Effect para debug
-    useEffect(() => {
-        console.log("Turnos actualizados:", turns);
-        console.log("Datos de pacientes cargados:", patientsData);
-    }, [turns, patientsData]);
-
-    // Filtrado temporal - mostrar todos los turnos de hoy
     const filteredTurns = turns;
 
     const getVisitRecordForTurn = (turnId) =>
@@ -153,19 +129,22 @@ export default function VisitsPage() {
 
         setIsSubmitting(true);
 
-        try {
-            const existingRecord = getVisitRecordForTurn(selectedTurn.id);
-            const newVisitRecord = {
-                id_visit_record: existingRecord ? existingRecord.id_visit_record : Date.now(),
-                visit_date: new Date().toISOString(),
-                ...data,
-                id_turn: selectedTurn.id
-            };
+        const existingRecord = getVisitRecordForTurn(selectedTurn.id);
 
+        const payload = {
+            visitDate: new Date().toISOString().split("T")[0], 
+            treatment: data.treatment,
+            diagnosis: data.diagnosis,
+            notes: data.notes,
+            prescription: data.prescription,
+            turnId: selectedTurn.id
+        };
+
+        const handleSuccess = (savedRecord) => {
             setVisitRecords(prev =>
                 existingRecord
-                    ? prev.map(r => r.id_turn === selectedTurn.id ? newVisitRecord : r)
-                    : [...prev, newVisitRecord]
+                    ? prev.map(r => r.id_turn === selectedTurn.id ? savedRecord : r)
+                    : [...prev, savedRecord]
             );
 
             successToast(
@@ -177,10 +156,19 @@ export default function VisitsPage() {
             setShowVisitForm(false);
             setSelectedTurn(null);
             reset();
+        };
 
-        } catch (error) {
-            console.error(error);
+        const handleError = (err) => {
+            console.error(err);
             errorToast("Error al guardar el registro de visita.");
+        };
+
+        try {
+            if (existingRecord) {
+                updateVisitRecord(token, existingRecord.id_visit_record, payload, handleSuccess, handleError);
+            } else {
+                createVisitRecord(token, payload, handleSuccess, handleError);
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -212,6 +200,7 @@ export default function VisitsPage() {
                 setShowVisitForm={setShowVisitForm}
                 isSubmitting={isSubmitting}
                 getVisitRecordForTurn={getVisitRecordForTurn}
+                patientData={patientsData[selectedTurn?.patientId]} // <-- aquí
             />
         </div>
     );
