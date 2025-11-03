@@ -9,7 +9,7 @@ import CancelAppointmentModal from "@/components/admin/Schedule/CancelAppointmen
 import { motion } from "framer-motion"
 import { Plus } from "lucide-react"
 import Header from "@/components/common/Header/Header"
-import { getAllTurns, getPatientById, getDentistById, cancelTurn } from "@/services/api.services"
+import { getDentistTurns, getPatientById, getDentistById, cancelTurn } from "@/services/api.services"
 import { AuthContext } from "@/services/auth/AuthContextProvider"
 
 export default function AdminSchedule() {
@@ -23,7 +23,7 @@ export default function AdminSchedule() {
     const [editingAppointment, setEditingAppointment] = useState(null)
     const [cancelingAppointment, setCancelingAppointment] = useState(null)
 
-    const { token } = useContext(AuthContext);
+    const { token, userId } = useContext(AuthContext);
 
     const enrichTurnData = async (turn) => {
         try {
@@ -48,7 +48,7 @@ export default function AdminSchedule() {
                 dentistId: turn.dentistId
             }
         } catch (error) {
-            console.error('Error enriqueciendo datos del turno:', error)
+            console.error("Error enriqueciendo datos del turno:", error)
             return {
                 id_turn: turn.id,
                 appointment_date: turn.appointmentDate,
@@ -65,20 +65,23 @@ export default function AdminSchedule() {
     }
 
     useEffect(() => {
-        loadAppointments()
-    }, [])
+        if (token && userId) {
+            loadAppointments()
+        }
+    }, [token, userId])
 
     const loadAppointments = async () => {
-        if (!token) {
-            console.error('No hay token disponible')
+        if (!token || !userId) {
+            console.error("No hay token o ID de usuario disponibles")
             setLoading(false)
             return
         }
 
         try {
             setLoading(true)
+            // 🔥 Ahora se obtienen solo los turnos del dentista logueado:
             const turns = await new Promise((resolve, reject) => {
-                getAllTurns(token, resolve, reject)
+                getDentistTurns(token, userId, resolve, reject)
             })
 
             const enrichedAppointments = await Promise.all(
@@ -87,7 +90,7 @@ export default function AdminSchedule() {
 
             setAppointments(enrichedAppointments)
         } catch (error) {
-            console.error('Error cargando turnos:', error)
+            console.error("Error cargando turnos:", error)
         } finally {
             setLoading(false)
         }
@@ -111,7 +114,7 @@ export default function AdminSchedule() {
             setCancelModalOpen(false)
             setCancelingAppointment(null)
         } catch (error) {
-            console.error('Error cancelando turno:', error)
+            console.error("Error cancelando turno:", error)
         }
     }
 
@@ -142,10 +145,8 @@ export default function AdminSchedule() {
 
             setModalOpen(false)
             setEditingAppointment(null)
-
         } catch (error) {
-            console.error('Error guardando turno:', error)
-            throw error
+            console.error("Error guardando turno:", error)
         }
     }
 
@@ -158,7 +159,7 @@ export default function AdminSchedule() {
     })
 
     const appointmentsForSelectedDay = appointments.filter(
-        (a) =>
+        a =>
             isSameDay(parseISO(a.appointment_date), selectedDate) &&
             a.status === "Pending"
     )
@@ -185,11 +186,7 @@ export default function AdminSchedule() {
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-            <motion.div
-                variants={fadeSlideDown}
-                initial="hidden"
-                animate="visible"
-            >
+            <motion.div variants={fadeSlideDown} initial="hidden" animate="visible">
                 <Header
                     title="Agenda de Turnos"
                     subtitle="Gestiona todos los turnos de tus pacientes"
