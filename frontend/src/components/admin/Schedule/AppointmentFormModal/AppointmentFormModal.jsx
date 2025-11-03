@@ -6,9 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search } from "lucide-react";
-import { successToast } from "@/utils/notifications";
+import { errorToast, successToast } from "@/utils/notifications";
 import { appointmentValidations } from "@/utils/validations";
-import { getAllPatients, getAvailableSlots } from "@/services/api.services";
+import { getAllPatients, getAvailableSlots, createTurn, updateTurn } from "@/services/api.services";
 import { AuthContext } from "@/services/auth/AuthContextProvider";
 
 export default function AppointmentFormModal({ open, onClose, onSave, appointment = null }) {
@@ -27,15 +27,15 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
   const [patientSearch, setPatientSearch] = useState("");
   const [allPatients, setAllPatients] = useState([]);
   const [filteredPatients, setFilteredPatients] = useState([]);
-  const [availableSlots, setAvailableSlots] = useState({}); 
+  const [availableSlots, setAvailableSlots] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const watchPatientId = watch("patient_id");
   const watchDate = watch("appointment_date");
 
-  // -------------------- Helper para parsear fecha local --------------------
   const parseDateAsLocal = (dateString) => {
     const [year, month, day] = dateString.split("-").map(Number);
-    return new Date(year, month - 1, day); // Meses van de 0 a 11
+    return new Date(year, month - 1, day);
   }
 
   // -------------------- Cargar pacientes --------------------
@@ -59,78 +59,131 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + 30);
 
-    console.log("=== Solicitud de slots ===");
-    console.log("Dentista:", userId);
-    console.log("Fecha inicio:", startDate);
-    console.log("Fecha fin:", endDate.toISOString().split("T")[0]);
-
     getAvailableSlots(
       token,
       userId,
       startDate,
       endDate.toISOString().split("T")[0],
-      (slots) => {
-        console.log("=== Respuesta backend ===");
-        console.log(slots); // viene como { "2025-11-04": [...], ... }
-
-        setAvailableSlots(slots || {}); 
-      },
+      (slots) => setAvailableSlots(slots || {}),
       (err) => console.error("Error cargando slots:", err)
     );
   }, [open, userId, token]);
 
-  // -------------------- Reset formulario al editar --------------------
+  // -------------------- Precargar formulario en edición --------------------
   useEffect(() => {
+    if (!open) return;
+
+    // Reset general del formulario
     reset({
-      appointment_date: appointment?.appointment_date?.split("T")[0] || "",
-      appointment_time: appointment?.appointment_date?.split("T")[1]?.substring(0, 5) || "",
-      patient_id: appointment?.patient_id || "",
-      consultation_type: appointment?.consultation_type || "Consulta"
+      appointment_date: "",
+      appointment_time: "",
+      patient_id: "",
+      consultation_type: "Consulta"
     });
 
-    if (appointment?.patient_id) {
-      const p = allPatients.find(p => p.id === appointment.patient_id);
-      if (p) setPatientSearch(p.dni);
-    } else {
+    // Crear
+    if (!editMode) {
       setPatientSearch("");
+      return;
     }
-  }, [appointment, allPatients, reset]);
+
+    // Solo ejecutar precarga si pacientes y slots ya cargados
+    if (allPatients.length === 0 || Object.keys(availableSlots).length === 0) return;
+
+    // -------------------- Paciente --------------------
+    const patient = allPatients.find(p => p.id === appointment.patient_id);
+    if (patient) {
+      setPatientSearch(`${patient.firstName} ${patient.lastName} - ${patient.dni}`);
+      setValue("patient_id", patient.id, { shouldValidate: true });
+    }
+
+    // -------------------- Fecha y Hora --------------------
+    if (appointment.appointment_date) {
+      const [date, time] = appointment.appointment_date.split("T");
+      setValue("appointment_date", date, { shouldValidate: true });
+
+      if (availableSlots[date]?.includes(time?.substring(0,5))) {
+        setValue("appointment_time", time.substring(0,5), { shouldValidate: true });
+      } else {
+        setValue("appointment_time", "", { shouldValidate: true });
+      }
+    }
+
+    // -------------------- Tipo de consulta --------------------
+    setValue("consultation_type", appointment.consultation_type || "Consulta", { shouldValidate: true });
+
+  }, [open, editMode, appointment, allPatients, availableSlots, setValue, reset]);
 
   // -------------------- Filtrado de pacientes --------------------
   useEffect(() => {
-    if (!patientSearch) return setFilteredPatients(allPatients);
-    const filtered = allPatients.filter(p =>
-      p.firstName.toLowerCase().includes(patientSearch.toLowerCase()) ||
-      p.lastName.toLowerCase().includes(patientSearch.toLowerCase()) ||
-      p.dni.includes(patientSearch)
-    );
-    setFilteredPatients(filtered);
+    if (!patientSearch) {
+      setFilteredPatients(allPatients);
+    } else {
+      const filtered = allPatients.filter(p =>
+        p.firstName.toLowerCase().includes(patientSearch.toLowerCase()) ||
+        p.lastName.toLowerCase().includes(patientSearch.toLowerCase()) ||
+        p.dni.includes(patientSearch)
+      );
+      setFilteredPatients(filtered);
+    }
   }, [patientSearch, allPatients]);
 
   const handlePatientSelect = (id) => {
-    setValue("patient_id", id);
-    const p = allPatients.find(p => p.id === id);
-    if (p) setPatientSearch(p.dni);
+    setValue("patient_id", id, { shouldValidate: true });
+    const patient = allPatients.find(p => p.id === id);
+    if (patient) setPatientSearch(`${patient.firstName} ${patient.lastName} - ${patient.dni}`);
+  }
+
+  const handleClearPatient = () => {
+    setValue("patient_id", "", { shouldValidate: true });
+    setPatientSearch("");
   }
 
   // -------------------- Submit --------------------
-  const onSubmit = (data) => {
-    const patient = allPatients.find(p => p.id === parseInt(data.patient_id));
-    if (!patient) return alert("Seleccione un paciente");
+  const onSubmit = async (data) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
-    const appointmentData = {
-      appointment_date: `${data.appointment_date}T${data.appointment_time}:00`,
-      patient_id: patient.id,
-      patient_name: `${patient.firstName} ${patient.lastName}`,
-      dentist_id: userId,
-      consultation_type: data.consultation_type,
-      id_turn: appointment?.id_turn
+    const patient = allPatients.find(p => p.id === parseInt(data.patient_id));
+    if (!patient) {
+      errorToast("Seleccione un paciente");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const payload = {
+      appointmentDate: `${data.appointment_date}T${data.appointment_time}:00`,
+      consultationType: data.consultation_type,
+      patientId: patient.id,
+      dentistId: userId
     };
 
-    onSave(appointmentData);
-    successToast(editMode ? "Turno actualizado" : "Turno creado");
-    onClose();
-  }
+    try {
+      if (editMode) {
+        await updateTurn(token, appointment.id_turn, payload,
+          (turnFromBackend) => {
+            successToast("Turno actualizado con éxito");
+            onSave(turnFromBackend);
+            onClose();
+          },
+          (err) => errorToast(err.message || "Error al actualizar turno")
+        );
+      } else {
+        await createTurn(token, payload,
+          (turnFromBackend) => {
+            successToast("Turno creado con éxito");
+            onSave(turnFromBackend);
+            onClose();
+          },
+          (err) => errorToast(err.message || "Error al crear turno")
+        );
+      }
+    } catch (error) {
+      errorToast("Error inesperado");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const slotsForSelectedDate = watchDate ? availableSlots[watchDate] || [] : [];
 
@@ -146,8 +199,8 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
           <div className="space-y-2">
             <Label>Fecha</Label>
             <Select
-              onValueChange={val => setValue("appointment_date", val)}
-              defaultValue={watch("appointment_date")}
+              onValueChange={val => setValue("appointment_date", val, { shouldValidate: true })}
+              value={watch("appointment_date")}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Seleccione una fecha" />
@@ -155,14 +208,10 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
               <SelectContent className="max-h-60">
                 {Object.keys(availableSlots).length > 0 ? (
                   Object.keys(availableSlots)
-                    .sort((a, b) => parseDateAsLocal(a) - parseDateAsLocal(b))
+                    .sort((a,b) => parseDateAsLocal(a) - parseDateAsLocal(b))
                     .map(date => (
                       <SelectItem key={date} value={date}>
-                        {parseDateAsLocal(date).toLocaleDateString("es-AR", {
-                          weekday: "long",
-                          day: "numeric",
-                          month: "short"
-                        })}
+                        {parseDateAsLocal(date).toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "short" })}
                       </SelectItem>
                     ))
                 ) : (
@@ -178,18 +227,14 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
           <div className="space-y-2">
             <Label>Hora</Label>
             <Select
-              onValueChange={val => setValue("appointment_time", val)}
-              defaultValue={watch("appointment_time")}
+              onValueChange={val => setValue("appointment_time", val, { shouldValidate: true })}
+              value={watch("appointment_time")}
               disabled={!watchDate || slotsForSelectedDate.length === 0}
             >
-              <SelectTrigger>
-                <SelectValue placeholder="HH:MM" />
-              </SelectTrigger>
+              <SelectTrigger><SelectValue placeholder="HH:MM" /></SelectTrigger>
               <SelectContent className="max-h-60">
                 {slotsForSelectedDate.length > 0 ? (
-                  slotsForSelectedDate.map(time => (
-                    <SelectItem key={time} value={time}>{time}</SelectItem>
-                  ))
+                  slotsForSelectedDate.map(time => <SelectItem key={time} value={time}>{time}</SelectItem>)
                 ) : (
                   <SelectItem disabled>No hay horarios disponibles</SelectItem>
                 )}
@@ -217,16 +262,13 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
                   <div className="border rounded-md max-h-40 overflow-y-auto mt-1 bg-white shadow-sm">
                     {filteredPatients.length > 0 ? (
                       filteredPatients.map(p => (
-                        <div
-                          key={p.id}
-                          className="p-2 cursor-pointer hover:bg-gray-100 text-sm text-gray-700"
-                          onClick={() => handlePatientSelect(p.id)}
-                        >
-                          {p.firstName} {p.lastName} - DNI: {p.dni}
+                        <div key={p.id} className="p-2 cursor-pointer hover:bg-gray-100 text-sm text-gray-700"
+                             onClick={() => handlePatientSelect(p.id)}>
+                        {p.firstName} {p.lastName} - DNI: {p.dni}
                         </div>
                       ))
                     ) : (
-                      <div className="p-2 text-sm text-gray-500">No se encontraron pacientes con ese nombre o DNI</div>
+                      <div className="p-2 text-sm text-gray-500">No se encontraron pacientes</div>
                     )}
                   </div>
                 )}
@@ -238,25 +280,19 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
                   {allPatients.find(p => p.id === parseInt(watchPatientId))?.lastName} - DNI:{" "}
                   {allPatients.find(p => p.id === parseInt(watchPatientId))?.dni}
                 </span>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => { setValue("patient_id", ""); setPatientSearch(""); }}
-                >
-                  x
-                </Button>
+                <Button type="button" size="sm" variant="outline" onClick={handleClearPatient}>x</Button>
               </div>
             )}
             <input type="hidden" {...register("patient_id", appointmentValidations.patient_id)} />
+            {errors.patient_id && <p className="text-red-500 text-xs">{errors.patient_id.message}</p>}
           </div>
 
           {/* Tipo de Turno */}
           <div className="space-y-2">
             <Label>Tipo de Turno</Label>
             <Select
-              onValueChange={val => setValue("consultation_type", val)}
-              defaultValue={watch("consultation_type")}
+              onValueChange={val => setValue("consultation_type", val, { shouldValidate: true })}
+              value={watch("consultation_type")}
             >
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -268,8 +304,8 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
           </div>
 
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
-            <Button type="submit">{editMode ? "Guardar" : "Crear Turno"}</Button>
+            <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>Cancelar</Button>
+            <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Guardando..." : (editMode ? "Guardar" : "Crear Turno")}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
