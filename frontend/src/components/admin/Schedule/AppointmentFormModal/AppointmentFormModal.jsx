@@ -64,7 +64,10 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
       userId,
       startDate,
       endDate.toISOString().split("T")[0],
-      (slots) => setAvailableSlots(slots || {}),
+      (slots) => {
+        setAvailableSlots(slots || {});
+        console.log("✅ Slots cargados:", slots);
+      },
       (err) => console.error("Error cargando slots:", err)
     );
   }, [open, userId, token]);
@@ -73,7 +76,6 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
   useEffect(() => {
     if (!open) return;
 
-    // Reset general del formulario
     reset({
       appointment_date: "",
       appointment_time: "",
@@ -81,33 +83,55 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
       consultation_type: "Consulta"
     });
 
-    // Crear
     if (!editMode) {
       setPatientSearch("");
       return;
     }
 
-    // Solo ejecutar precarga si pacientes y slots ya cargados
     if (allPatients.length === 0 || Object.keys(availableSlots).length === 0) return;
 
+    console.log("🔹 Ejecutando precarga del formulario", { appointment, editMode, open });
+    console.log("🔹 Pacientes cargados:", allPatients.length);
+    console.log("🔹 Slots disponibles:", Object.keys(availableSlots).length);
+
     // -------------------- Paciente --------------------
-    const patient = allPatients.find(p => p.id === appointment.patient_id);
+    let patient;
+    if (appointment.patientId) {
+      patient = allPatients.find(p => p.id === appointment.patientId);
+    }
+    if (!patient) {
+      // fallback: buscar por nombre completo
+      patient = allPatients.find(p => `${p.firstName} ${p.lastName}` === appointment.patient_name);
+    }
+    console.log("🔹 Paciente encontrado:", patient);
+
     if (patient) {
       setPatientSearch(`${patient.firstName} ${patient.lastName} - ${patient.dni}`);
       setValue("patient_id", patient.id, { shouldValidate: true });
     }
 
     // -------------------- Fecha y Hora --------------------
-    if (appointment.appointment_date) {
-      const [date, time] = appointment.appointment_date.split("T");
-      setValue("appointment_date", date, { shouldValidate: true });
+if (appointment.appointment_date) {
+  const dateObj = new Date(appointment.appointment_date);
 
-      if (availableSlots[date]?.includes(time?.substring(0,5))) {
-        setValue("appointment_time", time.substring(0,5), { shouldValidate: true });
-      } else {
-        setValue("appointment_time", "", { shouldValidate: true });
-      }
-    }
+  // extraer fecha en formato YYYY-MM-DD
+  const date = dateObj.toISOString().split("T")[0];
+  setValue("appointment_date", date, { shouldValidate: true });
+
+  // extraer hora y minuto en HH:MM
+  const hours = dateObj.getHours().toString().padStart(2, "0");
+  const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+  const appointmentTime = `${hours}:${minutes}`;
+
+  if (availableSlots[date]?.includes(appointmentTime)) {
+    setValue("appointment_time", appointmentTime, { shouldValidate: true });
+  } else {
+    console.warn("⚠️ La hora del turno no está en los slots disponibles", appointmentTime);
+    setValue("appointment_time", "", { shouldValidate: true });
+  }
+
+  console.log("🔹 Fecha del turno:", date, "Hora:", appointmentTime);
+}
 
     // -------------------- Tipo de consulta --------------------
     setValue("consultation_type", appointment.consultation_type || "Consulta", { shouldValidate: true });
