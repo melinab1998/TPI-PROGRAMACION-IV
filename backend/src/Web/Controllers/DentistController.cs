@@ -16,19 +16,21 @@ public class DentistController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "SuperAdmin, Patient, Dentist")] 
     public ActionResult<IEnumerable<DentistDto>> GetAllDentists()
     {
         return Ok(_dentistService.GetAllDentists());
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "SuperAdmin, Patient, Dentist")]
     public ActionResult<DentistDto> GetDentistById([FromRoute] int id)
     {
         return Ok(_dentistService.GetDentistById(id));
     }
 
     [HttpPost]
-    [Authorize(Roles = "SuperAdmin")]
+    [Authorize(Roles = "SuperAdmin")] 
     public ActionResult<DentistDto> CreateDentist([FromBody] CreateDentistRequest request)
     {
         var created = _dentistService.CreateDentist(request);
@@ -41,6 +43,8 @@ public class DentistController : ControllerBase
     {
         return Ok(_dentistService.UpdateDentist(id, request));
     }
+
+
 
     [HttpPatch("{id}/activate")]
     [Authorize(Roles = "SuperAdmin")]

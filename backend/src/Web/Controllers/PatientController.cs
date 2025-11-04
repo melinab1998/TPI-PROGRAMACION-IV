@@ -18,34 +18,22 @@ public class PatientController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Dentist")]
     public ActionResult<IEnumerable<PatientDto>> GetAllPatients()
     {
         return Ok(_patientService.GetAllPatients());
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Dentist, Patient")]
     public ActionResult<PatientDto> GetPatientById([FromRoute] int id)
     {
         return Ok(_patientService.GetPatientById(id));
     }
 
-    [HttpPost("register")]
-    public ActionResult<PatientDto> RegisterPatient([FromBody] RegisterPatientRequest request)
-    {
-        var created = _patientService.RegisterPatient(request);
-        return CreatedAtAction(nameof(GetPatientById), new { id = created.Id }, created);
-    }
-
-    [HttpPost("create-by-dentist")]
-    [Authorize(Roles = "Dentist,SuperAdmin")]
-    public ActionResult<PatientDto> CreatePatientByDentist([FromBody] CreatePatientByDentistRequest request)
-    {
-        var created = _patientService.CreatePatientByDentist(request);
-        return CreatedAtAction(nameof(GetPatientById), new { id = created.Id }, created);
-    }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = "SuperAdmin, Dentist")]
+    [Authorize(Roles = "Dentist")]
     public ActionResult<PatientDto> UpdatePatient([FromRoute] int id, [FromBody] UpdatePatientRequest request)
     {
         var updated = _patientService.UpdatePatient(id, request);

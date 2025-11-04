@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Application.Models;
 using Application.Models.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/visitRecords")]
@@ -15,18 +16,21 @@ public class VisitRecordController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Dentist")]
     public ActionResult<List<VisitRecordDto>> GetAll()
     {
         return Ok(_visitRecordService.GetAllVisitRecord());
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Dentist")]
     public ActionResult<VisitRecordDto> GetById(int id)
     {
         return Ok(_visitRecordService.GetVisitRecordById(id));
     }
 
     [HttpPost]
+    [Authorize(Roles = "Dentist")]
     public ActionResult<VisitRecordDto> Create([FromBody] CreateVisitRecordRequest request)
     {
         var created = _visitRecordService.CreateVisitRecord(request);
@@ -34,6 +38,7 @@ public class VisitRecordController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Dentist")]
     public ActionResult<VisitRecordDto> Update([FromRoute] int id, [FromBody] UpdateVisitRecordRequest request)
     {
         return Ok(_visitRecordService.UpdateVisitRecord(id, request));

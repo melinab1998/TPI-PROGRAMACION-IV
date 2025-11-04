@@ -1,8 +1,8 @@
 using Application.Interfaces;
 using Application.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Application.Models.Requests;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Web.Controllers
 {
@@ -18,6 +18,7 @@ namespace Web.Controllers
         }
 
         [HttpGet("{dentistId}")]
+        [Authorize(Roles = "SuperAdmin, Dentist")]
         public ActionResult<IEnumerable<AvailabilityDto>> GetByDentistId(int dentistId)
         {
             var slots = _availabilityService.GetByDentistId(dentistId);
@@ -25,20 +26,24 @@ namespace Web.Controllers
         }
 
         [HttpPost("{dentistId}")]
-        public IActionResult SetAvailability(int dentistId, [FromBody] List<AvailabilityRequest> slots)
+        [Authorize(Roles = "SuperAdmin, Dentist")]
+        public ActionResult<IEnumerable<AvailabilityDto>> CreateAvailability(int dentistId, [FromBody] List<AvailabilityRequest> slots)
         {
-            _availabilityService.CreateAvailability(dentistId, slots);
-            return Ok();
+            var created = _availabilityService.CreateAvailability(dentistId, slots);
+            return CreatedAtAction(nameof(GetByDentistId), new { dentistId }, created);
         }
 
         [HttpPut("{slotId}")]
+        [Authorize(Roles = "SuperAdmin, Dentist")]
         public IActionResult UpdateAvailability(int slotId, [FromBody] AvailabilityRequest updatedSlot)
         {
-            _availabilityService.UpdateAvailability(slotId, updatedSlot);
-            return Ok();
+            return Ok(_availabilityService.UpdateAvailability(slotId, updatedSlot));
         }
 
+        //Necesario para el front
+
         [HttpGet("{dentistId}/available-slots")]
+         [Authorize(Roles = "SuperAdmin, Dentist, Patient")]
         public ActionResult<Dictionary<string, List<string>>> GetAvailableSlots(int dentistId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
             var availableSlots = _availabilityService.GetAvailableSlots(dentistId, startDate, endDate);
