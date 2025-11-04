@@ -6,10 +6,10 @@ namespace Application.Interfaces;
 
 public interface IDentistService
 {
-    DentistDto CreateDentist(CreateDentistRequest request);
-    void ActivateDentist(string token, string password);
+    List<DentistDto> GetAllDentists();
     DentistDto GetDentistById(int id);
-    IEnumerable<DentistDto> GetAllDentists();
+    DentistDto CreateDentist(CreateDentistRequest request);
     DentistDto UpdateDentist(int id, UpdateDentistRequest request);
+    void ActivateDentist(string token, string password);
     DentistDto SetActiveStatusByAdmin(int id, bool isActive);
 }

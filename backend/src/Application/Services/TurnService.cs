@@ -5,9 +5,7 @@ using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 
 namespace Application.Services
 {
@@ -31,13 +29,13 @@ namespace Application.Services
         }
 
         //Obtener todos los turnos
-        public IEnumerable<TurnDto> GetAllTurns()
+        public List<TurnDto> GetAllTurns()
         {
             var turns = _turnRepository.List();
             if (!turns.Any())
-                throw new NotFoundException("NO_TURNS_FOUND");
+                return new List<TurnDto>();
 
-            return turns.Select(TurnDto.Create);
+            return TurnDto.CreateList(turns);
         }
 
         //Mostrar un turno en especifico por ID
@@ -48,6 +46,7 @@ namespace Application.Services
 
             return TurnDto.Create(turn);
         }
+
 
         // Crear turno
         public TurnDto CreateTurn(CreateTurnRequest request)
@@ -124,6 +123,14 @@ namespace Application.Services
             _turnRepository.Update(turn);
             return TurnDto.Create(turn);
         }
+
+        public void DeleteTurn(int id)
+    {
+        var turn = _turnRepository.GetById(id)
+            ?? throw new NotFoundException("TURN_NOT_FOUND");
+
+        _turnRepository.Delete(turn);
+    }
 
         public void CancelTurn(int id)
         {

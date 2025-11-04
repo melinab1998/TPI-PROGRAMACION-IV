@@ -31,13 +31,13 @@ public class DentistService : IDentistService
 
 
     //Obtener todos los dentistas
-    public IEnumerable<DentistDto> GetAllDentists()
+    public List<DentistDto> GetAllDentists()
     {
         var dentists = _dentistRepository.List();
-        if (dentists == null || !dentists.Any())
-            throw new NotFoundException("NO_DENTISTS_FOUND");
+        if (!dentists.Any())
+            return new List<DentistDto>();
 
-        return dentists.Select(DentistDto.Create);
+        return DentistDto.CreateList(dentists);
     }
 
     //Obtener un dentista en especifico

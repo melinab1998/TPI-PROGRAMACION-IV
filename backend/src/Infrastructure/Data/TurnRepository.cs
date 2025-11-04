@@ -27,15 +27,6 @@ namespace Infrastructure.Data
                 .ToList();
         }
 
-        public IEnumerable<Turn> GetTurnsByDate(DateTime date)
-        {
-            return _dbSet
-                .Include(t => t.Dentist)
-                .Include(t => t.Patient)
-                .Where(t => t.AppointmentDate.Date == date.Date)
-                .ToList();
-        }
-
         public IEnumerable<Turn> GetBookedTurnsInRange(int dentistId, DateTime startDate, DateTime endDate)
         {
             return _dbSet

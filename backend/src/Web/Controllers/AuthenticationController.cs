@@ -51,7 +51,7 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("create-patient")]
-    [Authorize(Roles = "Dentist, SuperAdmin")]
+    [Authorize(Roles = "Dentist")]
     public ActionResult<PatientDto> CreatePatientByDentist([FromBody] CreatePatientByDentistRequest request)
     {
         var newPatient = _patientService.CreatePatientByDentist(request);

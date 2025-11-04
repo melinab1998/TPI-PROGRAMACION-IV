@@ -4,54 +4,47 @@ using Application.Models.Requests;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Application.Services
 {
     public class AvailabilityService : IAvailabilityService
     {
         private readonly IAvailabilityRepository _availabilityRepository;
-        private readonly ITurnRepository _turnRepository; 
+        private readonly ITurnRepository _turnRepository;
 
         public AvailabilityService(
             IAvailabilityRepository availabilityRepository,
-            ITurnRepository turnRepository) 
+            ITurnRepository turnRepository)
         {
             _availabilityRepository = availabilityRepository;
             _turnRepository = turnRepository;
         }
 
-        // Obtener la disponibilidad de un dentista en específico
-        public IEnumerable<AvailabilityDto> GetByDentistId(int dentistId)
+        public List<AvailabilityDto> GetByDentistId(int dentistId)
         {
             var availabilities = _availabilityRepository.GetByDentistId(dentistId);
-
-            if (availabilities == null || !availabilities.Any())
-                throw new NotFoundException("NO_AVAILABLE_SLOTS");
-
-            return availabilities.Select(AvailabilityDto.Create);
+            return AvailabilityDto.CreateList(availabilities);
         }
 
-        // Creación de la disponibilidad
-        public void CreateAvailability(int dentistId, IEnumerable<AvailabilityRequest> slots)
+        public List<AvailabilityDto> CreateAvailability(int dentistId, IEnumerable<AvailabilityRequest> slots)
         {
             if (slots == null || !slots.Any())
                 throw new AppValidationException("MANDATORY_FIELDS");
 
             var existingSlots = _availabilityRepository.GetByDentistId(dentistId).ToList();
+            var createdSlots = new List<AvailabilityDto>();
 
             foreach (var slotRequest in slots)
             {
+                
                 var newSlot = new Availability(
                     slotRequest.DayOfWeek,
-                    TimeSpan.Parse(slotRequest.StartTime),
-                    TimeSpan.Parse(slotRequest.EndTime),
+                    slotRequest.StartTime,
+                    slotRequest.EndTime,
                     dentistId
                 );
 
-                // Validar superposición con tramos existentes del mismo día
+                // Validar superposición
                 bool overlaps = existingSlots
                     .Where(s => s.DayOfWeek == newSlot.DayOfWeek)
                     .Any(s => !(newSlot.EndTime <= s.StartTime || newSlot.StartTime >= s.EndTime));
@@ -61,20 +54,22 @@ namespace Application.Services
 
                 _availabilityRepository.Add(newSlot);
                 existingSlots.Add(newSlot);
+                createdSlots.Add(AvailabilityDto.Create(newSlot));
             }
+
+            return createdSlots;
         }
 
-        // Actualización de la disponibilidad
-        public void UpdateAvailability(int slotId, AvailabilityRequest updatedSlot)
+        public AvailabilityDto UpdateAvailability(int slotId, AvailabilityRequest updatedSlot)
         {
             var slot = _availabilityRepository.GetById(slotId);
             if (slot == null)
                 throw new NotFoundException("SLOT_NOT_FOUND");
 
-            slot.DayOfWeek = updatedSlot.DayOfWeek;
-            slot.StartTime = TimeSpan.Parse(updatedSlot.StartTime);
-            slot.EndTime = TimeSpan.Parse(updatedSlot.EndTime);
+            //Usamos el metodo de la entidad
+            slot.Update(updatedSlot.DayOfWeek, updatedSlot.EndTime, updatedSlot.StartTime);
 
+            // Validar superposición
             var otherSlots = _availabilityRepository.GetByDentistId(slot.DentistId)
                 .Where(s => s.Id != slotId && s.DayOfWeek == slot.DayOfWeek);
 
@@ -83,9 +78,10 @@ namespace Application.Services
                 throw new AppValidationException("TIME_SLOT_OVERLAP");
 
             _availabilityRepository.Update(slot);
+            return AvailabilityDto.Create(slot);
         }
-
-        //Obtiene los horarios disponibles para un dentista dentro de un rango de fechas especificado (FRONT).
+        
+        //Metodo necesario para el front
         public Dictionary<string, List<string>> GetAvailableSlots(int dentistId, DateTime startDate, DateTime endDate)
         {
             if (startDate > endDate)
@@ -96,16 +92,12 @@ namespace Application.Services
                 throw new NotFoundException("NO_AVAILABILITY_DEFINED");
 
             var bookedTurns = _turnRepository.GetBookedTurnsInRange(dentistId, startDate, endDate).ToList();
-
             var result = new Dictionary<string, List<string>>();
 
             for (var date = startDate.Date; date <= endDate.Date; date = date.AddDays(1))
             {
-                var weekday = date.DayOfWeek;
-                var dayAvailability = availabilities.Where(a => a.DayOfWeek == weekday).ToList();
-
-                if (!dayAvailability.Any())
-                    continue; 
+                var dayAvailability = availabilities.Where(a => a.DayOfWeek == date.DayOfWeek).ToList();
+                if (!dayAvailability.Any()) continue;
 
                 var availableHours = new List<string>();
 
@@ -114,8 +106,7 @@ namespace Application.Services
                     var current = slot.StartTime;
                     while (current < slot.EndTime)
                     {
-                        var next = current.Add(TimeSpan.FromMinutes(30)); 
-
+                        var next = current.Add(TimeSpan.FromMinutes(30));
                         bool isBooked = bookedTurns.Any(t =>
                             t.AppointmentDate.Date == date &&
                             t.AppointmentDate.TimeOfDay >= current &&

@@ -5,12 +5,14 @@ namespace Application.Interfaces;
 
 public interface IPatientService
 {
+    List<PatientDto> GetAllPatients();
+    PatientDto GetPatientById(int id);
     PatientDto RegisterPatient(RegisterPatientRequest request);
+    PatientDto UpdatePatient(int id, UpdatePatientRequest request);
+
+    //Necesarios para el front
     PatientDto CreatePatientByDentist(CreatePatientByDentistRequest request);
     void ActivatePatient(string token, string password);
-    IEnumerable<PatientDto> GetAllPatients();
-    PatientDto GetPatientById(int id);
-    PatientDto UpdatePatient(int id, UpdatePatientRequest request);
     PatientDto UpdatePatientEmail(int id, UpdatePatientEmailRequest request);
     void UpdatePatientPassword(int id, UpdatePatientPasswordRequest request);
 }

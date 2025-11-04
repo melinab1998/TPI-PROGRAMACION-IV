@@ -4,7 +4,7 @@ using Application.Models.Requests;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
-using System.Linq;
+
 
 namespace Application.Services;
 
@@ -31,13 +31,13 @@ public class PatientService : IPatientService
     }
 
     //Obtener todos los pacientes
-    public IEnumerable<PatientDto> GetAllPatients()
+    public List<PatientDto> GetAllPatients()
     {
         var patients = _patientRepository.List();
-        if (patients == null || !patients.Any())
-            throw new NotFoundException("NO_PATIENTS_FOUND");
+        if (!patients.Any())
+            return new List<PatientDto>();
 
-        return patients.Select(PatientDto.Create);
+        return PatientDto.CreateList(patients);
     }
 
     //Obtener un paciente en especifico
@@ -67,7 +67,7 @@ public class PatientService : IPatientService
         return PatientDto.Create(saved!);
     }
 
-    //Actualizacion del email por parte del paciente
+    //Actualizacion del email por parte del paciente (necesario para el front)
     public PatientDto UpdatePatientEmail(int id, UpdatePatientEmailRequest request)
     {
         var patient = _patientRepository.GetById(id)
@@ -84,7 +84,7 @@ public class PatientService : IPatientService
         return PatientDto.Create(saved!);
     }
 
-    //Actualizacion de la contraseña por parte del paciente
+    //Actualizacion de la contraseña por parte del paciente (necesario para el front)
     public void UpdatePatientPassword(int id, UpdatePatientPasswordRequest request)
     {
         var patient = _patientRepository.GetById(id)
@@ -97,7 +97,8 @@ public class PatientService : IPatientService
         _patientRepository.Update(patient);
     }
 
-    //Creacion del paciente por parte del dentista
+
+    //Creacion del paciente por parte del dentista (necesario para el front)
     public PatientDto CreatePatientByDentist(CreatePatientByDentistRequest request)
     {
         if (_userRepository.GetByEmail(request.Email) != null)
@@ -136,7 +137,7 @@ public class PatientService : IPatientService
         return "Tmp-" + new string(Enumerable.Repeat(chars, 10).Select(s => s[random.Next(s.Length)]).ToArray());
     }
 
-    //Activacion del paciente
+    //Activacion del paciente (necesario para el front)
     public void ActivatePatient(string token, string password)
     {
         var principal = _jwtService.ValidateToken(token);
@@ -152,7 +153,7 @@ public class PatientService : IPatientService
         _patientRepository.Update(patient);
     }
 
-    //Actualizacion del paciente por el dentista
+    //Actualizacion del paciente por el dentista (necesario para el front)
     public PatientDto UpdatePatient(int id, UpdatePatientRequest request)
     {
         var patient = _patientRepository.GetById(id)

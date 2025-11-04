@@ -4,7 +4,7 @@ namespace Application.Interfaces
 {
     public interface IHealthInsuranceService
     {
-        IEnumerable<HealthInsuranceDto> GetAll();
+        List<HealthInsuranceDto> GetAllInsurances();
         HealthInsuranceDto GetById(int id);
     }
 }

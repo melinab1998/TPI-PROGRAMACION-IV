@@ -18,7 +18,7 @@ namespace Web.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<HealthInsuranceDto>> GetAll()
         {
-            var result = _healthInsuranceService.GetAll();
+            var result = _healthInsuranceService.GetAllInsurances();
             return Ok(result);
         }
 
