@@ -4,10 +4,7 @@ using Application.Models.Requests;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
-using Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 
 namespace Application.Services
 {
@@ -29,7 +26,7 @@ namespace Application.Services
             var visitRecords = _visitRecordRepository.List();
             if (!visitRecords.Any())
                 return new List<VisitRecordDto>();
-            return VisitRecordDto.Create(visitRecords);
+            return VisitRecordDto.CreateList(visitRecords);
         }
 
         //Obtener un registro en particular

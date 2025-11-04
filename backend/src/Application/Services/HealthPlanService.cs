@@ -1,6 +1,5 @@
 using Application.Interfaces;
 using Application.Models;
-using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
 
@@ -16,24 +15,22 @@ namespace Application.Services
         }
 
         //Obtener todos los planes
-        public IEnumerable<HealthPlanDto> GetAll()
+        public List<HealthPlanDto> GetAllPlans()
         {
             var plans = _healthPlanRepository.GetAll();
 
-            if (plans == null || !plans.Any())
-                throw new NotFoundException("HEALTH_PLAN_NOT_FOUND");
+            if (!plans.Any())
+                return new List<HealthPlanDto>();
 
-            return plans.Select(plan => new HealthPlanDto(plan.Id, plan.Name));
+            return HealthPlanDto.CreateList(plans);
+
         }
 
-        //Obtener un plan en especifico(ID)
+        //Obtener los planes con el id de la obra social
         public IEnumerable<HealthPlanDto> GetByInsuranceId(int healthInsuranceId)
         {
-            var plans = _healthPlanRepository.GetByInsuranceId(healthInsuranceId);
-
-            if (plans == null || !plans.Any())
-                throw new NotFoundException("HEALTH_PLAN_NOT_FOUND");
-
+            var plans = _healthPlanRepository.GetByInsuranceId(healthInsuranceId)
+                ?? throw new NotFoundException("HEALTH_PLAN_NOT_FOUND");
             return plans.Select(plan => new HealthPlanDto(plan.Id, plan.Name));
         }
     }
