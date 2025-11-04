@@ -10,7 +10,7 @@ public record VisitRecordDto(int Id, DateOnly VisitDate, string Treatment, strin
 
         return dto;
     }
-    public static List<VisitRecordDto> Create(IEnumerable<VisitRecord> visitRecords)
+    public static List<VisitRecordDto> CreateList(IEnumerable<VisitRecord> visitRecords)
     {
         return visitRecords.Select(visitRecord => Create(visitRecord)).ToList();
     }

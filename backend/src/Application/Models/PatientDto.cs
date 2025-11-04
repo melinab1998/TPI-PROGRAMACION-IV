@@ -38,5 +38,10 @@ public record PatientDto(
             entity.HealthPlan?.HealthInsurance?.Name
         );
     }
+
+     public static List<PatientDto> CreateList(IEnumerable<Patient> patients)
+    {
+        return patients.Select(patient => Create(patient)).ToList();
+    }
 }
 
