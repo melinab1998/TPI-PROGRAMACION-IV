@@ -5,9 +5,9 @@ namespace Application.Interfaces
 {
     public interface IAvailabilityService
     {
-        IEnumerable<AvailabilityDto> GetByDentistId(int dentistId);
-        void CreateAvailability(int dentistId, IEnumerable<AvailabilityRequest> slots);
-        void UpdateAvailability(int slotId, AvailabilityRequest updatedSlot);
+        List<AvailabilityDto> GetByDentistId(int dentistId);
+        List<AvailabilityDto> CreateAvailability(int dentistId, IEnumerable<AvailabilityRequest> slots);
+        AvailabilityDto UpdateAvailability(int slotId, AvailabilityRequest updatedSlot);
         Dictionary<string, List<string>> GetAvailableSlots(int dentistId, DateTime startDate, DateTime endDate);
     }
 }
