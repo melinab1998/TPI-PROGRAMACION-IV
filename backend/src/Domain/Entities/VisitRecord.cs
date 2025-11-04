@@ -46,7 +46,8 @@ namespace Domain.Entities
             if (!string.IsNullOrEmpty(diagnosis)) Diagnosis = diagnosis;
             if (!string.IsNullOrEmpty(notes)) Notes = notes;
             if (!string.IsNullOrEmpty(prescription)) Prescription = prescription;
-            int? TurnId = turnId;
+            if (turnId.HasValue)
+                TurnId = turnId.Value;
         }
     }
 
