@@ -14,7 +14,7 @@ namespace Application.Services
             _healthPlanRepository = healthPlanRepository;
         }
 
-        //Obtener todos los planes
+        // Obtiene todos los planes de salud disponibles en el sistema.
         public List<HealthPlanDto> GetAllPlans()
         {
             var plans = _healthPlanRepository.GetAll();
@@ -26,7 +26,7 @@ namespace Application.Services
 
         }
 
-        //Obtener los planes con el id de la obra social
+        // Obtiene todos los planes asociados a una obra social específica.
         public IEnumerable<HealthPlanDto> GetByInsuranceId(int healthInsuranceId)
         {
             var plans = _healthPlanRepository.GetByInsuranceId(healthInsuranceId);

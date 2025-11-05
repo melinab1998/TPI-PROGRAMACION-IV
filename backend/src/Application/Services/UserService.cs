@@ -25,7 +25,7 @@ namespace Application.Services
         }
 
 
-        //Autenticacion
+        // Autenticación de usuario.
         public User Authenticate(string email, string password)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
@@ -44,6 +44,7 @@ namespace Application.Services
             return user;
         }
 
+        // Enviar correo de recuperación de contraseña.
         public async Task SendPasswordResetEmailAsync(string email)
         {
             var user = _userRepository.GetByEmail(email);
@@ -54,6 +55,7 @@ namespace Application.Services
             await _emailService.SendPasswordResetEmailAsync(email, token);
         }
 
+        // Restablecer contraseña usando el token recibido.
         public void ResetPassword(string token, string newPassword)
         {
             var principal = _jwtService.ValidatePasswordResetToken(token);
@@ -69,7 +71,7 @@ namespace Application.Services
             _userRepository.Update(user);
         }
 
-        //Creacion del SuperAdmin de manera automatica
+        // Crear automáticamente un SuperAdmin (solo si no existe aún).
         public void CreateSuperAdminOnce(string firstName, string lastName, string email, string password)
         {
             try

@@ -28,7 +28,7 @@ namespace Application.Services
             _dentistRepository = dentistRepository;
         }
 
-        //Obtener todos los turnos
+        // Obtiene todos los turnos registrados en el sistema.
         public List<TurnDto> GetAllTurns()
         {
             var turns = _turnRepository.List();
@@ -38,7 +38,7 @@ namespace Application.Services
             return TurnDto.CreateList(turns);
         }
 
-        //Mostrar un turno en especifico por ID
+        // Obtiene un turno específico a partir de su identificador.
         public TurnDto GetTurnById(int id)
         {
             var turn = _turnRepository.GetById(id)
@@ -47,6 +47,7 @@ namespace Application.Services
             return TurnDto.Create(turn);
         }
 
+        // Crea un nuevo turno (cita) para un paciente con un dentista.
         public TurnDto CreateTurn(CreateTurnRequest request)
         {
             // Validar que el turno esté en intervalos de 30 minutos
@@ -103,7 +104,7 @@ namespace Application.Services
         }
 
 
-        //Actualizar el turno
+        // Actualiza la información de un turno existente.
         public TurnDto UpdateTurn(int id, UpdateTurnRequest request)
         {
             var turn = _turnRepository.GetById(id)
@@ -133,6 +134,7 @@ namespace Application.Services
             return TurnDto.Create(turn);
         }
 
+        // Elimina un turno del sistema.
         public void DeleteTurn(int id)
         {
             var turn = _turnRepository.GetById(id)
@@ -141,6 +143,7 @@ namespace Application.Services
             _turnRepository.Delete(turn);
         }
 
+        // Cancela un turno activo y actualiza su estado.
         public void CancelTurn(int id)
         {
             var turn = _turnRepository.GetById(id)

@@ -17,6 +17,7 @@ namespace Application.Services
             _contactRepository = repository;
         }
 
+        // Crea un nuevo mensaje de contacto a partir de la solicitud enviada por el usuario.
         public ContactMessageDto Create(ContactMessageRequest request)
         {
             var message = new ContactMessage(request.Name, request.Email, request.Message);
@@ -24,6 +25,7 @@ namespace Application.Services
             return ContactMessageDto.Create(message);
         }
 
+        // Obtiene la lista completa de mensajes de contacto almacenados en el sistema.
         public IEnumerable<ContactMessageDto> GetAll()
         {
             return _contactRepository.List().Select(ContactMessageDto.Create);

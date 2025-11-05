@@ -14,7 +14,7 @@ namespace Application.Services
             _healthInsuranceRepository = healthInsuranceRepository;
         }
 
-        //Obtener todas las obras sociales
+        // Obtiene todas las obras sociales registradas en el sistema.
         public List<HealthInsuranceDto> GetAllInsurances()
         {
             var insurances = _healthInsuranceRepository.GetAll();
@@ -25,7 +25,7 @@ namespace Application.Services
             return HealthInsuranceDto.CreateList(insurances);
         }
 
-        //Obtener una obra social en especifico
+        // Obtiene la información de una obra social específica junto con sus planes.
         public HealthInsuranceDto GetById(int id)
         {
             var insurance = _healthInsuranceRepository.GetByIdWithPlans(id)
