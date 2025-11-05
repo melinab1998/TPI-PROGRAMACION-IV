@@ -9,6 +9,8 @@ namespace Infrastructure.Services
 {
     public class EmailService : IEmailService
     {
+        // Servicio encargado del envío de correos electrónicos del sistema.
+        // Utiliza Gmail con autenticación OAuth2 mediante access token.
         private readonly IConfiguration _config;
         private readonly HttpClient _httpClient;
 
@@ -18,6 +20,7 @@ namespace Infrastructure.Services
             _httpClient = httpClient;
         }
 
+        // Envía un correo de activación de cuenta al usuario.
         public async Task SendActivationEmailAsync(string email, string activationToken)
         {
             try
@@ -66,6 +69,8 @@ namespace Infrastructure.Services
                 throw;
             }
         }
+
+        // Obtiene el access token de Google OAuth2 mediante el refresh token almacenado en las configuraciones.
         private async Task<string> GetAccessTokenAsync()
         {
             var clientId = _config["Email:ClientId"]!;
@@ -99,6 +104,7 @@ namespace Infrastructure.Services
             return accessToken!;
         }
 
+        // Envía un recordatorio de turno al paciente con la información del día, hora, profesional y dirección del consultorio.
         public async Task SendAppointmentReminderAsync(string toEmail, string patientName, string dentistName, DateTime appointmentDate, string address)
         {
             try
@@ -142,6 +148,7 @@ namespace Infrastructure.Services
             }
         }
 
+        // Envía un correo para restablecer la contraseña del usuario.
         public async Task SendPasswordResetEmailAsync(string toEmail, string resetToken)
         {
             try

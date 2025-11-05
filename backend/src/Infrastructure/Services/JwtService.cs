@@ -10,6 +10,8 @@ namespace Infrastructure.Services
 {
     public class JwtService : IJwtService
     {
+        // Servicio encargado de generar y validar los distintos tipos de tokens JWT
+        // utilizados en la aplicación: autenticación, activación y recuperación de contraseña.
         private readonly IConfiguration _config;
 
         public JwtService(IConfiguration config)
@@ -17,7 +19,7 @@ namespace Infrastructure.Services
             _config = config;
         }
 
-        // Token normal de autenticación
+        // Genera un token JWT de autenticación para un usuario que inicia sesión.
         public string GenerateToken(int userId, string role, TimeSpan? expires = null)
         {
             var claims = new List<Claim>
@@ -40,7 +42,8 @@ namespace Infrastructure.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        // Token de activación para dentistas
+        // Genera un token JWT de activación para un dentista recién registrado.
+        // El token se envía por email y se usa para validar su cuenta.
         public string GenerateActivationTokenForDentist(int dentistId, TimeSpan? expires = null)
         {
             var claims = new List<Claim>
@@ -52,7 +55,7 @@ namespace Infrastructure.Services
             return GenerateActivationTokenInternal(claims, expires);
         }
 
-        // Token de activación para pacientes
+        // Genera un token JWT de activación para un paciente recién registrado.
         public string GenerateActivationTokenForPatient(int patientId, TimeSpan? expires = null)
         {
             var claims = new List<Claim>
@@ -64,7 +67,8 @@ namespace Infrastructure.Services
             return GenerateActivationTokenInternal(claims, expires);
         }
 
-        // Método privado reutilizable
+        // Método privado reutilizable para generar tokens de activación o similares.
+        // Encapsula la lógica común de creación y firmado de tokens JWT.
         private string GenerateActivationTokenInternal(IEnumerable<Claim> claims, TimeSpan? expires = null)
         {
             var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_config["Authentication:SecretForKey"]!));
@@ -81,7 +85,7 @@ namespace Infrastructure.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
         
-        // Token de recuperación de contraseña
+        // Genera un token JWT temporal para la recuperación de contraseña.
         public string GeneratePasswordResetToken(int userId, TimeSpan? expires = null)
         {
             var claims = new List<Claim>
@@ -92,7 +96,8 @@ namespace Infrastructure.Services
             return GenerateActivationTokenInternal(claims, expires ?? TimeSpan.FromHours(1));
         }
 
-        // Validación de token de recuperación de contraseña
+        //  Valida un token JWT de recuperación de contraseña.
+        // Verifica firma, expiración y propósito antes de aceptar el token.
         public ClaimsPrincipal ValidatePasswordResetToken(string token)
         {
             var key = Encoding.ASCII.GetBytes(_config["Authentication:SecretForKey"]!);
@@ -127,7 +132,8 @@ namespace Infrastructure.Services
             }
         }
 
-        //  Validación del token
+        // Valida un token JWT de activación de cuenta (dentista o paciente).
+        // Verifica firma, expiración y que el propósito del token sea "activation".
         public ClaimsPrincipal ValidateToken(string token)
         {
             var key = Encoding.ASCII.GetBytes(_config["Authentication:SecretForKey"]!);

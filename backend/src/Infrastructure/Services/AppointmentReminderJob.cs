@@ -12,6 +12,10 @@ using Microsoft.Extensions.Logging;
 namespace Infrastructure.Services
 {
     public class AppointmentReminderJob : BackgroundService
+
+    // Servicio en segundo plano (BackgroundService) encargado de enviar recordatorios por correo electrónico
+    // a los pacientes que tienen turnos pendientes para el día siguiente.
+
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<AppointmentReminderJob> _logger;
@@ -21,7 +25,9 @@ namespace Infrastructure.Services
             _scopeFactory = scopeFactory;
             _logger = logger;
         }
-
+        
+        // Método principal que ejecuta el servicio en un bucle continuo hasta que se cancele.
+        // Se ejecuta una vez cada 24 horas para enviar los recordatorios de los turnos.
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
@@ -38,6 +44,7 @@ namespace Infrastructure.Services
             }
         }
 
+        // Obtiene los turnos pendientes para mañana y envía correos electrónicos a los pacientes correspondientes.
         private async Task SendRemindersAsync()
         {
             using var scope = _scopeFactory.CreateScope();
