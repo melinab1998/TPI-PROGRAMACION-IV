@@ -23,6 +23,10 @@ namespace Application.Services
         public List<AvailabilityDto> GetByDentistId(int dentistId)
         {
             var availabilities = _availabilityRepository.GetByDentistId(dentistId);
+
+            if (availabilities == null || !availabilities.Any())
+                return new List<AvailabilityDto>();
+
             return AvailabilityDto.CreateList(availabilities);
         }
 
