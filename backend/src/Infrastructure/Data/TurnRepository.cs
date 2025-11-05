@@ -9,6 +9,14 @@ namespace Infrastructure.Data
     {
         public TurnRepository(ApplicationDbContext context) : base(context) { }
 
+        public override IEnumerable<Turn> List()
+        {
+            return _dbSet
+                .Include(t => t.Dentist)
+                .Include(t => t.Patient)
+                .ToList();
+        }
+
         public IEnumerable<Turn> GetTurnsByDentist(int dentistId)
         {
             return _dbSet
@@ -23,7 +31,7 @@ namespace Infrastructure.Data
             return _dbSet
                 .Include(t => t.Dentist)
                 .Include(t => t.Patient)
-                .Where(t => t.PatientId == patientId) 
+                .Where(t => t.PatientId == patientId)
                 .ToList();
         }
 
