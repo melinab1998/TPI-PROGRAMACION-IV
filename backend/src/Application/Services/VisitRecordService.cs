@@ -58,7 +58,7 @@ namespace Application.Services
         public VisitRecordDto UpdateVisitRecord(int id, UpdateVisitRecordRequest request)
         {
             var visitRecord = _visitRecordRepository.GetById(id)
-                ?? throw new NotFoundException("VISIT_REPOSITORY_NOT_FOUND");
+                ?? throw new NotFoundException("VISIT_RECORD_NOT_FOUND");
             visitRecord.UpdateInfo(
                 request.VisitDate,
                 request.Treatment,

@@ -78,12 +78,12 @@ public class DentistService : IDentistService
         var dentistIdClaim = principal.FindFirst("dentistId");
 
         if (dentistIdClaim == null)
-            throw new AppValidationException("INVALID_TOKEN");
+            throw new UnauthorizedException("INVALID_TOKEN");
 
         int dentistId = int.Parse(dentistIdClaim.Value);
         var dentist = _dentistRepository.GetById(dentistId);
         if (dentist == null)
-            throw new AppValidationException("DENTIST_NOT_FOUND");
+            throw new NotFoundException("DENTIST_NOT_FOUND");
 
         dentist.Activate(_hasher.HashPassword(password));
         _dentistRepository.Update(dentist);

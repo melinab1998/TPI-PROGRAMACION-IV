@@ -29,8 +29,11 @@ namespace Application.Services
         //Obtener los planes con el id de la obra social
         public IEnumerable<HealthPlanDto> GetByInsuranceId(int healthInsuranceId)
         {
-            var plans = _healthPlanRepository.GetByInsuranceId(healthInsuranceId)
-                ?? throw new NotFoundException("HEALTH_PLAN_NOT_FOUND");
+            var plans = _healthPlanRepository.GetByInsuranceId(healthInsuranceId);
+
+            if (plans == null || !plans.Any())
+                return Enumerable.Empty<HealthPlanDto>();
+
             return plans.Select(plan => new HealthPlanDto(plan.Id, plan.Name));
         }
     }

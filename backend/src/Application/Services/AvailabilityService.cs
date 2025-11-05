@@ -36,12 +36,23 @@ namespace Application.Services
 
             foreach (var slotRequest in slots)
             {
-                
+                // Convertir los strings a TimeSpan
+                var startTime = TimeSpan.Parse(slotRequest.StartTime);
+                var endTime = TimeSpan.Parse(slotRequest.EndTime);
+
+                // Validar que los horarios sean múltiplos de 30 minutos
+                if (startTime.Minutes % 30 != 0 || endTime.Minutes % 30 != 0)
+                    throw new AppValidationException("AVAILABILITY_MUST_BE_ON_HALF_HOUR");
+
+                // Validar que el rango horario sea correcto
+                if (startTime >= endTime)
+                    throw new AppValidationException("INVALID_TIME_RANGE");
+
                 var newSlot = new Availability(
-                    slotRequest.DayOfWeek,
-                    slotRequest.StartTime,
-                    slotRequest.EndTime,
-                    dentistId
+                slotRequest.DayOfWeek,
+                startTime.ToString(@"hh\:mm"),
+                endTime.ToString(@"hh\:mm"),
+                dentistId
                 );
 
                 // Validar superposición
@@ -80,7 +91,7 @@ namespace Application.Services
             _availabilityRepository.Update(slot);
             return AvailabilityDto.Create(slot);
         }
-        
+
         //Metodo necesario para el front
         public Dictionary<string, List<string>> GetAvailableSlots(int dentistId, DateTime startDate, DateTime endDate)
         {
