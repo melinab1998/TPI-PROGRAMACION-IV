@@ -51,7 +51,7 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("create-patient")]
-    [Authorize(Roles = "Dentist")]
+    [Authorize(Roles = "Dentist, SuperAdmin")]
     public ActionResult<PatientDto> CreatePatientByDentist([FromBody] CreatePatientByDentistRequest request)
     {
         var newPatient = _patientService.CreatePatientByDentist(request);
@@ -89,6 +89,20 @@ public class AuthenticationController : ControllerBase
     public IActionResult ActivateDentist([FromBody] ActivateDentistRequest dto)
     {
         _dentistService.ActivateDentist(dto.Token, dto.Password);
+        return NoContent();
+    }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        await _userService.SendPasswordResetEmailAsync(request.Email);
+        return NoContent();
+    }
+
+    [HttpPost("reset-password")]
+    public IActionResult ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        _userService.ResetPassword(request.Token, request.NewPassword);
         return NoContent();
     }
 }

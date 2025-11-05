@@ -361,3 +361,13 @@ export const updateVisitRecord = (token, id, payload, onSuccess, onError) => {
     })
         .then(handleResponse).then(onSuccess).catch(onError);
 };
+
+/* CONTACT MESSAGES */
+export const sendContactMessage = (payload, onSuccess, onError) => {
+    fetch(`${baseUrl}/api/contact-messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+    })
+        .then(handleResponse).then(onSuccess).catch(onError);
+};

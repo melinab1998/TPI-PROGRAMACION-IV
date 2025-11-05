@@ -14,7 +14,7 @@ namespace Application.Services
             _healthPlanRepository = healthPlanRepository;
         }
 
-        //Obtener todos los planes
+        // Obtiene todos los planes de salud disponibles en el sistema.
         public List<HealthPlanDto> GetAllPlans()
         {
             var plans = _healthPlanRepository.GetAll();
@@ -26,11 +26,14 @@ namespace Application.Services
 
         }
 
-        //Obtener los planes con el id de la obra social
+        // Obtiene todos los planes asociados a una obra social específica.
         public IEnumerable<HealthPlanDto> GetByInsuranceId(int healthInsuranceId)
         {
-            var plans = _healthPlanRepository.GetByInsuranceId(healthInsuranceId)
-                ?? throw new NotFoundException("HEALTH_PLAN_NOT_FOUND");
+            var plans = _healthPlanRepository.GetByInsuranceId(healthInsuranceId);
+
+            if (plans == null || !plans.Any())
+                return Enumerable.Empty<HealthPlanDto>();
+
             return plans.Select(plan => new HealthPlanDto(plan.Id, plan.Name));
         }
     }

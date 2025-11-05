@@ -28,7 +28,7 @@ namespace Application.Services
             _dentistRepository = dentistRepository;
         }
 
-        //Obtener todos los turnos
+        // Obtiene todos los turnos registrados en el sistema.
         public List<TurnDto> GetAllTurns()
         {
             var turns = _turnRepository.List();
@@ -38,7 +38,7 @@ namespace Application.Services
             return TurnDto.CreateList(turns);
         }
 
-        //Mostrar un turno en especifico por ID
+        // Obtiene un turno específico a partir de su identificador.
         public TurnDto GetTurnById(int id)
         {
             var turn = _turnRepository.GetById(id)
@@ -47,10 +47,13 @@ namespace Application.Services
             return TurnDto.Create(turn);
         }
 
-
-        // Crear turno
+        // Crea un nuevo turno (cita) para un paciente con un dentista.
         public TurnDto CreateTurn(CreateTurnRequest request)
         {
+            // Validar que el turno esté en intervalos de 30 minutos
+            if (request.AppointmentDate.Minute % 30 != 0 || request.AppointmentDate.Second != 0)
+                throw new AppValidationException("APPOINTMENT_MUST_BE_ON_HALF_HOUR");
+
             // Validar paciente
             var patient = _patientRepository.GetById(request.PatientId);
             if (patient == null)
@@ -61,22 +64,27 @@ namespace Application.Services
             if (dentist == null)
                 throw new NotFoundException("DENTIST_NOT_FOUND");
 
+            // Validar que la fecha del turno no sea en el pasado
+            if (request.AppointmentDate < DateTime.Now)
+                throw new AppValidationException("INVALID_APPOINTMENT_DATE");
+
             // Validar disponibilidad del dentista para el día solicitado
-            var availabilities = _availabilityRepository.GetByDentistAndDay(request.DentistId, request.AppointmentDate.DayOfWeek);
+            var availabilities = _availabilityRepository
+                .GetByDentistAndDay(request.DentistId, request.AppointmentDate.DayOfWeek);
             if (!availabilities.Any())
                 throw new AppValidationException("NO_AVAILABILITY_FOR_DAY");
 
             // Validar que el paciente no tenga otro turno pendiente ese día
             var patientPendingTurnsSameDay = _turnRepository.GetTurnsByPatient(request.PatientId)
                 .Where(t => t.AppointmentDate.Date == request.AppointmentDate.Date &&
-                            t.Status == TurnStatus.Pending); // Solo pendientes
+                            t.Status == TurnStatus.Pending);
 
             if (patientPendingTurnsSameDay.Any())
                 throw new AppValidationException("PATIENT_ALREADY_HAS_TURN_TODAY");
 
-            // Validar que no haya otro turno en esa hora para el dentista
+            // Validar que no haya otro turno pendiente para el dentista a esa hora
             var dentistPendingTurns = _turnRepository.GetTurnsByDentist(request.DentistId)
-                .Where(t => t.Status == TurnStatus.Pending); // Solo pendientes
+                .Where(t => t.Status == TurnStatus.Pending);
 
             // Crear el turno
             var turn = new Turn(
@@ -87,6 +95,7 @@ namespace Application.Services
                 request.DentistId
             );
 
+            // Verificar que el horario encaje con la disponibilidad
             turn.Reschedule(request.AppointmentDate, availabilities, dentistPendingTurns);
 
             _turnRepository.Add(turn);
@@ -94,7 +103,8 @@ namespace Application.Services
             return TurnDto.Create(turn);
         }
 
-        //Actualizar el turno
+
+        // Actualiza la información de un turno existente.
         public TurnDto UpdateTurn(int id, UpdateTurnRequest request)
         {
             var turn = _turnRepository.GetById(id)
@@ -124,14 +134,16 @@ namespace Application.Services
             return TurnDto.Create(turn);
         }
 
+        // Elimina un turno del sistema.
         public void DeleteTurn(int id)
-    {
-        var turn = _turnRepository.GetById(id)
-            ?? throw new NotFoundException("TURN_NOT_FOUND");
+        {
+            var turn = _turnRepository.GetById(id)
+                ?? throw new NotFoundException("TURN_NOT_FOUND");
 
-        _turnRepository.Delete(turn);
-    }
+            _turnRepository.Delete(turn);
+        }
 
+        // Cancela un turno activo y actualiza su estado.
         public void CancelTurn(int id)
         {
             var turn = _turnRepository.GetById(id)

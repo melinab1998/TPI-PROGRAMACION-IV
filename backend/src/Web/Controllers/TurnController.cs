@@ -16,14 +16,14 @@ public class TurnController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = "Dentist, Patient")]
+    [Authorize(Roles = "SuperAdmin, Dentist, Patient")]
     public ActionResult<IEnumerable<TurnDto>> GetAll()
     {
         return Ok(_turnService.GetAllTurns());
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "Dentist, Patient")]
+    [Authorize(Roles = "SuperAdmin, Dentist, Patient")]
 
     public ActionResult<TurnDto> GetById(int id)
     {
@@ -39,14 +39,14 @@ public class TurnController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = "Dentist")]
+    [Authorize(Roles = "SuperAdmin, Dentist")]
     public ActionResult<TurnDto> Update([FromRoute] int id, [FromBody] UpdateTurnRequest request)
     {
         return Ok(_turnService.UpdateTurn(id, request));
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Dentist")]
+    [Authorize(Roles = "SuperAdmin, Dentist")]
     public IActionResult DeleteTurn([FromRoute] int id)
     {
         _turnService.DeleteTurn(id);
@@ -55,7 +55,7 @@ public class TurnController : ControllerBase
 
 
     [HttpPatch("{id}/cancel")]
-    [Authorize(Roles = "Patient, Dentist")]
+    [Authorize(Roles = "SuperAdmin, Dentist, Patient")]
     public IActionResult Cancel([FromRoute] int id)
     {
         _turnService.CancelTurn(id);

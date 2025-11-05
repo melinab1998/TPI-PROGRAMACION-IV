@@ -9,12 +9,8 @@ namespace Domain.Entities
         public DateTime AppointmentDate { get; set; }
         public TurnStatus Status { get; set; }
         public string? ConsultationType { get; set; }
-
-        // Foreign Keys
         public int PatientId { get; set; }
         public int DentistId { get; set; }
-
-        // Propiedades de navegación
         public Patient? Patient { get; set; }
         public Dentist? Dentist { get; set; }
         public Turn() { }

@@ -5,18 +5,15 @@ namespace Infrastructure.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        // DbSets concretos
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Dentist> Dentists { get; set; }
         public DbSet<SuperAdmin> SuperAdmins { get; set; }
         public DbSet<Availability> Availabilities { get; set; }
         public DbSet<Turn> Turns { get; set; }
-
         public DbSet<VisitRecord> VisitRecords { get; set; }
-
-        // DbSets para obras sociales y planes
         public DbSet<HealthInsurance> HealthInsurances { get; set; }
         public DbSet<HealthPlan> HealthPlans { get; set; }
+        public DbSet<ContactMessage> ContactMessages { get; set; }
 
         // DbSet general para User (útil para login)
         public DbSet<User> Users { get; set; }

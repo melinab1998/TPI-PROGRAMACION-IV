@@ -12,7 +12,7 @@ namespace Infrastructure.Data
             return _dbSet.Any(d => d.LicenseNumber == licenseNumber);
         }
 
-         public Dentist? GetByEmail(string email)
+        public Dentist? GetByEmail(string email)
         {
             return _dbSet.FirstOrDefault(d => d.Email == email);
         }

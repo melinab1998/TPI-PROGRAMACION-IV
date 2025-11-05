@@ -7,5 +7,5 @@ public interface IEmailService
 {
     Task SendActivationEmailAsync(string email, string activationToken);
     Task SendAppointmentReminderAsync(string toEmail, string patientName, string dentistName, DateTime appointmentDate, string address);
-
+    Task SendPasswordResetEmailAsync(string email, string resetToken);
 }

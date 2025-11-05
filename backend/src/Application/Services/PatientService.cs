@@ -30,7 +30,7 @@ public class PatientService : IPatientService
         _jwtService = jwtService;
     }
 
-    //Obtener todos los pacientes
+    // Obtiene todos los pacientes registrados en el sistema.
     public List<PatientDto> GetAllPatients()
     {
         var patients = _patientRepository.List();
@@ -40,7 +40,7 @@ public class PatientService : IPatientService
         return PatientDto.CreateList(patients);
     }
 
-    //Obtener un paciente en especifico
+    // Obtiene un paciente por su identificador único.
     public PatientDto GetPatientById(int id)
     {
         var patient = _patientRepository.GetById(id)
@@ -48,7 +48,7 @@ public class PatientService : IPatientService
         return PatientDto.Create(patient);
     }
 
-    //Registrar el paciente
+    // Registra un nuevo paciente en el sistema.
     public PatientDto RegisterPatient(RegisterPatientRequest request)
     {
         if (_userRepository.GetByEmail(request.Email) != null)
@@ -67,7 +67,7 @@ public class PatientService : IPatientService
         return PatientDto.Create(saved!);
     }
 
-    //Actualizacion del email por parte del paciente (necesario para el front)
+    // Actualiza el correo electrónico de un paciente. (Necesario para front)
     public PatientDto UpdatePatientEmail(int id, UpdatePatientEmailRequest request)
     {
         var patient = _patientRepository.GetById(id)
@@ -84,7 +84,7 @@ public class PatientService : IPatientService
         return PatientDto.Create(saved!);
     }
 
-    //Actualizacion de la contraseña por parte del paciente (necesario para el front)
+    // Actualiza la contraseña de un paciente. (Necesario para front)
     public void UpdatePatientPassword(int id, UpdatePatientPasswordRequest request)
     {
         var patient = _patientRepository.GetById(id)
@@ -98,7 +98,7 @@ public class PatientService : IPatientService
     }
 
 
-    //Creacion del paciente por parte del dentista (necesario para el front)
+    // Crea un nuevo paciente desde el panel del dentista. (Necesario para front)
     public PatientDto CreatePatientByDentist(CreatePatientByDentistRequest request)
     {
         if (_userRepository.GetByEmail(request.Email) != null)
@@ -130,6 +130,7 @@ public class PatientService : IPatientService
         return PatientDto.Create(saved!);
     }
 
+    // Genera una contraseña temporal aleatoria para nuevos pacientes.
     private string GenerateTemporaryPassword()
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -137,7 +138,7 @@ public class PatientService : IPatientService
         return "Tmp-" + new string(Enumerable.Repeat(chars, 10).Select(s => s[random.Next(s.Length)]).ToArray());
     }
 
-    //Activacion del paciente (necesario para el front)
+    // Activa la cuenta de un paciente mediante un token recibido por correo electrónico.
     public void ActivatePatient(string token, string password)
     {
         var principal = _jwtService.ValidateToken(token);
@@ -153,7 +154,7 @@ public class PatientService : IPatientService
         _patientRepository.Update(patient);
     }
 
-    //Actualizacion del paciente por el dentista (necesario para el front)
+    // Actualiza la información de un paciente por parte del dentista.  
     public PatientDto UpdatePatient(int id, UpdatePatientRequest request)
     {
         var patient = _patientRepository.GetById(id)

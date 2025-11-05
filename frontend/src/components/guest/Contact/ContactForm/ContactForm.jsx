@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { successToast } from "@/utils/notifications";
 import { contactValidations } from "@/utils/validations"
+import { sendContactMessage } from "@/services/api.services";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -23,9 +24,18 @@ export default function ContactForm() {
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
     const onSubmit = (data) => {
-        console.log(data);
-        successToast("Mensaje enviado con éxito");
-        reset();
+        sendContactMessage(
+            data,
+            (response) => {
+                successToast("Mensaje enviado con éxito");
+                reset();
+                console.log("Mensaje creado:", response);
+            },
+            (error) => {
+                console.error(error);
+                successToast("Ocurrió un error al enviar el mensaje");
+            }
+        );
     };
 
     return (

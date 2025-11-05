@@ -39,7 +39,7 @@ public record PatientDto(
         );
     }
 
-     public static List<PatientDto> CreateList(IEnumerable<Patient> patients)
+    public static List<PatientDto> CreateList(IEnumerable<Patient> patients)
     {
         return patients.Select(patient => Create(patient)).ToList();
     }

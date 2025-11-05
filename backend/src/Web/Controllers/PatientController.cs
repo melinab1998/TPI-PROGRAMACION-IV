@@ -18,7 +18,7 @@ public class PatientController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = "Dentist")]
+    [Authorize(Roles = "Dentist, SuperAdmin")]
     public ActionResult<IEnumerable<PatientDto>> GetAllPatients()
     {
         return Ok(_patientService.GetAllPatients());
@@ -33,7 +33,7 @@ public class PatientController : ControllerBase
 
 
     [HttpPut("{id}")]
-    [Authorize(Roles = "Dentist")]
+    [Authorize(Roles = "Dentist, SuperAdmin")]
     public ActionResult<PatientDto> UpdatePatient([FromRoute] int id, [FromBody] UpdatePatientRequest request)
     {
         var updated = _patientService.UpdatePatient(id, request);

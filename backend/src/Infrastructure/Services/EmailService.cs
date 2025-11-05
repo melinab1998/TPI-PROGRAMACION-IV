@@ -3,17 +3,14 @@ using MimeKit;
 using Microsoft.Extensions.Configuration;
 using Application.Interfaces;
 using MailKit.Security;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Threading.Tasks;
-using System;
-using System.Threading;
 
 namespace Infrastructure.Services
 {
     public class EmailService : IEmailService
     {
+        // Servicio encargado del envío de correos electrónicos del sistema.
+        // Utiliza Gmail con autenticación OAuth2 mediante access token.
         private readonly IConfiguration _config;
         private readonly HttpClient _httpClient;
 
@@ -23,6 +20,7 @@ namespace Infrastructure.Services
             _httpClient = httpClient;
         }
 
+        // Envía un correo de activación de cuenta al usuario.
         public async Task SendActivationEmailAsync(string email, string activationToken)
         {
             try
@@ -71,6 +69,8 @@ namespace Infrastructure.Services
                 throw;
             }
         }
+
+        // Obtiene el access token de Google OAuth2 mediante el refresh token almacenado en las configuraciones.
         private async Task<string> GetAccessTokenAsync()
         {
             var clientId = _config["Email:ClientId"]!;
@@ -104,6 +104,7 @@ namespace Infrastructure.Services
             return accessToken!;
         }
 
+        // Envía un recordatorio de turno al paciente con la información del día, hora, profesional y dirección del consultorio.
         public async Task SendAppointmentReminderAsync(string toEmail, string patientName, string dentistName, DateTime appointmentDate, string address)
         {
             try
@@ -143,6 +144,55 @@ namespace Infrastructure.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"ERROR al enviar recordatorio: {ex.Message}");
+                throw;
+            }
+        }
+
+        // Envía un correo para restablecer la contraseña del usuario.
+        public async Task SendPasswordResetEmailAsync(string toEmail, string resetToken)
+        {
+            try
+            {
+                Console.WriteLine("=== INICIANDO ENVÍO DE EMAIL DE RECUPERACIÓN ===");
+
+                var resetLink = $"{_config["App:FrontendUrl"]}/reset-password?token={resetToken}";
+
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress("Consultorio Odontológico", _config["Email:From"]!));
+                message.To.Add(MailboxAddress.Parse(toEmail));
+                message.Subject = "Recuperación de contraseña";
+                message.Body = new TextPart("html")
+                {
+                    Text = $@"
+                <p>Hola 👋,</p>
+                <p>Hemos recibido una solicitud para restablecer tu contraseña.</p>
+                <p>Para continuar, hacé clic en el siguiente enlace:</p>
+                <p><a href='{resetLink}'>Restablecer mi contraseña</a></p>
+                <p>Este enlace expirará en 1 hora.</p>
+                <p>Si no solicitaste esto, ignorá este correo.</p>
+                <p>Muchas gracias,<br/>Consultorio Odontológico</p>"
+                };
+
+                using var client = new SmtpClient();
+                Console.WriteLine("Conectando a SMTP...");
+                await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+
+                var accessToken = await GetAccessTokenAsync();
+                if (string.IsNullOrEmpty(accessToken))
+                    throw new Exception("No se pudo obtener el access token");
+
+                var oauth2 = new SaslMechanismOAuth2(_config["Email:From"]!, accessToken);
+                await client.AuthenticateAsync(oauth2);
+
+                Console.WriteLine("Enviando email...");
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
+
+                Console.WriteLine($"Email de recuperación enviado exitosamente a: {toEmail}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR en SendPasswordResetEmailAsync: {ex.Message}");
                 throw;
             }
         }
