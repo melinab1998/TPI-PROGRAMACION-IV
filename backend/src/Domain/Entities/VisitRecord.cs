@@ -10,11 +10,7 @@ namespace Domain.Entities
         public string Diagnosis { get; set; }
         public string? Notes { get; set; }
         public string? Prescription { get; set; }
-
-        // Foreign Key
         public int TurnId { get; set; }
-
-        // Propiedad de navegación
         public Turn? Turn { get; set; }
 
         public VisitRecord() { }

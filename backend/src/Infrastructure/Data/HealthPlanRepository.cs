@@ -11,15 +11,15 @@ public class HealthPlanRepository : Repository<HealthPlan>, IHealthPlanRepositor
     public IEnumerable<HealthPlan> GetAll()
     {
         return _applicationDbcontext.HealthPlans
-                       .Include(p => p.HealthInsurance) // Trae la obra social asociada
-                       .ToList();
+        .Include(p => p.HealthInsurance) 
+        .ToList();
     }
 
     public IEnumerable<HealthPlan> GetByInsuranceId(int healthInsuranceId)
     {
         return _applicationDbcontext.HealthPlans
-                       .Where(p => p.HealthInsuranceId == healthInsuranceId)
-                       .Include(p => p.HealthInsurance) // Trae la obra social asociada
-                       .ToList();
+        .Where(p => p.HealthInsuranceId == healthInsuranceId)
+        .Include(p => p.HealthInsurance) 
+        .ToList();
     }
 }

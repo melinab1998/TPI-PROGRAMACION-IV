@@ -80,6 +80,7 @@ namespace Infrastructure.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        
         // Token de recuperación de contraseña
         public string GeneratePasswordResetToken(int userId, TimeSpan? expires = null)
         {

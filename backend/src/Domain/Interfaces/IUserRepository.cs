@@ -7,6 +7,4 @@ namespace Domain.Interfaces
         User? GetByEmail(string email);
     }
 
-
-
 }

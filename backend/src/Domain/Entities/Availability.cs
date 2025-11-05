@@ -61,7 +61,6 @@ namespace Domain.Entities
 
         private static void ValidateTimeFormat(string time)
         {
-            // Acepta formatos HH:mm 
             var regex = new Regex(@"^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$");
             if (!regex.IsMatch(time))
                 throw new AppValidationException($"Formato de hora inválido: {time}. Usa HH:mm (ej. '09:00').");

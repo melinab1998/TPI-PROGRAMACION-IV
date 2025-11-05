@@ -11,7 +11,7 @@ public record HealthInsuranceDto(
     public static HealthInsuranceDto Create(HealthInsurance entity)
     {
         var plans = entity.Plans?.Select(plan => new HealthPlanDto(plan.Id, plan.Name))
-                     ?? Enumerable.Empty<HealthPlanDto>();
+        ?? Enumerable.Empty<HealthPlanDto>();
 
         return new HealthInsuranceDto(entity.Id, entity.Name, plans);
     }

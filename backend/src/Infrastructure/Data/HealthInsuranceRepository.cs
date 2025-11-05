@@ -13,8 +13,8 @@ public class HealthInsuranceRepository : Repository<HealthInsurance>, IHealthIns
     public IEnumerable<HealthInsurance> GetAll()
     {
         return _applicationDbcontext.HealthInsurances
-                       .Include(h => h.Plans)
-                       .ToList();
+        .Include(h => h.Plans)
+        .ToList();
     }
 
     public HealthInsurance? GetByIdWithPlans(int id)

@@ -22,7 +22,7 @@ namespace Application.Services
             if (!insurances.Any())
                 return new List<HealthInsuranceDto>();
 
-           return HealthInsuranceDto.CreateList(insurances);
+            return HealthInsuranceDto.CreateList(insurances);
         }
 
         //Obtener una obra social en especifico
@@ -30,7 +30,7 @@ namespace Application.Services
         {
             var insurance = _healthInsuranceRepository.GetByIdWithPlans(id)
                 ?? throw new NotFoundException("HEALTH_INSURANCE_NOT_FOUND");
-           return HealthInsuranceDto.Create(insurance);
+            return HealthInsuranceDto.Create(insurance);
         }
     }
 }
