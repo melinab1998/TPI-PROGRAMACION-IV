@@ -43,7 +43,7 @@ namespace Web.Controllers
         //Necesario para el front
 
         [HttpGet("{dentistId}/available-slots")]
-         [Authorize(Roles = "SuperAdmin, Dentist, Patient")]
+        [Authorize(Roles = "SuperAdmin, Dentist, Patient")]
         public ActionResult<Dictionary<string, List<string>>> GetAvailableSlots(int dentistId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
             var availableSlots = _availabilityService.GetAvailableSlots(dentistId, startDate, endDate);
