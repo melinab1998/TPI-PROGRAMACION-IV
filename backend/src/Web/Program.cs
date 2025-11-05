@@ -91,6 +91,8 @@ builder.Services.AddScoped<IHealthPlanService, HealthPlanService>();
 builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
 builder.Services.AddScoped<ITurnService, TurnService>();
 builder.Services.AddScoped<IVisitRecordService, VisitRecordService>();
+builder.Services.AddScoped<IContactMessageService, ContactMessageService>();
+
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -101,6 +103,8 @@ builder.Services.AddScoped<IHealthPlanRepository, HealthPlanRepository>();
 builder.Services.AddScoped<IAvailabilityRepository, AvailabilityRepository>();
 builder.Services.AddScoped<ITurnRepository, TurnRepository>();
 builder.Services.AddScoped<IVisitRecordRepository, VisitRecordRepository>();
+builder.Services.AddScoped<IContactMessageRepository, ContactMessageRepository>();
+
 
 builder.Services.AddHttpClient<IEmailService, EmailService>();
 builder.Services.AddScoped<IJwtService, JwtService>();

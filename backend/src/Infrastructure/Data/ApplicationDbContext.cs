@@ -17,6 +17,7 @@ namespace Infrastructure.Data
         // DbSets para obras sociales y planes
         public DbSet<HealthInsurance> HealthInsurances { get; set; }
         public DbSet<HealthPlan> HealthPlans { get; set; }
+        public DbSet<ContactMessage> ContactMessages { get; set; }
 
         // DbSet general para User (útil para login)
         public DbSet<User> Users { get; set; }
