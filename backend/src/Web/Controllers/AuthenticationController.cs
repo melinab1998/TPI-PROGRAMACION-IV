@@ -91,4 +91,18 @@ public class AuthenticationController : ControllerBase
         _dentistService.ActivateDentist(dto.Token, dto.Password);
         return NoContent();
     }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        await _userService.SendPasswordResetEmailAsync(request.Email);
+        return NoContent();
+    }
+
+    [HttpPost("reset-password")]
+    public IActionResult ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        _userService.ResetPassword(request.Token, request.NewPassword);
+        return NoContent();
+    }
 }

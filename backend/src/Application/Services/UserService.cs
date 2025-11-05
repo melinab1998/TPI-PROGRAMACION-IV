@@ -10,16 +10,20 @@ namespace Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _hasher;
         private readonly IJwtService _jwtService;
+        private readonly IEmailService _emailService;
 
         public UserService(
             IUserRepository userRepository,
             IPasswordHasher hasher,
-            IJwtService jwtService)
+            IJwtService jwtService,
+            IEmailService emailService)
         {
             _userRepository = userRepository;
             _hasher = hasher;
             _jwtService = jwtService;
+            _emailService = emailService;
         }
+
 
         //Autenticacion
         public User Authenticate(string email, string password)
@@ -38,6 +42,31 @@ namespace Application.Services
             user.Token = _jwtService.GenerateToken(user.Id, user.GetType().Name, TimeSpan.FromHours(1));
 
             return user;
+        }
+
+        public async Task SendPasswordResetEmailAsync(string email)
+        {
+            var user = _userRepository.GetByEmail(email);
+            if (user == null)
+                throw new NotFoundException("USER_NOT_FOUND");
+
+            var token = _jwtService.GeneratePasswordResetToken(user.Id, TimeSpan.FromHours(1));
+            await _emailService.SendPasswordResetEmailAsync(email, token);
+        }
+
+        public void ResetPassword(string token, string newPassword)
+        {
+            var principal = _jwtService.ValidatePasswordResetToken(token);
+            var userIdClaim = principal.Claims.First(c => c.Type == "passwordResetUserId").Value;
+            var userId = int.Parse(userIdClaim);
+
+            var user = _userRepository.GetById(userId);
+            if (user == null)
+                throw new NotFoundException("USER_NOT_FOUND");
+
+            var hashed = _hasher.HashPassword(newPassword);
+            user.SetPassword(hashed);
+            _userRepository.Update(user);
         }
 
         //Creacion del SuperAdmin de manera automatica

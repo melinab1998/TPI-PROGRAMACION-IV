@@ -80,6 +80,51 @@ namespace Infrastructure.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        // Token de recuperación de contraseña
+        public string GeneratePasswordResetToken(int userId, TimeSpan? expires = null)
+        {
+            var claims = new List<Claim>
+    {
+        new Claim("passwordResetUserId", userId.ToString()),
+        new Claim("purpose", "reset")
+    };
+            return GenerateActivationTokenInternal(claims, expires ?? TimeSpan.FromHours(1));
+        }
+
+        // Validación de token de recuperación de contraseña
+        public ClaimsPrincipal ValidatePasswordResetToken(string token)
+        {
+            var key = Encoding.ASCII.GetBytes(_config["Authentication:SecretForKey"]!);
+            var parameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var principal = handler.ValidateToken(token, parameters, out SecurityToken validatedToken);
+
+                var purpose = principal.Claims.FirstOrDefault(c => c.Type == "purpose")?.Value;
+                if (purpose != "reset")
+                    throw new AppValidationException("Token no válido para recuperación de contraseña.");
+
+                return principal;
+            }
+            catch (AppValidationException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Token inválido: {ex.Message}");
+                throw new AppValidationException("Token inválido o expirado.", ex);
+            }
+        }
 
         //  Validación del token
         public ClaimsPrincipal ValidateToken(string token)
@@ -111,7 +156,7 @@ namespace Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Token inválido: {ex.Message}");
+                Console.WriteLine($"Token inválido: {ex.Message}");
                 throw new AppValidationException("Token inválido o expirado.", ex);
             }
         }
