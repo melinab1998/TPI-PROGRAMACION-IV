@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { successToast } from "@/utils/notifications";
 import { forgotPasswordValidations } from "@/utils/validations";
+import { forgotPassword } from "@/services/api.services";
 
 export default function ForgotPassword() {
     const {
@@ -17,9 +18,14 @@ export default function ForgotPassword() {
     } = useForm();
 
     const onSubmit = (data) => {
-        console.log("Email enviado:", data.email);
-        successToast("Correo enviado exitosamente");
-        reset();
+        const showSuccess = () => {
+            successToast(
+                "Si hay una cuenta asociada con los detalles proporcionados, recibirá un correo electrónico para restablecer su contraseña."
+            );
+            reset();
+        };
+
+        forgotPassword(data.email, showSuccess, showSuccess);
     };
 
     const cardVariants = {
@@ -38,17 +44,10 @@ export default function ForgotPassword() {
 
     return (
         <div className="min-h-[80vh] flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
-            <motion.div
-                variants={cardVariants}
-                initial="hidden"
-                animate="visible"
-                className="w-full max-w-md"
-            >
+            <motion.div variants={cardVariants} initial="hidden" animate="visible" className="w-full max-w-md">
                 <Card>
                     <CardHeader className="space-y-1">
-                        <CardTitle className="text-2xl font-bold text-center">
-                            Recuperar Contraseña
-                        </CardTitle>
+                        <CardTitle className="text-2xl font-bold text-center">Recuperar Contraseña</CardTitle>
                         <CardDescription className="text-center">
                             Ingresá tu correo electrónico para recibir instrucciones de recuperación.
                         </CardDescription>
@@ -65,7 +64,7 @@ export default function ForgotPassword() {
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="Ingresa tu correo electrónico"
+                                    placeholder="Ingresá tu correo electrónico"
                                     {...register("email", forgotPasswordValidations.email)}
                                 />
                                 {errors.email && (
@@ -85,5 +84,3 @@ export default function ForgotPassword() {
         </div>
     );
 }
-
-

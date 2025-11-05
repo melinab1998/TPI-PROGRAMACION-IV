@@ -45,6 +45,28 @@ export const loginUser = (email, password, onSuccess, onError) => {
         .then(handleResponse).then(onSuccess).catch(onError);
 };
 
+export const forgotPassword = (email, onSuccess, onError) => {
+    if (!email) return onError({ message: "Email no proporcionado" });
+
+    fetch(`${baseUrl}/api/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+    })
+        .then(handleResponse).then(onSuccess).catch(onError);
+};
+
+export const resetPassword = (token, newPassword, onSuccess, onError) => {
+    if (!token || !newPassword) return onError({ message: "Token o nueva contraseña faltante" });
+
+    fetch(`${baseUrl}/api/auth/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, newPassword }),
+    })
+        .then(handleResponse).then(onSuccess).catch(onError);
+};
+
 /*DENTIST*/
 export const getAllDentists = (token, onSuccess, onError) => {
     if (!token) return onError({ message: "Token no proporcionado" });

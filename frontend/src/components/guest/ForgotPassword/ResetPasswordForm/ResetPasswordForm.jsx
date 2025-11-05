@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { successToast, errorToast } from "@/utils/notifications";
 import { resetPasswordValidations } from "@/utils/validations";
-import { activateDentist, activatePatient } from "@/services/api.services";
+import { activateDentist, activatePatient, resetPassword } from "@/services/api.services";
 import { jwtDecode } from "jwt-decode";
 
 export default function ResetPassword() {
@@ -26,12 +26,17 @@ export default function ResetPassword() {
     const searchParams = new URLSearchParams(window.location.search);
     const token = searchParams.get("token");
 
-    let userType = "patient";
+    let userType = null;
+    let isActivationFlow = false;
+
     try {
         if (token) {
             const decoded = jwtDecode(token);
-            if (decoded.dentistId) userType = "dentist";
-            else if (decoded.patientId) userType = "patient";
+            if (decoded.dentistId || decoded.patientId) {
+                isActivationFlow = true;
+                if (decoded.dentistId) userType = "dentist";
+                else if (decoded.patientId) userType = "patient";
+            }
         }
     } catch (err) {
         console.warn("Token inválido:", err);
@@ -48,21 +53,36 @@ export default function ResetPassword() {
             return;
         }
 
-        const activateFn = userType === "dentist" ? activateDentist : activatePatient;
+        if (isActivationFlow) {
+            const activateFn = userType === "dentist" ? activateDentist : activatePatient;
 
-        activateFn(
-            token,
-            data.password,
-            () => {
-                console.log(`Cuenta activada (${userType})`);
-                successToast("Tu cuenta ha sido activada. Ya podés iniciar sesión.");
-                reset();
-                setTimeout(() => navigate("/login"), 1200);
-            },
-            (err) => {
-                errorToast(err?.message || "Error al activar la cuenta");
-            }
-        );
+            activateFn(
+                token,
+                data.password,
+                () => {
+                    successToast("Tu cuenta ha sido activada. Ya podés iniciar sesión.");
+                    reset();
+                    setTimeout(() => navigate("/login"), 1200);
+                },
+                (err) => {
+                    errorToast(err?.message || "Error al activar la cuenta");
+                }
+            );
+        }
+        else {
+            resetPassword(
+                token,
+                data.password,
+                () => {
+                    successToast("Tu contraseña ha sido restablecida correctamente.");
+                    reset();
+                    setTimeout(() => navigate("/login"), 1200);
+                },
+                (err) => {
+                    errorToast(err?.message || "Error al restablecer la contraseña");
+                }
+            );
+        }
     };
 
     const inputVariants = {
@@ -79,9 +99,13 @@ export default function ResetPassword() {
             <motion.div initial="hidden" animate="visible" className="w-full max-w-md">
                 <Card>
                     <CardHeader className="space-y-1">
-                        <CardTitle className="text-2xl font-bold text-center">Activar Cuenta</CardTitle>
+                        <CardTitle className="text-2xl font-bold text-center">
+                            {isActivationFlow ? "Activar Cuenta" : "Restablecer Contraseña"}
+                        </CardTitle>
                         <CardDescription className="text-center">
-                            Crea tu nueva contraseña para activar tu cuenta.
+                            {isActivationFlow
+                                ? "Crea tu nueva contraseña para activar tu cuenta."
+                                : "Ingresá tu nueva contraseña para recuperar el acceso."}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -120,7 +144,7 @@ export default function ResetPassword() {
 
                             <motion.div custom={2} variants={inputVariants}>
                                 <Button type="submit" className="w-full">
-                                    Activar Cuenta
+                                    {isActivationFlow ? "Activar Cuenta" : "Restablecer Contraseña"}
                                 </Button>
                             </motion.div>
                         </motion.form>
