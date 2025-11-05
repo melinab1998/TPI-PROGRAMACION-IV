@@ -27,7 +27,7 @@ public class GlobalExceptionHandlingMiddleware : IMiddleware
 
             int statusCode = (int)HttpStatusCode.BadRequest;
 
-            var response = new { message = ex.Message }; 
+            var response = new { message = ex.Message };
             string json = JsonSerializer.Serialize(response);
 
             context.Response.StatusCode = statusCode;
@@ -53,7 +53,21 @@ public class GlobalExceptionHandlingMiddleware : IMiddleware
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;
-            
+
+            await context.Response.WriteAsync(json);
+        }
+        catch (UnauthorizedException ex)
+        {
+            _logger.LogWarning(ex, ex.Message);
+
+            int statusCode = (int)HttpStatusCode.Unauthorized;
+
+            var response = new { message = ex.Message };
+            string json = JsonSerializer.Serialize(response);
+
+            context.Response.StatusCode = statusCode;
+            context.Response.ContentType = "application/json";
+
             await context.Response.WriteAsync(json);
         }
         catch (Exception ex)

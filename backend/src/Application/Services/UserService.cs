@@ -29,14 +29,11 @@ namespace Application.Services
 
             var user = _userRepository.GetByEmail(email);
 
-            if (user == null)
-                throw new AppValidationException("INVALID_EMAIL_OR_PASSWORD");
+            if (user == null || !_hasher.VerifyPassword(password, user.Password))
+                throw new UnauthorizedException("INVALID_EMAIL_OR_PASSWORD");
 
             if (user is Dentist dentist && !dentist.IsActive)
-                throw new AppValidationException("DENTIST_NOT_ACTIVATED");
-
-            if (!_hasher.VerifyPassword(password, user.Password))
-                throw new AppValidationException("INVALID_EMAIL_OR_PASSWORD");
+                throw new UnauthorizedException("DENTIST_NOT_ACTIVATED");
 
             user.Token = _jwtService.GenerateToken(user.Id, user.GetType().Name, TimeSpan.FromHours(1));
 
@@ -56,7 +53,7 @@ namespace Application.Services
                     superAdmin.SetPassword(hashed);
                     _userRepository.Add(superAdmin);
 
-                    Console.WriteLine("✅ SuperAdmin created successfully");
+                    Console.WriteLine("SuperAdmin created successfully");
                 }
                 else
                 {
@@ -66,7 +63,7 @@ namespace Application.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error creating SuperAdmin: {ex.Message}");
+                Console.WriteLine($"Error creating SuperAdmin: {ex.Message}");
             }
         }
     }
