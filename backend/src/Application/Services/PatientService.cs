@@ -125,6 +125,7 @@ public class PatientService : IPatientService
         var saved = _patientRepository.GetById(patient.Id);
 
         var activationToken = _jwtService.GenerateActivationTokenForPatient(patient.Id);
+        Console.WriteLine($"TOKEN DE ACTIVACIÓN: {activationToken}");
         _emailService.SendActivationEmailAsync(patient.Email, activationToken);
 
         return PatientDto.Create(saved!);

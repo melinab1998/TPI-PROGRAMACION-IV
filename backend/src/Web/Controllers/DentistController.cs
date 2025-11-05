@@ -29,14 +29,6 @@ public class DentistController : ControllerBase
         return Ok(_dentistService.GetDentistById(id));
     }
 
-    [HttpPost]
-    [Authorize(Roles = "SuperAdmin")] 
-    public ActionResult<DentistDto> CreateDentist([FromBody] CreateDentistRequest request)
-    {
-        var created = _dentistService.CreateDentist(request);
-        return CreatedAtAction(nameof(GetDentistById), new { id = created.Id }, created);
-    }
-
     [HttpPut("{id}")]
     [Authorize(Roles = "SuperAdmin")]
     public ActionResult<DentistDto> UpdateDentist([FromRoute] int id, [FromBody] UpdateDentistRequest request)

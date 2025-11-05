@@ -80,7 +80,7 @@ namespace Application.Services
             if (slot == null)
                 throw new NotFoundException("SLOT_NOT_FOUND");
 
-            slot.Update(updatedSlot.DayOfWeek, updatedSlot.EndTime, updatedSlot.StartTime);
+            slot.Update(updatedSlot.DayOfWeek, updatedSlot.StartTime, updatedSlot.EndTime);
 
             var otherSlots = _availabilityRepository.GetByDentistId(slot.DentistId)
                 .Where(s => s.Id != slotId && s.DayOfWeek == slot.DayOfWeek);

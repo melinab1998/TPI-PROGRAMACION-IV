@@ -25,7 +25,7 @@ public class PatientController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "Dentist, Patient")]
+    [Authorize(Roles = "Dentist, Patient, SuperAdmin")]
     public ActionResult<PatientDto> GetPatientById([FromRoute] int id)
     {
         return Ok(_patientService.GetPatientById(id));
