@@ -12,10 +12,11 @@ using Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+// Se agregan los controladores al contenedor de servicios del proyecto.
 builder.Services.AddControllers();
 
-// ---------------- CORS ----------------
+// Configuración de CORS para permitir que el frontend (React en este caso) 
+// pueda comunicarse con el backend sin bloqueos de seguridad.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
@@ -27,7 +28,8 @@ builder.Services.AddCors(options =>
         });
 });
 
-// ---------------- Swagger + JWT ----------------
+// Configuración de Swagger con autenticación JWT para la documentación interactiva de la API.
+// Esto permite probar los endpoints protegidos ingresando un token desde Swagger.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setup =>
 {
@@ -55,7 +57,7 @@ builder.Services.AddSwaggerGen(setup =>
     });
 });
 
-// ---------------- Base de datos ----------------
+// Configuración de la base de datos utilizando la cadena de conexión definida en appsettings.json.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrEmpty(connectionString))
     throw new Exception("La cadena de conexión 'DefaultConnection' no está configurada en appsettings.json");
@@ -63,7 +65,8 @@ if (string.IsNullOrEmpty(connectionString))
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// ---------------- JWT ----------------
+// Configuración del sistema de autenticación JWT.
+// Se valida que exista una clave secreta en appsettings.json y se definen los parámetros de validación.
 var secretKey = builder.Configuration["Authentication:SecretForKey"];
 if (string.IsNullOrEmpty(secretKey))
     throw new Exception("La clave de autenticación no está configurada en appsettings.json");
@@ -82,7 +85,9 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
-// ---------------- Inyección de dependencias ----------------
+// Registro de dependencias del proyecto (inyección de dependencias).
+// Aquí se vinculan las interfaces con sus implementaciones concretas, 
+// para que los servicios puedan resolverlas automáticamente.
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDentistService, DentistService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
@@ -93,7 +98,7 @@ builder.Services.AddScoped<ITurnService, TurnService>();
 builder.Services.AddScoped<IVisitRecordService, VisitRecordService>();
 builder.Services.AddScoped<IContactMessageService, ContactMessageService>();
 
-
+// Repositorios genéricos y específicos de cada entidad.
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDentistRepository, DentistRepository>();
@@ -105,19 +110,24 @@ builder.Services.AddScoped<ITurnRepository, TurnRepository>();
 builder.Services.AddScoped<IVisitRecordRepository, VisitRecordRepository>();
 builder.Services.AddScoped<IContactMessageRepository, ContactMessageRepository>();
 
-
+// Servicios adicionales utilizados en el sistema.
 builder.Services.AddHttpClient<IEmailService, EmailService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasherService>();
+
+// Jobs en segundo plano que se ejecutan automáticamente en intervalos definidos.
+// AppointmentReminderJob: envía recordatorios de turnos por correo.
+// CompletePendingTurnsJob: marca turnos antiguos como completados.
 builder.Services.AddHostedService<AppointmentReminderJob>();
 builder.Services.AddHostedService<CompletePendingTurnsJob>();
 
-
+// Middleware global de manejo de excepciones para capturar y devolver errores de manera uniforme.
 builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 
 var app = builder.Build();
 
-// ---------------- Crear SuperAdmin al iniciar ----------------
+// Al iniciar la aplicación, se verifica si existe un SuperAdmin en la base de datos.
+// Si no existe, se crea automáticamente utilizando los datos definidos en appsettings.json.
 using (var scope = app.Services.CreateScope())
 {
     var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
@@ -142,7 +152,8 @@ using (var scope = app.Services.CreateScope())
     );
 }
 
-// ---------------- Pipeline ----------------
+// Configuración del pipeline de la aplicación.
+// Define el orden en que se ejecutan los middlewares durante cada solicitud HTTP.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -151,15 +162,19 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Middleware global de manejo de errores primero
+// El middleware global de manejo de errores se coloca al inicio para interceptar excepciones.
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
-// CORS antes de Auth
+// Se habilita CORS antes de la autenticación para permitir solicitudes desde el frontend.
 app.UseCors("AllowFrontend");
 
+// Activación de los middlewares de autenticación y autorización.
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Se mapean los controladores, que contienen los endpoints de la API.
 app.MapControllers();
+
+// Finalmente, se inicia la aplicación.
 app.Run();
 
