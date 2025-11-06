@@ -273,6 +273,17 @@ export const setAvailability = (token, dentistId, data, onSuccess, onError) => {
         .then(handleResponse).then(onSuccess).catch(onError);
 };
 
+export const updateAvailability = (token, slotId, data, onSuccess, onError) => {
+    if (!token) return onError({ message: "Token no proporcionado" });
+
+    fetch(`${baseUrl}/api/availabilities/${slotId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify(data),
+    })
+        .then(handleResponse).then(onSuccess).catch(onError);
+};
+
 /*TURNS*/
 export const getPatientTurns = (token, patientId, onSuccess, onError) => {
     if (!token) return onError({ message: "Token no proporcionado" });

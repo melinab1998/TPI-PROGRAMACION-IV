@@ -7,7 +7,7 @@ import WeeklySummary from "@/components/admin/Availability/WeeklySummary/WeeklyS
 import { successToast, errorToast } from "@/utils/notifications";
 import Header from "@/components/common/Header/Header";
 import { availabilityValidations } from "@/utils/validations";
-import { getAvailability, setAvailability } from "@/services/api.services";
+import { getAvailability, setAvailability, updateAvailability } from "@/services/api.services";
 import { AuthContext } from "@/services/auth/AuthContextProvider";
 
 const daysOfWeek = [
@@ -175,30 +175,81 @@ export default function Availability() {
   };
 
   // ---------- Guardar en backend ----------
-  const handleSave = () => {
+const handleSave = () => {
     if (!validateAllAvailabilities()) {
-      errorToast("Por favor, corrige los errores en los horarios antes de guardar");
-      return;
+        errorToast("Por favor, corrige los errores en los horarios antes de guardar");
+        return;
     }
 
     const mapDayToBackend = (day) => (day === 7 ? 0 : day);
-    const formattedAvailabilities = availabilities.map((slot) => ({
-      dayOfWeek: mapDayToBackend(slot.day_of_week),
-      startTime: `${slot.start_time}:00`,
-      endTime: `${slot.end_time}:00`,
-    }));
 
-    setAvailability(
-      token,
-      userId,
-      formattedAvailabilities,
-      () => {
-        successToast("Horarios guardados exitosamente");
+    const newSlots = [];
+    const existingSlots = [];
+
+    availabilities.forEach(slot => {
+        const formattedSlot = {
+            dayOfWeek: mapDayToBackend(slot.day_of_week),
+            startTime: `${slot.start_time}:00`,
+            endTime: `${slot.end_time}:00`,
+        };
+
+        if (slot.id_availability > 1000000) { 
+            newSlots.push(formattedSlot);
+        } else {
+            existingSlots.push({
+                slotId: slot.id_availability, 
+                data: formattedSlot 
+            });
+        }
+    });
+
+    let updateCount = 0;
+    const totalUpdates = existingSlots.length;
+
+    const checkAllUpdatesComplete = () => {
+        if (updateCount === totalUpdates && newSlots.length === 0) {
+            successToast("Horarios actualizados exitosamente");
+            loadAvailabilities();
+        }
+    };
+
+    if (existingSlots.length > 0) {
+        existingSlots.forEach(({ slotId, data }) => {
+            updateAvailability(
+                token,
+                slotId,
+                data,
+                () => {
+                    updateCount++;
+                    checkAllUpdatesComplete();
+                },
+                (err) => {
+                    errorToast(`Error al actualizar horario: ${err?.message}`);
+                    updateCount++;
+                    checkAllUpdatesComplete();
+                }
+            );
+        });
+    }
+
+    if (newSlots.length > 0) {
+        setAvailability(
+            token,
+            userId,
+            newSlots,
+            () => {
+                successToast("Horarios guardados exitosamente");
+                loadAvailabilities();
+            },
+            (err) => errorToast(err?.message || "Error al guardar los horarios")
+        );
+    }
+
+    if (existingSlots.length > 0 && newSlots.length === 0 && totalUpdates === 0) {
+        successToast("Horarios actualizados exitosamente");
         loadAvailabilities();
-      },
-      (err) => errorToast(err?.message || "Error al guardar los horarios")
-    );
-  };
+    }
+};
 
   // ---------- Render ----------
   return (
