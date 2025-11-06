@@ -31,7 +31,7 @@ export default function Appointments() {
       token,
       (data) => {
         setDentists(data);
-        setFilteredDoctors(data); 
+        setFilteredDoctors(data);
       },
       (error) => console.error("Error al cargar dentistas:", error)
     );
@@ -71,17 +71,19 @@ export default function Appointments() {
         ? selectedProfessional.trim().toLowerCase()
         : null;
 
-    const filtered = dentists.filter((doc) => {
-      const fullName = `${doc.firstName} ${doc.lastName}`.toLowerCase();
-      const matchProfessional = prof ? fullName.includes(prof) : true;
-      return matchProfessional;
-    });
+    const filtered = dentists
+      .filter(doc => doc.isActive)
+      .filter((doc) => {
+        const fullName = `${doc.firstName} ${doc.lastName}`.toLowerCase();
+        const matchProfessional = prof ? fullName.includes(prof) : true;
+        return matchProfessional;
+      });
 
     setFilteredDoctors(filtered);
   };
 
   useEffect(() => {
-    if (!dentists.length) return; 
+    if (!dentists.length) return;
     handleSearch();
   }, [selectedProfessional, selectedSocial, dentists]);
 
