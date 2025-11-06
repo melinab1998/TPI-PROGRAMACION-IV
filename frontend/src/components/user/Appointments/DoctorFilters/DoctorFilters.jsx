@@ -1,4 +1,3 @@
-// DoctorFilters.jsx
 import React from "react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,6 @@ export default function DoctorFilters({
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       
-      {/* Filtro por Profesional */}
       <Select value={selectedProfessional || "all"} onValueChange={setSelectedProfessional}>
         <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
           <SelectValue placeholder="Buscar por Profesional..." />
@@ -23,7 +21,7 @@ export default function DoctorFilters({
         <SelectContent>
           <SelectItem value="all">Todos los Profesionales</SelectItem>
           {dentists
-            .filter(doc => doc.isActive) // <-- Solo activos
+            .filter(doc => doc.isActive) 
             .map((doc) => (
               <SelectItem key={doc.id} value={`${doc.firstName} ${doc.lastName}`}>
                 {doc.firstName} {doc.lastName}
@@ -32,7 +30,6 @@ export default function DoctorFilters({
         </SelectContent>
       </Select>
 
-      {/* Filtro por Obra Social */}
       <Select value={selectedSocial || "all"} onValueChange={setSelectedSocial}>
         <SelectTrigger className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/50">
           <SelectValue placeholder="Buscar por Obra Social..." />
