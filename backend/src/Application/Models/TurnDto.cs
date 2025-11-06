@@ -11,7 +11,7 @@ namespace Application.Models
         public string? ConsultationType { get; set; }
         public int PatientId { get; set; }
         public int DentistId { get; set; }
-        public string? DentistFullName { get; set; }
+        public DentistDto? Dentist { get; set; }
 
         public static TurnDto Create(Turn t) => new()
         {
@@ -21,16 +21,12 @@ namespace Application.Models
             ConsultationType = t.ConsultationType,
             PatientId = t.PatientId,
             DentistId = t.DentistId,
-            DentistFullName = t.Dentist != null
-                ? $"{t.Dentist.FirstName} {t.Dentist.LastName}"
-                : null
+            Dentist = t.Dentist != null ? DentistDto.Create(t.Dentist) : null
         };
 
         public static List<TurnDto> CreateList(IEnumerable<Turn> turns)
         {
             return turns.Select(turn => Create(turn)).ToList();
         }
-    
     }
-
 }
