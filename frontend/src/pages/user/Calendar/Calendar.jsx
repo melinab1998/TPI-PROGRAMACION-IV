@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import CalendarWidget from "@/components/user/Calendar/CalendarWidget/CalendarWidget";
@@ -10,6 +10,7 @@ import { AuthContext } from "@/services/auth/AuthContextProvider";
 
 export default function CalendarPage() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const { token } = useContext(AuthContext); 
 
     const [doctor, setDoctor] = useState({
@@ -67,6 +68,10 @@ export default function CalendarPage() {
         setFormData({ email: "", motivoConsulta: "Consulta" });
     };
 
+    const handleGoBack = () => {
+        navigate(-1); // Esto vuelve a la página anterior en el historial
+    };
+
     return (
         <div className="max-w-5xl mx-auto px-4 py-12">
             <motion.div
@@ -101,6 +106,34 @@ export default function CalendarPage() {
                         setTime={setTime}
                     />
                 </div>
+            </motion.div>
+
+            {/* Botón Volver */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="flex justify-center mt-12"
+            >
+                <button
+                    onClick={handleGoBack}
+                    className="flex items-center gap-2 px-6 py-3 text-sm font-medium text-primary hover:text-primary/80 border border-primary/30 hover:border-primary/50 rounded-lg transition-all duration-200 hover:bg-primary/5 hover:shadow-sm"
+                >
+                    <svg 
+                        className="w-4 h-4" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                    >
+                        <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            strokeWidth={2} 
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18" 
+                        />
+                    </svg>
+                    Volver
+                </button>
             </motion.div>
 
             {time && (
