@@ -17,7 +17,7 @@ export default function VisitsPage() {
     const [selectedTurn, setSelectedTurn] = useState(null);
     const [showVisitForm, setShowVisitForm] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [patientsData, setPatientsData] = useState({}); // { patientId: { name, dni } }
+    const [patientsData, setPatientsData] = useState({});
 
     const {
         register,
@@ -25,8 +25,7 @@ export default function VisitsPage() {
         formState: { errors },
         setValue,
         watch,
-        reset,
-        trigger
+        reset
     } = useForm({
         defaultValues: {
             treatment: "",
@@ -37,7 +36,7 @@ export default function VisitsPage() {
         }
     });
 
-    // Cargar datos de paciente
+    // 🧩 Cargar datos del paciente
     const loadPatientData = (patientId) => {
         if (!token || patientsData[patientId]) return;
 
@@ -54,23 +53,22 @@ export default function VisitsPage() {
                 }));
             },
             (err) => {
-                console.error(err);
+                console.error("Error al obtener paciente:", err);
                 setPatientsData(prev => ({
                     ...prev,
-                    [patientId]: {
-                        name: `ID: ${patientId}`,
-                        dni: 'No disponible'
-                    }
+                    [patientId]: { name: `ID: ${patientId}`, dni: "No disponible" }
                 }));
             }
         );
     };
 
-    // Cargar turnos del dentista
+    // 🗓️ Cargar turnos del dentista
     useEffect(() => {
         if (!token || !userId) return;
 
-        getDentistTurns(token, userId,
+        getDentistTurns(
+            token,
+            userId,
             (fetchedTurns) => {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
@@ -79,23 +77,19 @@ export default function VisitsPage() {
                     const turnDate = new Date(turn.appointmentDate);
                     turnDate.setHours(0, 0, 0, 0);
                     const isToday = turnDate.getTime() === today.getTime();
-                    const isValidStatus = turn.status === 'Pending' || turn.status === 'Completed';
+                    const isValidStatus = turn.status === "Pending" || turn.status === "Completed";
                     return isToday && isValidStatus;
                 });
 
                 setTurns(todaysTurns);
-
-                // Cargar pacientes
                 todaysTurns.forEach(turn => loadPatientData(turn.patientId));
             },
             (err) => {
-                errorToast("No se pudieron cargar los turnos.");
-                console.error(err);
+                console.error("Error al cargar turnos:", err);
+                errorToast("No se pudieron cargar los turnos del día.");
             }
         );
     }, [token, userId]);
-
-    const filteredTurns = turns;
 
     const getVisitRecordForTurn = (turnId) =>
         visitRecords.find(record => record.id_turn === turnId);
@@ -103,7 +97,7 @@ export default function VisitsPage() {
     const handleCreateVisitRecord = (turn) => {
         setSelectedTurn(turn);
         const existingRecord = getVisitRecordForTurn(turn.id);
-        const formData = existingRecord ? { ...existingRecord } : {
+        const formData = existingRecord || {
             treatment: "",
             diagnosis: "",
             notes: "",
@@ -119,101 +113,70 @@ export default function VisitsPage() {
     };
 
     const onSubmit = async (data) => {
-    if (!selectedTurn) {
-        errorToast("No hay turno seleccionado");
-        return;
-    }
-
-    // Validación manual de campos obligatorios
-    if (!data.treatment?.trim() || !data.diagnosis?.trim()) {
-        errorToast("Por favor, complete tratamiento y diagnóstico");
-        return;
-    }
-
-    setIsSubmitting(true);
-
-    const existingRecord = getVisitRecordForTurn(selectedTurn.id);
-
-    // Asegúrate que turnId sea número
-    const payload = {
-        visitDate: new Date().toISOString().split("T")[0],
-        treatment: data.treatment.trim(),
-        diagnosis: data.diagnosis.trim(),
-        notes: data.notes?.trim() || "",
-        prescription: data.prescription?.trim() || "",
-        turnId: Number(selectedTurn.id) // ← Conversión a número
-    };
-
-    console.log("Enviando payload:", payload); // ← Para debug
-
-    const handleSuccess = (savedRecord) => {
-        console.log("Respuesta del servidor:", savedRecord);
-        
-        if (!savedRecord) {
-            errorToast("Error: No se recibió respuesta del servidor");
+        if (!selectedTurn) {
+            errorToast("No hay turno seleccionado");
             return;
         }
 
-        // Asegúrate que el registro tenga los campos necesarios
-        const processedRecord = {
-            ...savedRecord,
-            id_turn: savedRecord.turnId || selectedTurn.id
+        if (!data.treatment?.trim() || !data.diagnosis?.trim()) {
+            errorToast("Por favor, complete tratamiento y diagnóstico");
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        const existingRecord = getVisitRecordForTurn(selectedTurn.id);
+
+        const payload = {
+            visitDate: new Date().toISOString().split("T")[0],
+            treatment: data.treatment.trim(),
+            diagnosis: data.diagnosis.trim(),
+            notes: data.notes?.trim() || "",
+            prescription: data.prescription?.trim() || "",
+            turnId: Number(selectedTurn.id)
         };
 
-        setVisitRecords(prev =>
-            existingRecord
-                ? prev.map(r => r.id_turn === selectedTurn.id ? processedRecord : r)
-                : [...prev, processedRecord]
-        );
+        const handleSuccess = (savedRecord) => {
+            const processedRecord = {
+                ...savedRecord,
+                id_turn: savedRecord.turnId || selectedTurn.id
+            };
 
-        successToast(
-            existingRecord
-                ? "Registro actualizado exitosamente."
-                : "Registro creado exitosamente."
-        );
-
-        setShowVisitForm(false);
-        setSelectedTurn(null);
-        reset();
-    };
-
-    const handleError = (err) => {
-        console.error("Error detallado:", err);
-        let errorMessage = "Error al guardar el registro";
-        
-        if (err.response?.data?.message) {
-            errorMessage = err.response.data.message;
-        } else if (err.message) {
-            errorMessage = err.message;
-        }
-        
-        errorToast(errorMessage);
-    };
-
-    try {
-        if (existingRecord && existingRecord.id_visit_record) {
-            await updateVisitRecord(
-                token, 
-                existingRecord.id_visit_record, 
-                payload, 
-                handleSuccess, 
-                handleError
+            setVisitRecords(prev =>
+                existingRecord
+                    ? prev.map(r => r.id_turn === selectedTurn.id ? processedRecord : r)
+                    : [...prev, processedRecord]
             );
-        } else {
-            await createVisitRecord(
-                token, 
-                payload, 
-                handleSuccess, 
-                handleError
+
+            successToast(
+                existingRecord
+                    ? "Registro actualizado exitosamente."
+                    : "Registro creado exitosamente."
             );
+
+            setShowVisitForm(false);
+            setSelectedTurn(null);
+            reset();
+        };
+
+        const handleError = (err) => {
+            console.error("Error detallado:", err);
+            errorToast(err.message || "Error al guardar el registro");
+        };
+
+        try {
+            if (existingRecord && existingRecord.id_visit_record) {
+                await updateVisitRecord(token, existingRecord.id_visit_record, payload, handleSuccess, handleError);
+            } else {
+                await createVisitRecord(token, payload, handleSuccess, handleError);
+            }
+        } catch (error) {
+            console.error("Error inesperado:", error);
+            errorToast("Error inesperado al procesar la solicitud");
+        } finally {
+            setIsSubmitting(false);
         }
-    } catch (error) {
-        console.error("Error inesperado:", error);
-        errorToast("Error inesperado al procesar la solicitud");
-    } finally {
-        setIsSubmitting(false);
-    }
-};
+    };
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
@@ -224,7 +187,7 @@ export default function VisitsPage() {
                 placeholder="Buscar por nombre, apellido o DNI..."
             />
             <TurnsList
-                turns={filteredTurns}
+                turns={turns}
                 patientsData={patientsData}
                 getVisitRecordForTurn={getVisitRecordForTurn}
                 handleCreateVisitRecord={handleCreateVisitRecord}
@@ -241,8 +204,9 @@ export default function VisitsPage() {
                 setShowVisitForm={setShowVisitForm}
                 isSubmitting={isSubmitting}
                 getVisitRecordForTurn={getVisitRecordForTurn}
-                patientData={patientsData[selectedTurn?.patientId]} // <-- aquí
+                patientData={patientsData[selectedTurn?.patientId]}
             />
         </div>
     );
 }
+

@@ -5,13 +5,13 @@ using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
 
-
 namespace Application.Services
 {
     public class VisitRecordService : IVisitRecordService
     {
         private readonly IVisitRecordRepository _visitRecordRepository;
         private readonly ITurnRepository _turnRepository;
+
         public VisitRecordService(
             IVisitRecordRepository visitRecordRepository,
             ITurnRepository turnRepository)
@@ -26,6 +26,7 @@ namespace Application.Services
             var visitRecords = _visitRecordRepository.List();
             if (!visitRecords.Any())
                 return new List<VisitRecordDto>();
+
             return VisitRecordDto.CreateList(visitRecords);
         }
 
@@ -34,6 +35,7 @@ namespace Application.Services
         {
             var visitRecord = _visitRecordRepository.GetById(id)
                 ?? throw new NotFoundException("VISIT_RECORD_NOT_FOUND");
+
             return VisitRecordDto.Create(visitRecord);
         }
 
@@ -42,14 +44,18 @@ namespace Application.Services
         {
             var turn = _turnRepository.GetById(request.TurnId)
                 ?? throw new NotFoundException("TURN_NOT_FOUND");
+
+            var visitDate = DateOnly.FromDateTime(turn.AppointmentDate);
+
             var visitRecord = new VisitRecord(
-                request.VisitDate,
+                visitDate,
                 request.Treatment,
                 request.Diagnosis,
                 request.Notes,
                 request.Prescription,
                 request.TurnId
             );
+
             _visitRecordRepository.Add(visitRecord);
             return VisitRecordDto.Create(visitRecord);
         }
@@ -59,17 +65,26 @@ namespace Application.Services
         {
             var visitRecord = _visitRecordRepository.GetById(id)
                 ?? throw new NotFoundException("VISIT_RECORD_NOT_FOUND");
+
+            var turn = (request.TurnId.HasValue)
+                ? _turnRepository.GetById(request.TurnId.Value)
+                    ?? throw new NotFoundException("TURN_NOT_FOUND")
+                : _turnRepository.GetById(visitRecord.TurnId);
+
+            var visitDate = DateOnly.FromDateTime(turn.AppointmentDate);
+
             visitRecord.UpdateInfo(
-                request.VisitDate,
+                visitDate,
                 request.Treatment,
                 request.Diagnosis,
                 request.Notes,
                 request.Prescription,
-                request.TurnId
+                request.TurnId ?? visitRecord.TurnId
             );
-            _visitRecordRepository.Update(visitRecord);
 
+            _visitRecordRepository.Update(visitRecord);
             return VisitRecordDto.Create(visitRecord);
         }
     }
 }
+

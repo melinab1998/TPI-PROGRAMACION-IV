@@ -29,12 +29,6 @@ export default function VisitForm({
 
   const existingRecord = getVisitRecordForTurn(selectedTurn.id);
 
-  const handleFormSubmit = (data) => {
-    onSubmit(data);
-  };
-
-  const handleCancel = () => setShowVisitForm(false);
-
   return (
     <motion.div variants={fadeScale} initial="hidden" animate="visible">
       <Card className="w-full">
@@ -45,13 +39,12 @@ export default function VisitForm({
           </CardTitle>
           <CardDescription>
             {patientData
-              ? `${patientData.name} - ${new Date(selectedTurn.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-              : `ID: ${selectedTurn.patientId} - ${new Date(selectedTurn.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-            }
+              ? `${patientData.name} - ${new Date(selectedTurn.appointmentDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+              : `ID: ${selectedTurn.patientId} - ${new Date(selectedTurn.appointmentDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="treatment">Tratamiento Realizado *</Label>
               <Textarea
@@ -77,30 +70,24 @@ export default function VisitForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notes">Notas Adicionales <span className="text-muted-foreground">(opcional)</span></Label>
-              <Textarea
-                id="notes"
-                placeholder="Ingrese notas adicionales..."
-                {...register("notes")}
-                rows={3}
-              />
+              <Label htmlFor="notes">Notas Adicionales (opcional)</Label>
+              <Textarea id="notes" placeholder="Ingrese notas adicionales..." {...register("notes")} rows={3} />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="prescription">Prescripción Médica <span className="text-muted-foreground">(opcional)</span></Label>
-              <Textarea
-                id="prescription"
-                placeholder="Ingrese la prescripción médica..."
-                {...register("prescription")}
-                rows={3}
-              />
+              <Label htmlFor="prescription">Prescripción Médica (opcional)</Label>
+              <Textarea id="prescription" placeholder="Ingrese la prescripción médica..." {...register("prescription")} rows={3} />
             </div>
 
             <div className="text-xs text-muted-foreground pt-2">* Campos obligatorios</div>
 
             <div className="flex justify-end gap-2 pt-4">
-              <Button type="button" variant="outline" onClick={handleCancel} disabled={isSubmitting}>Cancelar</Button>
-              <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Guardando..." : "Guardar Registro"}</Button>
+              <Button type="button" variant="outline" onClick={() => setShowVisitForm(false)} disabled={isSubmitting}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Guardando..." : "Guardar Registro"}
+              </Button>
             </div>
           </form>
         </CardContent>
@@ -108,3 +95,4 @@ export default function VisitForm({
     </motion.div>
   );
 }
+

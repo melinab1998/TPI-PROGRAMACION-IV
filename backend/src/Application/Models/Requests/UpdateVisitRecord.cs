@@ -1,21 +1,19 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Application.Models.Requests;
+namespace Application.Models.Requests
+{
+    public record UpdateVisitRecordRequest
+    (
+        [MinLength(10, ErrorMessage = "Debe tener al menos 10 caracteres")]
+        string? Treatment,
 
-public record UpdateVisitRecordRequest
-(
-    DateOnly? VisitDate,
+        [MinLength(10, ErrorMessage = "Debe tener al menos 10 caracteres")]
+        string? Diagnosis,
 
-    [MinLength(10, ErrorMessage = "Debe tener al menos 10 caracteres")]
-    string? Treatment,
+        string? Notes,
 
-    [MinLength(10, ErrorMessage = "Debe tener al menos 10 caracteres")]
-    string? Diagnosis,
+        string? Prescription,
 
-    string? Notes,
-
-    string? Prescription,
-
-    int? TurnId
-
-);
+        int? TurnId
+    );
+}
