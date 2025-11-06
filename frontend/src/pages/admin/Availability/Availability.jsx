@@ -7,7 +7,7 @@ import WeeklySummary from "@/components/admin/Availability/WeeklySummary/WeeklyS
 import { successToast, errorToast } from "@/utils/notifications";
 import Header from "@/components/common/Header/Header";
 import { availabilityValidations } from "@/utils/validations";
-import { getAvailability, setAvailability, updateAvailability } from "@/services/api.services";
+import { getAvailability, setAvailability, updateAvailability, deleteAvailability } from "@/services/api.services";
 import { AuthContext } from "@/services/auth/AuthContextProvider";
 
 const daysOfWeek = [
@@ -86,7 +86,6 @@ export default function Availability() {
   const getAvailabilityForDay = (dayId) =>
     availabilities.filter((a) => a.day_of_week === dayId);
 
-  // ---------- Cargar disponibilidad desde backend ----------
   const loadAvailabilities = () => {
     if (!token || !userId) return;
 
@@ -113,23 +112,42 @@ export default function Availability() {
     loadAvailabilities();
   }, [token, userId]);
 
-  // ---------- Eventos ----------
   const handleToggleDay = (dayId, enabled) => {
     if (enabled) {
-      const newSlot = {
-        id_availability: Date.now(),
-        day_of_week: dayId,
-        start_time: "09:00",
-        end_time: "17:00",
-        enabled: true,
-      };
-      setAvailabilities((prev) => [...prev, newSlot]);
-      setErrors((prev) => ({ ...prev, [dayId]: null }));
+        const newSlot = {
+            id_availability: Date.now(),
+            day_of_week: dayId,
+            start_time: "09:00",
+            end_time: "17:00",
+            enabled: true,
+        };
+        setAvailabilities((prev) => [...prev, newSlot]);
+        setErrors((prev) => ({ ...prev, [dayId]: null }));
     } else {
-      setAvailabilities((prev) => prev.filter((a) => a.day_of_week !== dayId));
-      setErrors((prev) => ({ ...prev, [dayId]: null }));
+
+        const slotsToRemove = availabilities.filter((a) => a.day_of_week === dayId);
+        
+        if (slotsToRemove.length > 0) {
+            slotsToRemove.forEach(slot => {
+                if (slot.id_availability <= 1000000) {
+                    deleteAvailability(
+                        token,
+                        slot.id_availability,
+                        () => {
+                            console.log(`Slot ${slot.id_availability} eliminado`);
+                        },
+                        (err) => errorToast(`Error al eliminar horario: ${err?.message}`)
+                    );
+                }
+            });
+            
+            successToast("Día deshabilitado correctamente");
+        }
+        
+        setAvailabilities((prev) => prev.filter((a) => a.day_of_week !== dayId));
+        setErrors((prev) => ({ ...prev, [dayId]: null }));
     }
-  };
+};
 
   const handleTimeChange = (id, field, value) => {
     setAvailabilities((prev) => {
@@ -251,7 +269,6 @@ const handleSave = () => {
     }
 };
 
-  // ---------- Render ----------
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       <Header

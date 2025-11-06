@@ -50,6 +50,14 @@ namespace Web.Controllers
             return Ok(availableSlots);
         }
 
+        [HttpDelete("{slotId}")] 
+        [Authorize(Roles = "SuperAdmin, Dentist")]
+        public IActionResult DeleteAvailability(int slotId)
+        {
+            _availabilityService.DeleteAvailability(slotId);
+            return NoContent();
+        }
+
     }
 }
 

@@ -93,6 +93,16 @@ namespace Application.Services
             return AvailabilityDto.Create(slot);
         }
 
+        // Elimina una disponibilidad existente.
+        public void DeleteAvailability(int slotId)
+        {
+            var slot = _availabilityRepository.GetById(slotId);
+            if (slot == null)
+                throw new NotFoundException("SLOT_NOT_FOUND");
+
+            _availabilityRepository.Delete(slot);
+        }
+
         // Devuelve los horarios disponibles entre dos fechas para un odontólogo,
         // excluyendo los turnos ya reservados. (Usado por el frontend)
         public Dictionary<string, List<string>> GetAvailableSlots(int dentistId, DateTime startDate, DateTime endDate)

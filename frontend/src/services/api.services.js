@@ -284,6 +284,16 @@ export const updateAvailability = (token, slotId, data, onSuccess, onError) => {
         .then(handleResponse).then(onSuccess).catch(onError);
 };
 
+export const deleteAvailability = (token, slotId, onSuccess, onError) => {
+    if (!token) return onError({ message: "Token no proporcionado" });
+
+    fetch(`${baseUrl}/api/availabilities/${slotId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+    })
+        .then(handleResponse).then(onSuccess).catch(onError);
+};
+
 /*TURNS*/
 export const getPatientTurns = (token, patientId, onSuccess, onError) => {
     if (!token) return onError({ message: "Token no proporcionado" });
