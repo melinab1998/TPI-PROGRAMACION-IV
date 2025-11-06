@@ -89,7 +89,7 @@ public class DentistService : IDentistService
     }
 
     // Crea un nuevo dentista (por parte del SuperAdmin), valida duplicados y envía un correo de activación.
-    public DentistDto CreateDentist(CreateDentistRequest request)
+    public ActivationResponseDto<DentistDto> CreateDentist(CreateDentistRequest request)
     {
         if (_userRepository.GetByEmail(request.Email) != null)
             throw new AppValidationException("EMAIL_ALREADY_EXISTS");
@@ -107,7 +107,7 @@ public class DentistService : IDentistService
         var activationToken = _jwtService.GenerateActivationTokenForDentist(dentist.Id);
         _emailService.SendActivationEmailAsync(dentist.Email, activationToken);
 
-        return DentistDto.Create(dentist);
+        return new ActivationResponseDto<DentistDto>(DentistDto.Create(dentist), activationToken);
     }
 
     // Permite al SuperAdmin activar o desactivar la cuenta de un dentista.

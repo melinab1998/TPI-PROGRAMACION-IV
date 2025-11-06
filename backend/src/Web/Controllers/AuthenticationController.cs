@@ -52,16 +52,10 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost("create-patient")]
     [Authorize(Roles = "Dentist, SuperAdmin")]
-    public ActionResult<PatientDto> CreatePatientByDentist([FromBody] CreatePatientByDentistRequest request)
+    public ActionResult<ActivationResponseDto<PatientDto>> CreatePatientByDentist([FromBody] CreatePatientByDentistRequest request)
     {
-        var newPatient = _patientService.CreatePatientByDentist(request);
-
-        return CreatedAtAction(
-            nameof(PatientController.GetPatientById),
-            "Patient",
-            new { id = newPatient.Id },
-            newPatient
-        );
+        var result = _patientService.CreatePatientByDentist(request);
+        return CreatedAtAction(nameof(PatientController.GetPatientById), "Patient", new { id = result.Entity.Id }, result);
     }
 
     [HttpPost("activate-patient")]
@@ -73,16 +67,10 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost("create-dentist")]
     [Authorize(Roles = "SuperAdmin")]
-    public ActionResult<DentistDto> CreateDentist([FromBody] CreateDentistRequest dentistDto)
+    public ActionResult<ActivationResponseDto<DentistDto>> CreateDentist([FromBody] CreateDentistRequest dentistDto)
     {
-        var newDentist = _dentistService.CreateDentist(dentistDto);
-
-        return CreatedAtAction(
-            nameof(DentistController.GetDentistById),
-            "Dentist",
-            new { id = newDentist.Id },
-            newDentist
-        );
+        var result = _dentistService.CreateDentist(dentistDto);
+        return CreatedAtAction(nameof(DentistController.GetDentistById), "Dentist", new { id = result.Entity.Id }, result);
     }
 
     [HttpPost("activate-dentist")]

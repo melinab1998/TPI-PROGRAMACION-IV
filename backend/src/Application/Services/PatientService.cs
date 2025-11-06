@@ -99,7 +99,7 @@ public class PatientService : IPatientService
 
 
     // Crea un nuevo paciente desde el panel del dentista. (Necesario para front)
-    public PatientDto CreatePatientByDentist(CreatePatientByDentistRequest request)
+    public ActivationResponseDto<PatientDto> CreatePatientByDentist(CreatePatientByDentistRequest request)
     {
         if (_userRepository.GetByEmail(request.Email) != null)
             throw new AppValidationException("EMAIL_ALREADY_EXISTS");
@@ -121,13 +121,12 @@ public class PatientService : IPatientService
         patient.SetPassword(_hasher.HashPassword(tempPassword));
 
         _patientRepository.Add(patient);
-
         var saved = _patientRepository.GetById(patient.Id);
 
         var activationToken = _jwtService.GenerateActivationTokenForPatient(patient.Id);
         _emailService.SendActivationEmailAsync(patient.Email, activationToken);
 
-        return PatientDto.Create(saved!);
+        return new ActivationResponseDto<PatientDto>(PatientDto.Create(saved!), activationToken);
     }
 
     // Genera una contraseña temporal aleatoria para nuevos pacientes.
