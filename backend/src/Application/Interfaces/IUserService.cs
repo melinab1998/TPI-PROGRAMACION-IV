@@ -9,7 +9,7 @@ namespace Application.Interfaces
 
         void CreateSuperAdminOnce(string firstName, string lastName, string email, string password);
 
-        Task SendPasswordResetEmailAsync(string email);
+        Task<string> SendPasswordResetEmailAsync(string email);
 
         void ResetPassword(string token, string newPassword);
     }

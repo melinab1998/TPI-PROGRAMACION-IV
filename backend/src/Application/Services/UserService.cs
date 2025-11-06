@@ -45,7 +45,7 @@ namespace Application.Services
         }
 
         // Enviar correo de recuperación de contraseña.
-        public async Task SendPasswordResetEmailAsync(string email)
+        public async Task<string> SendPasswordResetEmailAsync(string email)
         {
             var user = _userRepository.GetByEmail(email);
             if (user == null)
@@ -53,6 +53,8 @@ namespace Application.Services
 
             var token = _jwtService.GeneratePasswordResetToken(user.Id, TimeSpan.FromHours(1));
             await _emailService.SendPasswordResetEmailAsync(email, token);
+
+            return token; 
         }
 
         // Restablecer contraseña usando el token recibido.
