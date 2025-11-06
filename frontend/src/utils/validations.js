@@ -125,11 +125,11 @@ export const appointmentValidations = {
         required: "La fecha es requerida",
         validate: {
             notPast: (date) => {
-                if (!date) return "La fecha es requerida"
-                const selected = new Date(date)
-                const today = new Date()
-                today.setHours(0, 0, 0, 0)
-                return selected >= today || "No se pueden agendar turnos pasados"
+                if (!date) return "La fecha es requerida";
+
+                const selectedDate = new Date(date);
+                const now = new Date();
+                return selectedDate >= now || "No se pueden agendar turnos pasados";
             }
         }
     },
@@ -147,6 +147,7 @@ export const appointmentValidations = {
         required: "Seleccione el tipo de turno"
     }
 };
+
 
 export const patientValidations = {
     firstName: {

@@ -15,7 +15,7 @@ const errorMessages = {
     DENTISTS_NOT_FOUND: "No se encontraron dentistas registrados",
     EMAIL_AND_PASSWORD_REQUIRED: "Email y contraseña son obligatorios",
     INVALID_EMAIL_OR_PASSWORD: "Email y/o contraseña incorrectos",
-    DENTIST_NOT_ACTIVATED: "El dentista aún no está activado",
+    DENTIST_NOT_ACTIVATED: "Email y/o contraseña incorrectos",
     INVALID_TOKEN: "Token inválido o paciente/dentista no encontrado",
     CURRENT_PASSWORD_INCORRECT: "La contraseña actual es incorrecta",
     PATIENT_ALREADY_HAS_TURN_TODAY: "Ya tiene un turno reservado para ese día.",
