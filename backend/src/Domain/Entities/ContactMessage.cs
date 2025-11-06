@@ -15,16 +15,16 @@ namespace Domain.Entities
         public ContactMessage(string name, string email, string message)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new AppValidationException("El nombre es obligatorio.");
+                throw new AppValidationException("NAME_REQUIRED");
 
             if (string.IsNullOrWhiteSpace(email))
-                throw new AppValidationException("El email es obligatorio.");
+                throw new AppValidationException("EMAIL_REQUIRED");
 
             if (string.IsNullOrWhiteSpace(message))
-                throw new AppValidationException("El mensaje es obligatorio.");
+                throw new AppValidationException("MESSAGE_REQUIRED");
 
             if (message.Length < 10)
-                throw new AppValidationException("El mensaje debe tener al menos 10 caracteres.");
+                throw new AppValidationException("MESSAGE_TOO_SHORT");
 
             Name = name.Trim();
             Email = email.Trim();
@@ -33,3 +33,4 @@ namespace Domain.Entities
         }
     }
 }
+

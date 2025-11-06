@@ -18,7 +18,7 @@ namespace Domain.Entities
         public VisitRecord(DateOnly visitDate, string treatment, string diagnosis, string? notes, string? prescription, int turnId)
         {
             if (visitDate > DateOnly.FromDateTime(DateTime.Now))
-                throw new AppValidationException("La fecha de la visita no puede ser futura.");
+                throw new AppValidationException("VISIT_DATE_IN_FUTURE");
 
             VisitDate = visitDate;
             Treatment = treatment;
@@ -33,7 +33,7 @@ namespace Domain.Entities
             if (visitDate.HasValue)
             {
                 if (visitDate.Value > DateOnly.FromDateTime(DateTime.Now))
-                    throw new AppValidationException("La fecha de la visita no puede ser futura.");
+                    throw new AppValidationException("VISIT_DATE_IN_FUTURE");
 
                 VisitDate = visitDate.Value;
             }
@@ -46,5 +46,5 @@ namespace Domain.Entities
                 TurnId = turnId.Value;
         }
     }
-
 }
+

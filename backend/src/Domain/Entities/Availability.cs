@@ -19,13 +19,13 @@ namespace Domain.Entities
             ValidateTimeFormat(endTime);
 
             if (!Enum.IsDefined(typeof(DayOfWeek), dayOfWeek))
-                throw new AppValidationException($"DayOfWeek inválido: {dayOfWeek}");
+                throw new AppValidationException("INVALID_DAY_OF_WEEK");
 
             var start = TimeSpan.Parse(startTime);
             var end = TimeSpan.Parse(endTime);
 
             if (start >= end)
-                throw new AppValidationException("StartTime debe ser menor que EndTime");
+                throw new AppValidationException("INVALID_TIME_RANGE");
 
             DayOfWeek = dayOfWeek;
             StartTime = start;
@@ -38,7 +38,7 @@ namespace Domain.Entities
             if (dayOfWeek.HasValue)
             {
                 if (!Enum.IsDefined(typeof(DayOfWeek), dayOfWeek.Value))
-                    throw new AppValidationException($"DayOfWeek inválido: {dayOfWeek}");
+                    throw new AppValidationException("INVALID_DAY_OF_WEEK");
                 DayOfWeek = dayOfWeek.Value;
             }
 
@@ -55,15 +55,14 @@ namespace Domain.Entities
             }
 
             if (StartTime >= EndTime)
-                throw new AppValidationException("StartTime debe ser menor que EndTime");
+                throw new AppValidationException("INVALID_TIME_RANGE");
         }
-
 
         private static void ValidateTimeFormat(string time)
         {
-            var regex = new Regex(@"^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$");
+            var regex = new Regex(@"^(?:[01]\d|2[0-3]):[0-5]\d$");
             if (!regex.IsMatch(time))
-                throw new AppValidationException($"Formato de hora inválido: {time}. Usa HH:mm (ej. '09:00').");
+                throw new AppValidationException("INVALID_TIME_FORMAT");
         }
     }
 }

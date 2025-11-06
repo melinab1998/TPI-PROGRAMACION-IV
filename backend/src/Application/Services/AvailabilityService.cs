@@ -42,8 +42,11 @@ namespace Application.Services
 
             foreach (var slotRequest in slots)
             {
-                var startTime = TimeSpan.Parse(slotRequest.StartTime);
-                var endTime = TimeSpan.Parse(slotRequest.EndTime);
+                if (!TimeSpan.TryParseExact(slotRequest.StartTime, "hh\\:mm", null, out var startTime))
+                    throw new AppValidationException("INVALID_TIME_FORMAT");
+
+                if (!TimeSpan.TryParseExact(slotRequest.EndTime, "hh\\:mm", null, out var endTime))
+                    throw new AppValidationException("INVALID_TIME_FORMAT");
 
                 if (startTime.Minutes % 30 != 0 || endTime.Minutes % 30 != 0)
                     throw new AppValidationException("AVAILABILITY_MUST_BE_ON_HALF_HOUR");
@@ -52,10 +55,10 @@ namespace Application.Services
                     throw new AppValidationException("INVALID_TIME_RANGE");
 
                 var newSlot = new Availability(
-                slotRequest.DayOfWeek,
-                startTime.ToString(@"hh\:mm"),
-                endTime.ToString(@"hh\:mm"),
-                dentistId
+                    slotRequest.DayOfWeek,
+                    startTime.ToString(@"hh\:mm"),
+                    endTime.ToString(@"hh\:mm"),
+                    dentistId
                 );
 
                 bool overlaps = existingSlots
@@ -85,6 +88,7 @@ namespace Application.Services
             var otherSlots = _availabilityRepository.GetByDentistId(slot.DentistId)
                 .Where(s => s.Id != slotId && s.DayOfWeek == slot.DayOfWeek);
 
+            // Validación: no debe superponerse con otras disponibilidades del mismo día
             bool overlaps = otherSlots.Any(s => !(slot.EndTime <= s.StartTime || slot.StartTime >= s.EndTime));
             if (overlaps)
                 throw new AppValidationException("TIME_SLOT_OVERLAP");
@@ -150,3 +154,4 @@ namespace Application.Services
         }
     }
 }
+
