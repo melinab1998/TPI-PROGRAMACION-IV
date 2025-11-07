@@ -51,7 +51,7 @@ export default function Register() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
         >
-            <Card className="w-full max-w-2xl mx-auto shadow-xl rounded-xl mt-16 p-8">
+            <Card className="w-full max-w-2xl mx-auto shadow-xl rounded-xl mt-20 p-8">
                 <CardHeader className="space-y-2 pb-4">
                     <CardTitle className="text-3xl font-bold text-center">
                         Crear cuenta
