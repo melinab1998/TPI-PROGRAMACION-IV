@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { MessageSquare, Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { successToast } from "@/utils/notifications";
+import { successToast, errorToast } from "@/utils/notifications";
 import { contactValidations } from "@/utils/validations"
 import { sendContactMessage } from "@/services/api.services";
 
@@ -26,14 +26,12 @@ export default function ContactForm() {
     const onSubmit = (data) => {
         sendContactMessage(
             data,
-            (response) => {
-                successToast("Mensaje enviado con éxito");
+            () => {
+                successToast("Mensaje enviado con éxito.");
                 reset();
-                console.log("Mensaje creado:", response);
             },
-            (error) => {
-                console.error(error);
-                successToast("Ocurrió un error al enviar el mensaje");
+            () => {
+                errorToast("Ocurrió un error al enviar el mensaje.");
             }
         );
     };
