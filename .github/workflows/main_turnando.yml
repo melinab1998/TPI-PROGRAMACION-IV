@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read # Requerido para actions/checkout
 
     steps:
       - uses: actions/checkout@v4
@@ -23,16 +23,19 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      # Construir el proyecto del backend (apunta al csproj dentro de backend)
+      - name: Build backend
+        run: dotnet build backend/Turnando.csproj --configuration Release
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+      # Publicar el proyecto en una carpeta temporal
+      - name: Publish backend
+        run: dotnet publish backend/Turnando.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
+      # Subir el artifact para el deploy
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: .net-app
+          name: backend-app
           path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
@@ -40,16 +43,18 @@ jobs:
     needs: build
     
     steps:
+      # Descargar el artifact generado
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: .net-app
-      
+          name: backend-app
+
+      # Deploy a Azure Web App
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'turnando'
           slot-name: 'Production'
-          package: .
+          package: '${{env.DOTNET_ROOT}}/myapp'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3A7240E3AB064F9EBDBA63DADD031F5F }}
