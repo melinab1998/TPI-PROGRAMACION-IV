@@ -207,8 +207,8 @@ const handleSave = () => {
     availabilities.forEach(slot => {
         const formattedSlot = {
             dayOfWeek: mapDayToBackend(slot.day_of_week),
-            startTime: `${slot.start_time}:00`,
-            endTime: `${slot.end_time}:00`,
+            startTime: `${slot.start_time}`,
+            endTime: `${slot.end_time}`,
         };
 
         if (slot.id_availability > 1000000) { 
