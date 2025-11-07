@@ -6,7 +6,7 @@ import TurnsList from "@/components/admin/Visits/TurnsList/TurnsList";
 import VisitForm from "@/components/admin/Visits/VisitForm/VisitForm";
 import { successToast, errorToast } from "@/utils/notifications";
 import { AuthContext } from "@/services/auth/AuthContextProvider";
-import { getDentistTurns, getPatientById, createVisitRecord, updateVisitRecord } from "@/services/api.services";
+import { getDentistTurns, getPatientById, createVisitRecord, updateVisitRecord, getAllVisitRecords } from "@/services/api.services";
 
 export default function VisitsPage() {
     const { token, userId } = useContext(AuthContext);
@@ -36,7 +36,20 @@ export default function VisitsPage() {
         }
     });
 
-    // 🧩 Cargar datos del paciente
+    useEffect(() => {
+        if (!token) return;
+
+        getAllVisitRecords(
+            token,
+            (allVisitRecords) => {
+                setVisitRecords(allVisitRecords || []);
+            },
+            (err) => {
+                console.error("Error al cargar registros de visitas:", err);
+            }
+        );
+    }, [token]);
+
     const loadPatientData = (patientId) => {
         if (!token || patientsData[patientId]) return;
 
@@ -53,7 +66,6 @@ export default function VisitsPage() {
                 }));
             },
             (err) => {
-                console.error("Error al obtener paciente:", err);
                 setPatientsData(prev => ({
                     ...prev,
                     [patientId]: { name: `ID: ${patientId}`, dni: "No disponible" }
@@ -81,22 +93,28 @@ export default function VisitsPage() {
                     return isToday && isValidStatus;
                 });
 
+                console.log("📅 Turnos de hoy:", todaysTurns);
                 setTurns(todaysTurns);
                 todaysTurns.forEach(turn => loadPatientData(turn.patientId));
             },
             (err) => {
-                console.error("Error al cargar turnos:", err);
                 errorToast("No se pudieron cargar los turnos del día.");
             }
         );
     }, [token, userId]);
 
-    const getVisitRecordForTurn = (turnId) =>
-        visitRecords.find(record => record.id_turn === turnId);
+    const getVisitRecordForTurn = (turnId) => {
+        const record = visitRecords.find(record => record.turnId === turnId);
+        console.log(`🔍 Buscando registro para turnId ${turnId}:`, record);
+        return record;
+    };
 
     const handleCreateVisitRecord = (turn) => {
+        console.log("🔄 Creando/Editando registro para turno:", turn);
         setSelectedTurn(turn);
         const existingRecord = getVisitRecordForTurn(turn.id);
+        console.log("📝 Registro existente:", existingRecord);
+        
         const formData = existingRecord || {
             treatment: "",
             diagnosis: "",
@@ -126,6 +144,7 @@ export default function VisitsPage() {
         setIsSubmitting(true);
 
         const existingRecord = getVisitRecordForTurn(selectedTurn.id);
+        console.log("💾 Guardando registro. Existente?:", existingRecord);
 
         const payload = {
             visitDate: new Date().toISOString().split("T")[0],
@@ -137,16 +156,21 @@ export default function VisitsPage() {
         };
 
         const handleSuccess = (savedRecord) => {
+            console.log("✅ Registro guardado exitosamente:", savedRecord);
+            
             const processedRecord = {
                 ...savedRecord,
-                id_turn: savedRecord.turnId || selectedTurn.id
+                turnId: savedRecord.turnId || selectedTurn.id
             };
 
-            setVisitRecords(prev =>
-                existingRecord
-                    ? prev.map(r => r.id_turn === selectedTurn.id ? processedRecord : r)
-                    : [...prev, processedRecord]
-            );
+            // 🔹 ACTUALIZAR EL ESTADO CORRECTAMENTE
+            setVisitRecords(prev => {
+                const newRecords = existingRecord
+                    ? prev.map(r => r.turnId === selectedTurn.id ? processedRecord : r)
+                    : [...prev, processedRecord];
+                console.log("📊 Nuevo estado de visitRecords:", newRecords);
+                return newRecords;
+            });
 
             successToast(
                 existingRecord
@@ -160,18 +184,20 @@ export default function VisitsPage() {
         };
 
         const handleError = (err) => {
-            console.error("Error detallado:", err);
+            console.error("❌ Error al guardar:", err);
             errorToast(err.message || "Error al guardar el registro");
         };
 
         try {
-            if (existingRecord && existingRecord.id_visit_record) {
-                await updateVisitRecord(token, existingRecord.id_visit_record, payload, handleSuccess, handleError);
+            if (existingRecord && existingRecord.id) {
+                console.log("🔄 Actualizando registro existente ID:", existingRecord.id);
+                await updateVisitRecord(token, existingRecord.id, payload, handleSuccess, handleError);
             } else {
+                console.log("🆕 Creando nuevo registro");
                 await createVisitRecord(token, payload, handleSuccess, handleError);
             }
         } catch (error) {
-            console.error("Error inesperado:", error);
+            console.error("❌ Error inesperado:", error);
             errorToast("Error inesperado al procesar la solicitud");
         } finally {
             setIsSubmitting(false);
@@ -209,4 +235,3 @@ export default function VisitsPage() {
         </div>
     );
 }
-

@@ -35,7 +35,6 @@ export default function PatientsPage() {
   const [healthInsurances, setHealthInsurances] = useState([]);
   const [healthPlans, setHealthPlans] = useState([]);
 
-  // Cargar pacientes
   useEffect(() => {
     if (!token) return;
 
@@ -67,7 +66,6 @@ export default function PatientsPage() {
     );
   }, [token]);
 
-  // Cargar obras sociales y planes
   useEffect(() => {
     if (!token) return;
 
@@ -84,7 +82,6 @@ export default function PatientsPage() {
     );
   }, [token]);
 
-  // Filtrar pacientes
   const filteredPatients = (patients || []).filter((p) => {
     const firstName = p.firstName || "";
     const lastName = p.lastName || "";
@@ -97,7 +94,6 @@ export default function PatientsPage() {
     );
   });
 
-  // Acciones
   const handleCreatePatient = () => {
     setEditingPatient(null);
     setIsFormModalOpen(true);
@@ -138,16 +134,14 @@ export default function PatientsPage() {
       healthPlanId: patientData.healthPlanId ? parseInt(patientData.healthPlanId) : null,
     };
 
-    console.log("Payload a enviar:", payload); // Para debug
-
     if (editingPatient) {
-      // Actualizar paciente
       updatePatientByDentist(
         editingPatient.id,
         payload,
         token,
-        (updated) => {
-          console.log("Paciente actualizado:", updated); // Para debug
+        (response) => {
+          const updated = response.entity || response;
+
           setPatients((prev) =>
             prev.map((p) =>
               p.id === updated.id
@@ -171,6 +165,10 @@ export default function PatientsPage() {
                 : p
             )
           );
+
+          successToast("Paciente actualizado exitosamente");
+          setEditingPatient(null);
+          setIsFormModalOpen(false);
         },
         (err) => {
           errorToast(err?.message || "Error al actualizar el paciente");
@@ -180,31 +178,38 @@ export default function PatientsPage() {
       return;
     }
 
-    // Crear paciente
     CreatePatientByDentist(
       payload,
       token,
       (response) => {
-        console.log("Paciente creado:", response); // Para debug
-        setPatients((prev) => [
-          ...prev,
-          {
-            id: response.id,
-            firstName: response.firstName,
-            lastName: response.lastName,
-            dni: response.dni,
-            email: response.email,
-            phoneNumber: response.phoneNumber,
-            address: response.address,
-            city: response.city,
-            membershipNumber: response.membershipNumber,
-            birthDate: response.birthDate,
-            healthPlanId: response.healthPlanId,
-            healthPlanName: response.healthPlanName,
-            healthInsuranceId: response.healthInsuranceId,
-            healthInsuranceName: response.healthInsuranceName,
-          },
-        ]);
+        const entity = response.entity || response;
+        if (!entity.id) {
+          errorToast("No se recibió el ID del nuevo paciente. Recargando lista...");
+          getAllPatients(token, (res) => {
+            setPatients(res);
+          });
+          setIsFormModalOpen(false);
+          return;
+        }
+
+        const newPatient = {
+          id: entity.id,
+          firstName: entity.firstName,
+          lastName: entity.lastName,
+          dni: entity.dni,
+          email: entity.email,
+          phoneNumber: entity.phoneNumber,
+          address: entity.address,
+          city: entity.city,
+          membershipNumber: entity.membershipNumber,
+          birthDate: entity.birthDate,
+          healthPlanId: entity.healthPlanId,
+          healthPlanName: entity.healthPlanName,
+          healthInsuranceId: entity.healthInsuranceId,
+          healthInsuranceName: entity.healthInsuranceName,
+        };
+
+        setPatients((prev) => [...prev, newPatient]);
         successToast("Paciente creado exitosamente");
         setEditingPatient(null);
         setIsFormModalOpen(false);
@@ -215,11 +220,9 @@ export default function PatientsPage() {
     );
   };
 
-  // Animaciones
   const fadeSlideDown = { hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
   const fadeSlideUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
 
-  // Abrir modal automáticamente si viene desde otra página
   const location = useLocation();
   useEffect(() => {
     if (location.state?.openNewPatientModal) {
@@ -293,6 +296,7 @@ export default function PatientsPage() {
           setSelectedPatientForVisits(null);
         }}
         patient={selectedPatientForVisits}
+        token={token}
       />
 
       <PatientOdontogramModal

@@ -2,20 +2,33 @@ import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Users, ChevronLeft, ChevronRight } from "lucide-react"
 import DentistItem from "../DentistItem/DentistItem"
-import usePagination from "@/hooks/usePagination"
 import { Button } from "@/components/ui/button"
 
-export default function DentistList({ dentists, onEdit, onToggleStatus, searchTerm }) {
-  const itemsPerPage = 5
-  const {
-    currentPage,
-    totalPages,
-    currentItemsRange,
-    nextPage,
-    prevPage
-  } = usePagination({ totalItems: dentists.length, itemsPerPage })
+export default function DentistList({ 
+  dentists, 
+  onEdit, 
+  onToggleStatus, 
+  searchTerm,
+  currentPage,
+  itemsPerPage,
+  onPageChange 
+}) {
+  const totalPages = Math.ceil(dentists.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentDentists = dentists.slice(startIndex, endIndex);
 
-  const currentDentists = dentists.slice(currentItemsRange.start - 1, currentItemsRange.end)
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      onPageChange(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      onPageChange(currentPage - 1);
+    }
+  };
 
   return (
     <motion.div
@@ -57,7 +70,7 @@ export default function DentistList({ dentists, onEdit, onToggleStatus, searchTe
               {totalPages > 1 && (
                 <div className="p-6 flex items-center justify-between border-t">
                   <div className="text-sm text-muted-foreground">
-                    Mostrando {currentItemsRange.start}-{currentItemsRange.end} de {dentists.length} dentistas
+                    Mostrando {startIndex + 1}-{Math.min(endIndex, dentists.length)} de {dentists.length} dentistas
                   </div>
                   <div className="flex items-center gap-2">
                     <Button variant="outline" size="sm" onClick={prevPage} disabled={currentPage === 1}>
@@ -75,5 +88,5 @@ export default function DentistList({ dentists, onEdit, onToggleStatus, searchTe
         </CardContent>
       </Card>
     </motion.div>
-  )
+  );
 }

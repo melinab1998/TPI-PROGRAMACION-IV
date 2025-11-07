@@ -5,62 +5,78 @@ import StatsCards from "@/components/super/SuperAdmin/StatsCards/StatsCards";
 import DentistList from "@/components/super/SuperAdmin/DentistList/DentistList";
 import DentistForm from "@/components/super/SuperAdmin/DentistForm/DentistForm";
 import ConfirmDialog from "@/components/super/SuperAdmin/ConfirmDialog/ConfirmDialog";
-import { toggleDentistStatus } from "@/services/api.services.js";
+import { toggleDentistStatus, createDentist, getAllDentists, updateDentistBySuperAdmin } from "@/services/api.services.js";
 import { Plus } from "lucide-react";
-import {
-  createDentist,
-  getAllDentists,
-  updateDentistBySuperAdmin,
-} from "@/services/api.services.js";
 import { AuthContext } from "@/services/auth/AuthContextProvider";
 import { successToast, errorToast } from "@/utils/notifications.js";
 
 export default function SuperAdminPage() {
   const { token } = useContext(AuthContext);
-
   const [dentists, setDentists] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingDentist, setEditingDentist] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const itemsPerPage = 5;
 
-  // Obtener todos los dentistas
   useEffect(() => {
     if (!token) return;
+    loadDentists();
+  }, [token]);
 
+  const loadDentists = () => {
     getAllDentists(
       token,
       (response) => {
-        setDentists(
-          response.map((d) => ({
-            id_user: d.id_user || d.id,
-            first_name: d.firstName || d.first_name,
-            last_name: d.lastName || d.last_name,
-            email: d.email || d.Email,
-            license_number: d.licenseNumber || d.license_number,
-            status: d.isActive ? "active" : "inactive",
-            created_at: d.createdAt || d.created_at || new Date().toISOString().split("T")[0],
-          }))
-        );
+        console.log("Respuesta completa de la API:", response);
+
+        const normalized = response.map((d) => {
+          const id = d.id || d.id_user;
+          if (!id) console.warn("Dentista sin ID:", d);
+
+          return {
+            id,
+            id_user: id,
+            first_name: d.firstName || d.first_name || "",
+            last_name: d.lastName || d.last_name || "",
+            email: d.email || d.Email || "",
+            license_number: d.licenseNumber || d.license_number || "",
+            status:
+              d.isActive === undefined
+                ? d.status || "inactive"
+                : d.isActive
+                ? "active"
+                : "inactive",
+            created_at:
+              d.createdAt ||
+              d.created_at ||
+              new Date().toISOString().split("T")[0],
+          };
+        });
+
+        setDentists(normalized);
       },
       (err) => {
-        // Mostrar mensaje que viene del back o un fallback genérico
         errorToast(err?.message || "Error del servidor al cargar los dentistas.");
       }
     );
-  }, [token]);
+  };
 
-  // Filtrado por búsqueda
   const filteredDentists = dentists.filter(
     (dentist) =>
-      `${dentist.first_name} ${dentist.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      dentist.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      dentist.license_number.toLowerCase().includes(searchTerm.toLowerCase())
+      `${dentist.first_name} ${dentist.last_name}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      (dentist.email || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (dentist.license_number || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
   );
 
-  useEffect(() => setCurrentPage(1), [searchTerm]);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   const handleCreateDentist = () => {
     setEditingDentist(null);
@@ -68,6 +84,14 @@ export default function SuperAdminPage() {
   };
 
   const handleEditDentist = (dentist) => {
+    console.log("Editando dentista:", dentist);
+
+    if (!dentist.id) {
+      errorToast("El dentista aún no está sincronizado. Actualizando lista...");
+      loadDentists();
+      return;
+    }
+
     setEditingDentist(dentist);
     setIsFormOpen(true);
   };
@@ -81,28 +105,39 @@ export default function SuperAdminPage() {
     };
 
     if (editingDentist) {
-      // Actualizar dentista existente
       updateDentistBySuperAdmin(
-        editingDentist.id_user || editingDentist.id,
+        editingDentist.id,
         payload,
         token,
         (updated) => {
+          const updatedDentist = {
+            id: updated.id || updated.id_user || editingDentist.id,
+            id_user: updated.id || updated.id_user || editingDentist.id,
+            first_name: updated.firstName || updated.first_name,
+            last_name: updated.lastName || updated.last_name,
+            email: updated.email,
+            license_number:
+              updated.licenseNumber ||
+              updated.license_number ||
+              editingDentist.license_number,
+            status:
+              updated.isActive === undefined
+                ? editingDentist.status
+                : updated.isActive
+                ? "active"
+                : "inactive",
+            created_at:
+              updated.createdAt ||
+              updated.created_at ||
+              editingDentist.created_at,
+          };
+
           setDentists((prev) =>
-            prev.map((d) =>
-              d.id_user === (updated.id_user || updated.id)
-                ? {
-                  ...d,
-                  first_name: updated.firstName || updated.first_name,
-                  last_name: updated.lastName || updated.last_name,
-                  email: updated.email,
-                  license_number: updated.licenseNumber || updated.license_number,
-                }
-                : d
-            )
+            prev.map((d) => (d.id === updatedDentist.id ? updatedDentist : d))
           );
           successToast("Dentista actualizado exitosamente");
-          setEditingDentist(null);
           setIsFormOpen(false);
+          setEditingDentist(null);
         },
         (err) => {
           errorToast(err?.message || "Error del servidor");
@@ -111,23 +146,33 @@ export default function SuperAdminPage() {
       return;
     }
 
-    // Crear nuevo dentista
     createDentist(
       payload,
       token,
       (response) => {
-        setDentists((prev) => [
-          ...prev,
-          {
-            id_user: response.id_user || response.id,
-            first_name: response.firstName || response.first_name,
-            last_name: response.lastName || response.last_name,
-            email: response.email,
-            license_number: response.licenseNumber || response.license_number,
-            status: "active",
-            created_at: new Date().toISOString().split("T")[0],
-          },
-        ]);
+        const entity = response.entity || response;
+        const id = entity.id;
+
+        if (!id) {
+          successToast("Dentista creado. Actualizando lista...");
+          loadDentists();
+          setIsFormOpen(false);
+          return;
+        }
+
+        const newDentist = {
+          id,
+          id_user: id,
+          first_name: entity.firstName || payload.firstName,
+          last_name: entity.lastName || payload.lastName,
+          email: entity.email || payload.email,
+          license_number:
+            entity.licenseNumber || payload.licenseNumber || "",
+          status: entity.isActive ? "active" : "inactive",
+          created_at: new Date().toISOString().split("T")[0],
+        };
+
+        setDentists((prev) => [...prev, newDentist]);
         successToast("Dentista creado exitosamente");
         setIsFormOpen(false);
       },
@@ -138,31 +183,36 @@ export default function SuperAdminPage() {
   };
 
   const handleToggleStatus = (dentist) => {
+    if (!dentist.id) {
+      errorToast("ID del dentista no disponible. Actualizando lista...");
+      loadDentists();
+      return;
+    }
     setDeleteConfirm(dentist);
   };
 
   const handleConfirmToggle = () => {
-    if (!deleteConfirm) return;
+    if (!deleteConfirm?.id) {
+      setDeleteConfirm(null);
+      return;
+    }
 
-    const newStatus = deleteConfirm.status === "active" ? false : true;
-
+    const newStatusBool = deleteConfirm.status === "active" ? false : true;
     toggleDentistStatus(
-      deleteConfirm.id_user,
-      newStatus,
+      deleteConfirm.id,
+      newStatusBool,
       token,
       (updatedDentist) => {
+        const id = updatedDentist.id || updatedDentist.id_user || deleteConfirm.id;
+        const status = updatedDentist.isActive
+          ? "active"
+          : "inactive";
+
         setDentists((prev) =>
-          prev.map((d) =>
-            d.id_user === (updatedDentist.id_user || updatedDentist.id)
-              ? {
-                ...d,
-                status: updatedDentist.isActive ? "active" : "inactive",
-              }
-              : d
-          )
+          prev.map((d) => (d.id === id ? { ...d, status } : d))
         );
         successToast(
-          `Dentista ${updatedDentist.isActive ? "activado" : "desactivado"} exitosamente`
+          `Dentista ${status === "active" ? "activado" : "desactivado"} exitosamente`
         );
         setDeleteConfirm(null);
       },
@@ -186,7 +236,11 @@ export default function SuperAdminPage() {
         actionIcon={Plus}
       />
 
-      <StatsCards total={totalDentists} active={activeDentists} className="text-sm p-4 gap-3" />
+      <StatsCards
+        total={totalDentists}
+        active={activeDentists}
+        className="text-sm p-4 gap-3"
+      />
 
       <SearchBar
         searchTerm={searchTerm}
@@ -223,3 +277,4 @@ export default function SuperAdminPage() {
     </div>
   );
 }
+

@@ -156,33 +156,26 @@ export default function Login() {
                 )}
               </motion.div>
 
-              <motion.div
-                variants={itemVariants}
-                className="flex justify-between items-center py-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="remember"
-                    className="h-4 w-4 border-gray-300 rounded"
-                  />
-                  <label htmlFor="remember" className="text-sm">
-                    Recordar contraseña
-                  </label>
-                </div>
-                <Link to="/forgot-password" className="text-sm hover:underline">
-                  ¿Olvidaste tu contraseña?
-                </Link>
-              </motion.div>
-
               <motion.div variants={itemVariants}>
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="w-full mt-1 mb-1"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "Iniciando sesión..." : "Ingresar"}
                 </Button>
+              </motion.div>
+
+              <motion.div
+                variants={itemVariants}
+                className="flex justify-center"
+              >
+                <Link
+                  to="/forgot-password"
+                  className="text-sm hover:underline text-gray-600"
+                >
+                  ¿Olvidaste tu contraseña?
+                </Link>
               </motion.div>
             </motion.form>
 
