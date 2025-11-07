@@ -12,51 +12,50 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    permissions:
-      contents: read # Requerido para actions/checkout
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up .NET Core
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
 
-      # Construir el proyecto del backend (ruta completa al .csproj)
+      # 🔹 Compilar
       - name: Build backend
-        run: dotnet build backend/src/Web/Web.csproj --configuration Release
+        run: dotnet build backend/Web/Web.csproj --configuration Release
 
-      # Publicar el proyecto en una carpeta temporal
+      # 🔹 Publicar en una carpeta fija (usamos ./publish para evitar problemas con DOTNET_ROOT)
       - name: Publish backend
-        run: dotnet publish backend/src/Web/Web.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+        run: dotnet publish backend/Web/Web.csproj -c Release -o ./publish
 
-      # Subir el artifact para el deploy
+      # 🔹 Subir el artifact
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: backend-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ./publish
 
   deploy:
     runs-on: windows-latest
     needs: build
-    
+
     steps:
-      # Descargar el artifact generado
+      # 🔹 Descargar el artifact generado
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: backend-app
+          path: ./publish
 
-      # Deploy a Azure Web App
+      # 🔹 Deploy a Azure Web App
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'turnando'
           slot-name: 'Production'
-          package: '${{env.DOTNET_ROOT}}/myapp'
+          package: './publish'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3A7240E3AB064F9EBDBA63DADD031F5F }}
+
 
 
