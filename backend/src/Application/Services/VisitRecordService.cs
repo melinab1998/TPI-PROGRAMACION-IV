@@ -45,10 +45,8 @@ namespace Application.Services
             var turn = _turnRepository.GetById(request.TurnId)
                 ?? throw new NotFoundException("TURN_NOT_FOUND");
 
-            var visitDate = DateOnly.FromDateTime(turn.AppointmentDate);
 
             var visitRecord = new VisitRecord(
-                visitDate,
                 request.Treatment,
                 request.Diagnosis,
                 request.Notes,
@@ -71,10 +69,9 @@ namespace Application.Services
                     ?? throw new NotFoundException("TURN_NOT_FOUND")
                 : _turnRepository.GetById(visitRecord.TurnId);
 
-            var visitDate = DateOnly.FromDateTime(turn.AppointmentDate);
+            
 
             visitRecord.UpdateInfo(
-                visitDate,
                 request.Treatment,
                 request.Diagnosis,
                 request.Notes,

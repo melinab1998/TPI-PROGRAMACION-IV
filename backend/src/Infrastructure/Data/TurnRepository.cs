@@ -17,6 +17,15 @@ namespace Infrastructure.Data
                 .ToList();
         }
 
+        public override Turn? GetById(int id)
+        {
+            return _dbSet
+                .Include(t => t.Dentist)
+                .Include(t => t.Patient)
+                .FirstOrDefault(t => t.Id == id);
+        }
+
+
         public IEnumerable<Turn> GetTurnsByDentist(int dentistId)
         {
             return _dbSet

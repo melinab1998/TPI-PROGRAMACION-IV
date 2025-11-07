@@ -28,6 +28,7 @@ public class Patient : User
         string? firstName,
         string? lastName,
         string? email,
+        string? dni,
         string? address,
         string? phoneNumber,
         string? city,
@@ -39,6 +40,7 @@ public class Patient : User
         if (!string.IsNullOrEmpty(firstName)) FirstName = firstName;
         if (!string.IsNullOrEmpty(lastName)) LastName = lastName;
         if (!string.IsNullOrEmpty(email)) Email = email;
+        if (!string.IsNullOrEmpty(dni)) Dni = dni;
         if (!string.IsNullOrEmpty(address)) Address = address;
         if (!string.IsNullOrEmpty(phoneNumber)) PhoneNumber = phoneNumber;
         if (!string.IsNullOrEmpty(city)) City = city;

@@ -5,7 +5,6 @@ namespace Domain.Entities
     public class VisitRecord
     {
         public int Id { get; set; }
-        public DateOnly VisitDate { get; set; }
         public string Treatment { get; set; }
         public string Diagnosis { get; set; }
         public string? Notes { get; set; }
@@ -15,12 +14,9 @@ namespace Domain.Entities
 
         public VisitRecord() { }
 
-        public VisitRecord(DateOnly visitDate, string treatment, string diagnosis, string? notes, string? prescription, int turnId)
+        public VisitRecord(string treatment, string diagnosis, string? notes, string? prescription, int turnId)
         {
-            if (visitDate > DateOnly.FromDateTime(DateTime.Now))
-                throw new AppValidationException("VISIT_DATE_IN_FUTURE");
-
-            VisitDate = visitDate;
+            
             Treatment = treatment;
             Diagnosis = diagnosis;
             Notes = notes;
@@ -28,16 +24,9 @@ namespace Domain.Entities
             TurnId = turnId;
         }
 
-        public void UpdateInfo(DateOnly? visitDate, string? treatment, string? diagnosis, string? notes, string? prescription, int? turnId)
+        public void UpdateInfo(string? treatment, string? diagnosis, string? notes, string? prescription, int? turnId)
         {
-            if (visitDate.HasValue)
-            {
-                if (visitDate.Value > DateOnly.FromDateTime(DateTime.Now))
-                    throw new AppValidationException("VISIT_DATE_IN_FUTURE");
-
-                VisitDate = visitDate.Value;
-            }
-
+          
             if (!string.IsNullOrEmpty(treatment)) Treatment = treatment;
             if (!string.IsNullOrEmpty(diagnosis)) Diagnosis = diagnosis;
             if (!string.IsNullOrEmpty(notes)) Notes = notes;

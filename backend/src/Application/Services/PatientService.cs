@@ -107,6 +107,11 @@ public class PatientService : IPatientService
         if (_patientRepository.GetByDni(request.Dni) != null)
             throw new AppValidationException("DNI_ALREADY_EXISTS");
 
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        if (request.BirthDate.HasValue && request.BirthDate.Value > today)
+            throw new AppValidationException("INVALID_BIRTHDATE_FUTURE");
+
         var patient = new Patient(request.FirstName, request.LastName, request.Email, request.Dni)
         {
             Address = request.Address,
@@ -164,8 +169,21 @@ public class PatientService : IPatientService
             request.Email != patient.Email)
             throw new AppValidationException("EMAIL_ALREADY_EXISTS");
 
+        if (!string.IsNullOrEmpty(request.Dni))
+        {
+            var existingPatient = _patientRepository.GetByDni(request.Dni);
+            if (existingPatient != null && existingPatient.Id != id)
+                throw new AppValidationException("DNI_ALREADY_EXISTS");
+        }
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        if (request.BirthDate.HasValue && request.BirthDate.Value > today)
+            throw new AppValidationException("INVALID_BIRTHDATE_FUTURE");
+
+
         patient.UpdatePersonalInfo(
-            request.FirstName, request.LastName, request.Email,
+            request.FirstName, request.LastName, request.Email, request.Dni,
             request.Address, request.PhoneNumber, request.City,
             request.MembershipNumber, request.BirthDate, request.HealthPlanId
         );
