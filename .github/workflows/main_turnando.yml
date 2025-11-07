@@ -21,13 +21,13 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      # 🔹 Construir el backend (ruta completa al .csproj)
+      # 🔹 Construir el backend (ruta real al .csproj)
       - name: Build backend
-        run: dotnet build backend/Web/Web.csproj --configuration Release
+        run: dotnet build backend/src/web/Web.csproj --configuration Release
 
       # 🔹 Publicar en carpeta local ./publish
       - name: Publish backend
-        run: dotnet publish backend/Web/Web.csproj -c Release -o ./publish
+        run: dotnet publish backend/src/web/Web.csproj -c Release -o ./publish
 
       # 🔹 Subir el artifact para deploy
       - name: Upload artifact for deployment job
@@ -56,4 +56,5 @@ jobs:
           slot-name: 'Production'
           package: './publish'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3A7240E3AB064F9EBDBA63DADD031F5F }}
+
 
