@@ -126,6 +126,13 @@ builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 
 var app = builder.Build();
 
+// Aplicar migraciones automáticamente.
+using (var serviceScope = app.Services.CreateScope())
+{
+    var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();
+}
+
 // Al iniciar la aplicación, se verifica si existe un SuperAdmin en la base de datos.
 // Si no existe, se crea automáticamente utilizando los datos definidos en appsettings.json.
 using (var scope = app.Services.CreateScope())
