@@ -119,33 +119,33 @@ export default function PatientsPage() {
     setIsOdontogramModalOpen(true);
   };
 
-const handleSavePatient = (patientData) => {
-  const payload = {
-    firstName: patientData.firstName,
-    lastName: patientData.lastName,
-    email: patientData.email,
-    dni: patientData.dni,
-    birthDate: patientData.birthDate || null,
-    address: patientData.address || null,
-    phoneNumber: patientData.phoneNumber || null,
-    city: patientData.city || null,
-    membershipNumber: patientData.membershipNumber || null,
-    healthInsuranceId: patientData.healthInsuranceId ? parseInt(patientData.healthInsuranceId) : null,
-    healthPlanId: patientData.healthPlanId ? parseInt(patientData.healthPlanId) : null,
-  };
+  const handleSavePatient = (patientData) => {
+    const payload = {
+      firstName: patientData.firstName,
+      lastName: patientData.lastName,
+      email: patientData.email,
+      dni: patientData.dni,
+      birthDate: patientData.birthDate || null,
+      address: patientData.address || null,
+      phoneNumber: patientData.phoneNumber || null,
+      city: patientData.city || null,
+      membershipNumber: patientData.membershipNumber || null,
+      healthInsuranceId: patientData.healthInsuranceId ? parseInt(patientData.healthInsuranceId) : null,
+      healthPlanId: patientData.healthPlanId ? parseInt(patientData.healthPlanId) : null,
+    };
 
-  if (editingPatient) {
-    updatePatientByDentist(
-      editingPatient.id,
-      payload,
-      token,
-      (response) => {
-        const updated = response.entity || response;
+    if (editingPatient) {
+      updatePatientByDentist(
+        editingPatient.id,
+        payload,
+        token,
+        (response) => {
+          const updated = response.entity || response;
 
-        setPatients((prev) =>
-          prev.map((p) =>
-            p.id === updated.id
-              ? {
+          setPatients((prev) =>
+            prev.map((p) =>
+              p.id === updated.id
+                ? {
                   ...p,
                   id: updated.id,
                   firstName: updated.firstName,
@@ -162,65 +162,63 @@ const handleSavePatient = (patientData) => {
                   healthInsuranceId: updated.healthInsuranceId,
                   healthInsuranceName: updated.healthInsuranceName,
                 }
-              : p
-          )
-        );
+                : p
+            )
+          );
 
-        successToast("Paciente actualizado exitosamente");
+          successToast("Paciente actualizado exitosamente");
+          setEditingPatient(null);
+          setIsFormModalOpen(false);
+        },
+        (err) => {
+          errorToast(err?.message || "Error al actualizar el paciente");
+        }
+      );
+
+      return;
+    }
+
+    CreatePatientByDentist(
+      payload,
+      token,
+      (response) => {
+        const entity = response.entity || response;
+        if (!entity.id) {
+          errorToast("No se recibió el ID del nuevo paciente. Recargando lista...");
+          getAllPatients(token, (res) => {
+            setPatients(res);
+          });
+          setIsFormModalOpen(false);
+          return;
+        }
+
+        const newPatient = {
+          id: entity.id,
+          firstName: entity.firstName,
+          lastName: entity.lastName,
+          dni: entity.dni,
+          email: entity.email,
+          phoneNumber: entity.phoneNumber,
+          address: entity.address,
+          city: entity.city,
+          membershipNumber: entity.membershipNumber,
+          birthDate: entity.birthDate,
+          healthPlanId: entity.healthPlanId,
+          healthPlanName: entity.healthPlanName,
+          healthInsuranceId: entity.healthInsuranceId,
+          healthInsuranceName: entity.healthInsuranceName,
+        };
+
+        setPatients((prev) => [...prev, newPatient]);
+        successToast("Paciente creado exitosamente");
         setEditingPatient(null);
         setIsFormModalOpen(false);
       },
       (err) => {
-        errorToast(err?.message || "Error al actualizar el paciente");
+        errorToast(err?.message || "Error al crear el paciente");
       }
     );
-
-    return;
-  }
-
-  CreatePatientByDentist(
-    payload,
-    token,
-    (response) => {
-      console.log("Respuesta creación paciente:", response);
-
-      const entity = response.entity || response;
-      if (!entity.id) {
-        errorToast("No se recibió el ID del nuevo paciente. Recargando lista...");
-        getAllPatients(token, (res) => {
-          setPatients(res);
-        });
-        setIsFormModalOpen(false);
-        return;
-      }
-
-      const newPatient = {
-        id: entity.id,
-        firstName: entity.firstName,
-        lastName: entity.lastName,
-        dni: entity.dni,
-        email: entity.email,
-        phoneNumber: entity.phoneNumber,
-        address: entity.address,
-        city: entity.city,
-        membershipNumber: entity.membershipNumber,
-        birthDate: entity.birthDate,
-        healthPlanId: entity.healthPlanId,
-        healthPlanName: entity.healthPlanName,
-        healthInsuranceId: entity.healthInsuranceId,
-        healthInsuranceName: entity.healthInsuranceName,
-      };
-
-      setPatients((prev) => [...prev, newPatient]);
-      successToast("Paciente creado exitosamente");
-      setEditingPatient(null);
-      setIsFormModalOpen(false);
-    },
-    (err) => {
-      errorToast(err?.message || "Error al crear el paciente");
-    }
-  );
-};
+  };
 
   const fadeSlideDown = { hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
   const fadeSlideUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
@@ -298,6 +296,7 @@ const handleSavePatient = (patientData) => {
           setSelectedPatientForVisits(null);
         }}
         patient={selectedPatientForVisits}
+        token={token}
       />
 
       <PatientOdontogramModal
