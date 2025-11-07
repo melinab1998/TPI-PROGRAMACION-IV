@@ -14,6 +14,8 @@ export default function CancelAppointmentModal({
     appointment,
     onCancelled 
 }) {
+    const { token } = useContext(AuthContext); 
+
     if (!appointment) return null
 
     const appointmentDate = parseISO(appointment.appointment_date)
@@ -21,18 +23,26 @@ export default function CancelAppointmentModal({
     const formattedTime = format(appointmentDate, "HH:mm")
 
     const handleConfirm = async () => {
-        const { token } = useContext(AuthContext);
         if (!token) {
             errorToast("No hay token disponible")
             return
         }
 
+        // 🔹 Verificar también el ID del turno
+        const turnId = appointment.id_turn || appointment.id;
+        if (!turnId) {
+            errorToast("No se pudo identificar el turno a cancelar");
+            return;
+        }
+
+        console.log("🔍 Cancelando turno ID:", turnId, "Token:", !!token);
+
         cancelTurn(
             token,
-            appointment.id_turn,
+            turnId, // ✅ Usar la variable verificada
             () => {
                 successToast("Turno cancelado exitosamente")
-                onCancelled(appointment.id_turn) 
+                onCancelled(turnId) // ✅ Usar el mismo ID
                 onClose()
             },
             (err) => {
