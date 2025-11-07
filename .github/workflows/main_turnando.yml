@@ -23,13 +23,13 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      # Construir el proyecto del backend (apunta al csproj dentro de backend)
+      # Construir el proyecto del backend (ruta completa al .csproj)
       - name: Build backend
-        run: dotnet build backend/Turnando.csproj --configuration Release
+        run: dotnet build backend/src/Web/Web.csproj --configuration Release
 
       # Publicar el proyecto en una carpeta temporal
       - name: Publish backend
-        run: dotnet publish backend/Turnando.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+        run: dotnet publish backend/src/Web/Web.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
       # Subir el artifact para el deploy
       - name: Upload artifact for deployment job
@@ -58,3 +58,5 @@ jobs:
           slot-name: 'Production'
           package: '${{env.DOTNET_ROOT}}/myapp'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3A7240E3AB064F9EBDBA63DADD031F5F }}
+
+
