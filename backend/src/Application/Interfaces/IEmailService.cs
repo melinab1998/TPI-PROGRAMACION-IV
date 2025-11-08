@@ -1,6 +1,3 @@
-using MailKit.Net.Smtp;
-using MimeKit;
-
 namespace Application.Interfaces;
 
 public interface IEmailService

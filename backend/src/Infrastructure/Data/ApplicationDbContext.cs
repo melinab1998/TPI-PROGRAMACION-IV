@@ -14,8 +14,6 @@ namespace Infrastructure.Data
         public DbSet<HealthInsurance> HealthInsurances { get; set; }
         public DbSet<HealthPlan> HealthPlans { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
-
-        // DbSet general para User (útil para login)
         public DbSet<User> Users { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -27,14 +25,12 @@ namespace Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Table-Per-Type (TPT)
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<Patient>().ToTable("Patients");
             modelBuilder.Entity<Dentist>().ToTable("Dentists");
             modelBuilder.Entity<SuperAdmin>().ToTable("SuperAdmins");
             modelBuilder.Entity<Turn>().ToTable("Turns");
 
-            // Configuración de Turn
             modelBuilder.Entity<Turn>()
                 .HasKey(t => t.Id);
 

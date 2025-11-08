@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Application.Interfaces;
 using Application.Models;
 using Application.Models.Requests;
-using Domain.Entities;
 using Web.Controllers;
 
 [Route("api/auth")]

@@ -40,8 +40,6 @@ namespace Web.Controllers
             return Ok(_availabilityService.UpdateAvailability(slotId, updatedSlot));
         }
 
-        //Necesario para el front
-
         [HttpGet("{dentistId}/available-slots")]
         [Authorize(Roles = "SuperAdmin, Dentist, Patient")]
         public ActionResult<Dictionary<string, List<string>>> GetAvailableSlots(int dentistId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
