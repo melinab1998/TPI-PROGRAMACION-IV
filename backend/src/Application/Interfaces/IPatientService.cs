@@ -9,8 +9,6 @@ public interface IPatientService
     PatientDto GetPatientById(int id);
     PatientDto RegisterPatient(RegisterPatientRequest request);
     PatientDto UpdatePatient(int id, UpdatePatientRequest request);
-
-    //Necesarios para el front
     ActivationResponseDto<PatientDto> CreatePatientByDentist(CreatePatientByDentistRequest request);
     void ActivatePatient(string token, string password);
     PatientDto UpdatePatientEmail(int id, UpdatePatientEmailRequest request);

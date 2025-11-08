@@ -1,22 +1,23 @@
-namespace Domain.Exceptions;
-
-public class NotFoundException : Exception
+namespace Domain.Exceptions
 {
-    public string ErrorCode { get; private set; }
-    public NotFoundException()
-    : base()
+    public class NotFoundException : Exception
     {
-    }
+        public string ErrorCode { get; private set; } = string.Empty;
 
-    public NotFoundException(string message, string errorCode = "")
-        : base(message)
-    {
-        ErrorCode = errorCode;
-    }
+        public NotFoundException()
+            : base()
+        {
+        }
 
-    public NotFoundException(string message, Exception innerException)
-        : base(message, innerException)
-    {
-    }
+        public NotFoundException(string message, string errorCode = "")
+            : base(message)
+        {
+            ErrorCode = errorCode;
+        }
 
+        public NotFoundException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+    }
 }

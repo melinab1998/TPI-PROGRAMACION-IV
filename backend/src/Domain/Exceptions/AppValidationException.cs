@@ -1,23 +1,24 @@
-
-namespace Domain.Exceptions;
-
-public class AppValidationException : Exception
+namespace Domain.Exceptions
 {
-    public string ErrorCode { get; private set; }
-    public AppValidationException()
-    : base()
+    public class AppValidationException : Exception
     {
-    }
+        public string ErrorCode { get; private set; } = string.Empty;
 
-    public AppValidationException(string message, string errorCode = "")
-        : base(message)
-    {
-        ErrorCode = errorCode;
-    }
+        public AppValidationException()
+            : base()
+        {
+        }
 
-    public AppValidationException(string message, Exception innerException)
-        : base(message, innerException)
-    {
-    }
+        public AppValidationException(string message, string errorCode = "")
+            : base(message)
+        {
+            ErrorCode = errorCode;
+        }
 
+        public AppValidationException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+    }
 }
+

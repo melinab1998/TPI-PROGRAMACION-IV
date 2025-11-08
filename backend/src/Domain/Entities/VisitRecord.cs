@@ -5,8 +5,8 @@ namespace Domain.Entities
     public class VisitRecord
     {
         public int Id { get; set; }
-        public string Treatment { get; set; }
-        public string Diagnosis { get; set; }
+        public string Treatment { get; set; } = string.Empty;
+        public string Diagnosis { get; set; } = string.Empty;
         public string? Notes { get; set; }
         public string? Prescription { get; set; }
         public int TurnId { get; set; }
@@ -16,7 +16,6 @@ namespace Domain.Entities
 
         public VisitRecord(string treatment, string diagnosis, string? notes, string? prescription, int turnId)
         {
-            
             Treatment = treatment;
             Diagnosis = diagnosis;
             Notes = notes;
@@ -26,7 +25,6 @@ namespace Domain.Entities
 
         public void UpdateInfo(string? treatment, string? diagnosis, string? notes, string? prescription, int? turnId)
         {
-          
             if (!string.IsNullOrEmpty(treatment)) Treatment = treatment;
             if (!string.IsNullOrEmpty(diagnosis)) Diagnosis = diagnosis;
             if (!string.IsNullOrEmpty(notes)) Notes = notes;
@@ -36,4 +34,3 @@ namespace Domain.Entities
         }
     }
 }
-

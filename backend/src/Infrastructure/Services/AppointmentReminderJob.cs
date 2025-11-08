@@ -1,10 +1,6 @@
 using Application.Interfaces;
 using Domain.Interfaces;
 using Domain.Exceptions;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

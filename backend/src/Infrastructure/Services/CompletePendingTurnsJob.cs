@@ -3,10 +3,6 @@ using Domain.Enums;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Services
 {
@@ -65,14 +61,14 @@ namespace Infrastructure.Services
             {
                 _logger.LogInformation("Marcando turno {Id} de {AppointmentDate} como Completado", turn.Id, turn.AppointmentDate);
 
-                turn.Status = TurnStatus.Completed;
+                var updatedTurn = turn with { Status = TurnStatus.Completed };
 
-                turnService.UpdateTurn(turn.Id, new Application.Models.Requests.UpdateTurnRequest
+                turnService.UpdateTurn(updatedTurn.Id, new Application.Models.Requests.UpdateTurnRequest
                 {
                     Status = TurnStatus.Completed
                 });
 
-                _logger.LogInformation("Turno {Id} actualizado correctamente", turn.Id);
+                _logger.LogInformation("Turno {Id} actualizado correctamente", updatedTurn.Id);
             }
         }
     }

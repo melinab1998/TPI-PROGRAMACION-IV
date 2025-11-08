@@ -2,7 +2,7 @@ namespace Domain.Exceptions
 {
     public class UnauthorizedException : Exception
     {
-        public string ErrorCode { get; private set; }
+        public string ErrorCode { get; private set; } = string.Empty;
 
         public UnauthorizedException()
             : base()
@@ -21,3 +21,4 @@ namespace Domain.Exceptions
         }
     }
 }
+

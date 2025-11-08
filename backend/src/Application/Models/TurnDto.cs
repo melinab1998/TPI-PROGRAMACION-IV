@@ -3,30 +3,32 @@ using Domain.Enums;
 
 namespace Application.Models
 {
-    public class TurnDto
+    public record TurnDto(
+        int Id,
+        DateTime AppointmentDate,
+        TurnStatus Status,
+        string? ConsultationType,
+        int PatientId,
+        int DentistId,
+        DentistDto? Dentist
+    )
     {
-        public int Id { get; set; }
-        public DateTime AppointmentDate { get; set; }
-        public TurnStatus Status { get; set; }
-        public string? ConsultationType { get; set; }
-        public int PatientId { get; set; }
-        public int DentistId { get; set; }
-        public DentistDto? Dentist { get; set; }
-
-        public static TurnDto Create(Turn t) => new()
+        public static TurnDto Create(Turn t)
         {
-            Id = t.Id,
-            AppointmentDate = t.AppointmentDate,
-            Status = t.Status,
-            ConsultationType = t.ConsultationType,
-            PatientId = t.PatientId,
-            DentistId = t.DentistId,
-            Dentist = t.Dentist != null ? DentistDto.Create(t.Dentist) : null
-        };
+            return new TurnDto(
+                t.Id,
+                t.AppointmentDate,
+                t.Status,
+                t.ConsultationType,
+                t.PatientId,
+                t.DentistId,
+                t.Dentist != null ? DentistDto.Create(t.Dentist) : null
+            );
+        }
 
         public static List<TurnDto> CreateList(IEnumerable<Turn> turns)
         {
-            return turns.Select(turn => Create(turn)).ToList();
+            return turns.Select(Create).ToList();
         }
     }
 }
