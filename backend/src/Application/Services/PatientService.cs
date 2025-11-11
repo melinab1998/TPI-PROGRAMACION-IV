@@ -41,8 +41,18 @@ public class PatientService : IPatientService
     }
 
     // Obtiene un paciente por su identificador único.
-    public PatientDto GetPatientById(int id)
+    public PatientDto GetPatientById(int id, string userId, string userRole)
     {
+        if (string.IsNullOrWhiteSpace(userId))
+            throw new AppValidationException("USER_NOT_AUTHENTICATED");
+
+        if (!int.TryParse(userId, out int parsedUserId))
+            throw new AppValidationException("INVALID_USER_ID");
+
+        // Si es paciente, solo puede ver su propio perfil
+        if (userRole == "Patient" && id != parsedUserId)
+            throw new AppValidationException("PATIENT_ID_MISMATCH");
+            
         var patient = _patientRepository.GetById(id)
             ?? throw new NotFoundException("PATIENT_NOT_FOUND");
         return PatientDto.Create(patient);
@@ -68,8 +78,18 @@ public class PatientService : IPatientService
     }
 
     // Actualiza el correo electrónico de un paciente. (Necesario para front)
-    public PatientDto UpdatePatientEmail(int id, UpdatePatientEmailRequest request)
+    public PatientDto UpdatePatientEmail(int id, UpdatePatientEmailRequest request, string userId, string userRole)
     {
+
+        if (string.IsNullOrWhiteSpace(userId))
+            throw new AppValidationException("USER_NOT_AUTHENTICATED");
+
+        if (!int.TryParse(userId, out int parsedUserId))
+            throw new AppValidationException("INVALID_USER_ID");
+
+        if (userRole == "Patient" && id != parsedUserId)
+            throw new AppValidationException("PATIENT_ID_MISMATCH");
+
         var patient = _patientRepository.GetById(id)
             ?? throw new NotFoundException("PATIENT_NOT_FOUND");
 
@@ -85,8 +105,17 @@ public class PatientService : IPatientService
     }
 
     // Actualiza la contraseña de un paciente. (Necesario para front)
-    public void UpdatePatientPassword(int id, UpdatePatientPasswordRequest request)
+    public void UpdatePatientPassword(int id, UpdatePatientPasswordRequest request, string userId, string userRole)
     {
+        if (string.IsNullOrWhiteSpace(userId))
+            throw new AppValidationException("USER_NOT_AUTHENTICATED");
+
+        if (!int.TryParse(userId, out int parsedUserId))
+            throw new AppValidationException("INVALID_USER_ID");
+
+        if (userRole == "Patient" && id != parsedUserId)
+            throw new AppValidationException("PATIENT_ID_MISMATCH");
+
         var patient = _patientRepository.GetById(id)
             ?? throw new NotFoundException("PATIENT_NOT_FOUND");
 
