@@ -176,7 +176,6 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
       if (editMode) {
         await updateTurn(token, appointment.id_turn, payload,
           (turnFromBackend) => {
-            successToast("Turno actualizado con éxito");
             onSave(turnFromBackend);
             onClose();
           },
@@ -185,7 +184,6 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
       } else {
         await createTurn(token, payload,
           (turnFromBackend) => {
-            successToast("Turno creado con éxito");
             onSave(turnFromBackend);
             onClose();
           },
