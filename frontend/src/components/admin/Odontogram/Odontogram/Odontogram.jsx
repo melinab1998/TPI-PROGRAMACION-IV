@@ -130,7 +130,7 @@ const Odontogram = () => {
             onClick={() => setShowObservationsModal(true)}
             className="flex items-center gap-2 px-6 py-3 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md font-medium"
           >
-            <span className="text-lg">📋</span>
+            <span className="text-lg">📝</span>
             <div className="flex flex-col items-start">
               <span className="text-sm">Ver Observaciones</span>
               <span className="text-xs opacity-80">{observations.length} registrada(s)</span>
