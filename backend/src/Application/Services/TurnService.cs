@@ -48,8 +48,22 @@ namespace Application.Services
         }
 
         // Crea un nuevo turno (cita) para un paciente con un dentista.
-        public TurnDto CreateTurn(CreateTurnRequest request)
+        public TurnDto CreateTurn(CreateTurnRequest request, string userId, string userRole)
         {
+
+            // Validar que el userId no sea nulo o vacío antes de convertir
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new AppValidationException("USER_NOT_AUTHENTICATED");
+
+            if (!int.TryParse(userId, out int parsedUserId))
+                throw new AppValidationException("INVALID_USER_ID");
+
+            // Si es paciente, no puede crear turno para otro paciente
+            int patientId = userRole == "Patient" ? parsedUserId : request.PatientId;
+            if (userRole == "Patient" && request.PatientId != parsedUserId)
+                throw new AppValidationException("PATIENT_ID_MISMATCH");
+
+
             // Validar que el turno esté en intervalos de 30 minutos
             if (request.AppointmentDate.Minute % 30 != 0 || request.AppointmentDate.Second != 0)
                 throw new AppValidationException("APPOINTMENT_MUST_BE_ON_HALF_HOUR");
@@ -63,6 +77,9 @@ namespace Application.Services
             var dentist = _dentistRepository.GetById(request.DentistId);
             if (dentist == null)
                 throw new NotFoundException("DENTIST_NOT_FOUND");
+            
+            if (!dentist.IsActive)
+                throw new AppValidationException("DENTIST_NOT_AVAILABLE");
 
             // Validar que la fecha del turno no sea en el pasado
             if (request.AppointmentDate < DateTime.Now)

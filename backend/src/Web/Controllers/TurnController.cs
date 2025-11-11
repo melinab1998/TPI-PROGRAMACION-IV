@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Application.Interfaces;
 using Application.Models;
 using Application.Models.Requests;
@@ -34,7 +35,10 @@ public class TurnController : ControllerBase
     [Authorize(Roles = "Dentist, Patient")]
     public ActionResult<TurnDto> Create([FromBody] CreateTurnRequest request)
     {
-        var created = _turnService.CreateTurn(request);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value!;
+        
+        var created = _turnService.CreateTurn(request, userId, userRole);
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 

@@ -3,6 +3,7 @@ using Application.Interfaces;
 using Application.Models;
 using Application.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Web.Controllers;
 
@@ -28,7 +29,9 @@ public class PatientController : ControllerBase
     [Authorize(Roles = "Dentist, Patient, SuperAdmin")]
     public ActionResult<PatientDto> GetPatientById([FromRoute] int id)
     {
-        return Ok(_patientService.GetPatientById(id));
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value!;
+        return Ok(_patientService.GetPatientById(id, userId, userRole));
     }
 
 
@@ -44,7 +47,10 @@ public class PatientController : ControllerBase
     [Authorize(Roles = "Patient")]
     public ActionResult<PatientDto> UpdatePatientEmail([FromRoute] int id, [FromBody] UpdatePatientEmailRequest request)
     {
-        var updated = _patientService.UpdatePatientEmail(id, request);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value!;
+
+        var updated = _patientService.UpdatePatientEmail(id, request, userId, userRole);
         return Ok(updated);
     }
 
@@ -52,7 +58,10 @@ public class PatientController : ControllerBase
     [Authorize(Roles = "Patient")]
     public IActionResult UpdatePatientPassword([FromRoute] int id, [FromBody] UpdatePatientPasswordRequest request)
     {
-        _patientService.UpdatePatientPassword(id, request);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value!;
+
+        _patientService.UpdatePatientPassword(id, request, userId, userRole);
         return NoContent();
     }
 }
