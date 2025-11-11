@@ -119,8 +119,8 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
                   setGeneral({ status: opt.key === general.status ? null : opt.key })
                 }
                 className={`flex flex-col items-center justify-center gap-1 p-3 border rounded-lg text-sm font-medium transition-all duration-150 ${general.status === opt.key
-                    ? "bg-primary/10 border-primary"
-                    : "bg-white border-gray-300 hover:bg-gray-50"
+                  ? "bg-primary/10 border-primary"
+                  : "bg-white border-gray-300 hover:bg-gray-50"
                   }`}
               >
                 <div>{opt.icon}</div>
@@ -130,11 +130,16 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
           </div>
         </div>
 
+
+
         {/* 🔹 Instrucciones (restauradas) */}
         <div className="px-6 py-3 bg-gray-50 border-b border-gray-100">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">
-            Guía de colores
+          <h3 className="text-sm font-semibold">
+            Guía de colores para las secciones de la pieza
           </h3>
+          <p className="text-xs text-gray-600 mb-3 mt-2">
+            Selecciona un color para marcar el estado de una parte específica del diente.
+          </p>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
             {Object.entries(colors).map(([key, colorInfo]) => (
               <div
@@ -189,8 +194,8 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
                         key={c}
                         onClick={() => handleColorChange(section, c)}
                         className={`w-7 h-7 rounded-full border-2 transition-all duration-150 transform hover:scale-110 ${data.color === c
-                            ? "ring-2 ring-primary ring-offset-1 scale-110"
-                            : "border-gray-300 hover:border-gray-400"
+                          ? "ring-2 ring-primary ring-offset-1 scale-110"
+                          : "border-gray-300 hover:border-gray-400"
                           }`}
                         style={{
                           backgroundColor: c === "white" ? "#FFFFFF" : customColors[c],

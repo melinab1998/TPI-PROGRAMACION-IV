@@ -14,6 +14,7 @@ import AdminHome from "./pages/admin/AdminHome/AdminHome";
 import AdminSchedule from "./pages/admin/Schedule/Schedule";
 import PatientsPage from "./pages/admin/Patients/Patients";
 import Availability from "./pages/admin/Availability/Availability";
+import Odontogram from "./components/admin/Odontogram/Odontogram/Odontogram";
 import VisitsPage from "./pages/admin/Visits/Visits";
 import SuperAdminPage from "./pages/super/SuperAdminHome/SuperAdminHome";
 import ForgotPassword from "./components/guest/ForgotPassword/ForgotPasswordForm/ForgotPasswordForm";
@@ -64,6 +65,7 @@ function App() {
           </Route>
 
           <Route path="*" element={<NotFound />} />
+          <Route path="odontogram" element={<Odontogram/>}/>
         </Route>
       </Routes>
       <ToastContainer
