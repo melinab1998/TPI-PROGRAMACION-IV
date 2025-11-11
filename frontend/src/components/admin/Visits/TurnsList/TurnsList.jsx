@@ -14,7 +14,6 @@ export default function TurnsList({
         visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
     };
 
-    // 🔹 Convertir y filtrar los turnos de HOY correctamente
     const today = new Date();
     const todayTurns = turns.filter((t) => {
         const turnDate = new Date(t.appointmentDate);
@@ -60,7 +59,6 @@ export default function TurnsList({
                                     key={turn.id}
                                     turn={{
                                         ...turn,
-                                        // 🔹 Aseguramos que appointmentDate sea un objeto Date
                                         appointmentDate: new Date(turn.appointmentDate),
                                     }}
                                     patientData={patientsData[turn.patientId]}

@@ -35,7 +35,6 @@ const Odontogram = () => {
   const getToothObservations = () => {
     const observations = [];
     Object.entries(toothData).forEach(([toothNumber, data]) => {
-      // Observaciones generales (coronas, cruces, etc.)
       if (data.general?.status) {
         observations.push({
           toothNumber,
@@ -46,7 +45,6 @@ const Odontogram = () => {
             .replace(/^\w/, (c) => c.toUpperCase()),
         });
       }
-      // Observaciones por secciones
       Object.entries(data.sections || {}).forEach(([section, sectionData]) => {
         if (sectionData.color !== "white" && sectionData.observation) {
           observations.push({
@@ -74,12 +72,9 @@ const Odontogram = () => {
 
   return (
     <div className="p-4 flex flex-col items-center">
-      {/* Título centrado */}
       <h1 className="text-2xl font-extrabold tracking-wide mb-8 mt-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70 drop-shadow-sm">
         ODONTOGRAMA
       </h1>
-
-      {/* Odontograma Superior */}
       <div className="flex mb-4">
         {topRowRight.map((t) => (
           <Tooth key={t} label={t} data={toothData[t]} onClick={() => handleToothClick(t)} />
@@ -89,8 +84,6 @@ const Odontogram = () => {
           <Tooth key={t} label={t} data={toothData[t]} onClick={() => handleToothClick(t)} />
         ))}
       </div>
-
-      {/* Odontograma Inferior */}
       <div className="flex mb-8">
         {bottomRowRight.map((t) => (
           <Tooth key={t} label={t} data={toothData[t]} onClick={() => handleToothClick(t)} />
@@ -100,8 +93,6 @@ const Odontogram = () => {
           <Tooth key={t} label={t} data={toothData[t]} onClick={() => handleToothClick(t)} />
         ))}
       </div>
-
-      {/* Odontograma Infantil Superior */}
       <div className="flex mb-4">
         {topChildRight.map((t) => (
           <Tooth key={t} label={t} data={toothData[t]} onClick={() => handleToothClick(t)} />
@@ -112,7 +103,6 @@ const Odontogram = () => {
         ))}
       </div>
 
-      {/* Odontograma Infantil Inferior */}
       <div className="flex mb-12">
         {bottomChildRight.map((t) => (
           <Tooth key={t} label={t} data={toothData[t]} onClick={() => handleToothClick(t)} />
@@ -123,7 +113,6 @@ const Odontogram = () => {
         ))}
       </div>
 
-      {/* Botón para ver observaciones - debajo del odontograma */}
       {observations.length > 0 && (
         <div className="mb-8">
           <button
@@ -139,11 +128,9 @@ const Odontogram = () => {
         </div>
       )}
 
-      {/* Modal de Observaciones */}
       {showObservationsModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[80vh] flex flex-col shadow-2xl border border-gray-200">
-            {/* Header del Modal */}
             <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-white rounded-t-2xl">
               <div>
                 <h2 className="text-xl font-bold text-gray-800">
@@ -161,7 +148,6 @@ const Odontogram = () => {
               </button>
             </div>
 
-            {/* Lista de Observaciones */}
             <div className="flex-1 overflow-y-auto p-6">
               {observations.length === 0 ? (
                 <div className="text-center text-gray-500 py-12">
@@ -184,14 +170,14 @@ const Odontogram = () => {
                         <div
                           className="w-4 h-4 rounded-full border-2 mt-1 flex-shrink-0 shadow-sm"
                           style={{
-                            backgroundColor: 
+                            backgroundColor:
                               obs.color === "blue" ? "#1E3A8A" :
-                              obs.color === "red" ? "#B22222" :
-                              obs.color === "green" ? "#2E7D32" : "white",
-                            borderColor: 
+                                obs.color === "red" ? "#B22222" :
+                                  obs.color === "green" ? "#2E7D32" : "white",
+                            borderColor:
                               obs.color === "blue" ? "#1E3A8A" :
-                              obs.color === "red" ? "#B22222" :
-                              obs.color === "green" ? "#2E7D32" : "#D1D5DB"
+                                obs.color === "red" ? "#B22222" :
+                                  obs.color === "green" ? "#2E7D32" : "#D1D5DB"
                           }}
                         />
                         <div className="flex-1">
@@ -215,7 +201,6 @@ const Odontogram = () => {
               )}
             </div>
 
-            {/* Footer del Modal */}
             <div className="flex justify-end px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-2xl">
               <button
                 onClick={() => setShowObservationsModal(false)}
@@ -228,13 +213,12 @@ const Odontogram = () => {
         </div>
       )}
 
-      {/* Modal para editar diente */}
       {selectedTooth && (
-        <ToothModal 
-          toothNumber={selectedTooth} 
-          initialData={toothData[selectedTooth]} 
-          onSave={handleSaveToothData} 
-          onClose={handleCloseModal} 
+        <ToothModal
+          toothNumber={selectedTooth}
+          initialData={toothData[selectedTooth]}
+          onSave={handleSaveToothData}
+          onClose={handleCloseModal}
         />
       )}
     </div>

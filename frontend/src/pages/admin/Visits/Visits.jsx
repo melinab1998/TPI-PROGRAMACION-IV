@@ -74,7 +74,6 @@ export default function VisitsPage() {
         );
     };
 
-    // 🗓️ Cargar turnos del dentista
     useEffect(() => {
         if (!token || !userId) return;
 
@@ -163,7 +162,6 @@ export default function VisitsPage() {
                 turnId: savedRecord.turnId || selectedTurn.id
             };
 
-            // 🔹 ACTUALIZAR EL ESTADO CORRECTAMENTE
             setVisitRecords(prev => {
                 const newRecords = existingRecord
                     ? prev.map(r => r.turnId === selectedTurn.id ? processedRecord : r)

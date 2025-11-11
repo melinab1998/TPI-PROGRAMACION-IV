@@ -91,7 +91,6 @@ export default function UserHome() {
                     />
                 </motion.div>
 
-                {/* Próximo turno */}
                 <motion.section
                     className="space-y-6"
                     initial="hidden"
@@ -124,7 +123,6 @@ export default function UserHome() {
                     </motion.div>
                 </motion.section>
 
-                {/* Acciones rápidas */}
                 <motion.section
                     className="space-y-8"
                     initial="hidden"

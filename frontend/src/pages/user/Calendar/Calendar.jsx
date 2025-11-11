@@ -69,7 +69,7 @@ export default function CalendarPage() {
     };
 
     const handleGoBack = () => {
-        navigate(-1); // Esto vuelve a la página anterior en el historial
+        navigate(-1); 
     };
 
     return (
@@ -107,8 +107,7 @@ export default function CalendarPage() {
                     />
                 </div>
             </motion.div>
-
-            {/* Botón Volver */}
+            
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

@@ -27,14 +27,12 @@ const Tooth = ({ label, data, onClick }) => {
       <span className="text-xs font-medium mb-1">{label}</span>
       
       <svg width="40" height="40" viewBox="0 0 100 100" className="drop-shadow-sm">
-        {/* Secciones */}
         <polygon points="20,20 80,20 60,40 40,40" fill={getFillColor(getColor("top"))} stroke="black" strokeWidth="1" />
         <polygon points="20,80 80,80 60,60 40,60" fill={getFillColor(getColor("bottom"))} stroke="black" strokeWidth="1" />
         <polygon points="20,20 20,80 40,60 40,40" fill={getFillColor(getColor("left"))} stroke="black" strokeWidth="1" />
         <polygon points="80,20 80,80 60,60 60,40" fill={getFillColor(getColor("right"))} stroke="black" strokeWidth="1" />
         <polygon points="40,40 60,40 60,60 40,60" fill={getFillColor(getColor("center"))} stroke="black" strokeWidth="1" />
         
-        {/* Estados generales */}
         {data?.general?.status === "ausente" && (
           <>
             <line x1="20" y1="20" x2="80" y2="80" stroke="#B22222" strokeWidth="6" />

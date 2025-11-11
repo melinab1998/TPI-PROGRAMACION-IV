@@ -88,7 +88,6 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl border border-gray-200">
-        {/* Encabezado */}
         <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-white rounded-t-2xl">
           <div>
             <h2 className="text-xl font-bold text-gray-800 font-sans">
@@ -105,8 +104,6 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
             ×
           </button>
         </div>
-
-        {/* Estado general */}
         <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
           <h3 className="text-sm font-semibold text-gray-700 mb-3">
             Estado general de la pieza
@@ -130,9 +127,6 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
           </div>
         </div>
 
-
-
-        {/* 🔹 Instrucciones (restauradas) */}
         <div className="px-6 py-3 bg-gray-50 border-b border-gray-100">
           <h3 className="text-sm font-semibold">
             Guía de colores para las secciones de la pieza
@@ -168,8 +162,6 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
           </div>
         </div>
 
-
-        {/* Estados por secciones */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {Object.entries(sections).map(([section, data]) => (
@@ -209,19 +201,19 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
 
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700 dark:text-black mb-2">
-  Observaciones
-</label>
-<textarea
-  value={data.observation}
-  onChange={(e) =>
-    handleObservationChange(section, e.target.value)
-  }
-  placeholder={`Describe el estado de la parte ${sectionLabels[
-    section
-  ].toLowerCase()}...`}
-  className="w-full text-sm border border-gray-300 bg-white text-black dark:text-black rounded-lg p-3 resize-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 min-h-[80px]"
-  rows={3}
-/>
+                    Observaciones
+                  </label>
+                  <textarea
+                    value={data.observation}
+                    onChange={(e) =>
+                      handleObservationChange(section, e.target.value)
+                    }
+                    placeholder={`Describe el estado de la parte ${sectionLabels[
+                      section
+                    ].toLowerCase()}...`}
+                    className="w-full text-sm border border-gray-300 bg-white text-black dark:text-black rounded-lg p-3 resize-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 min-h-[80px]"
+                    rows={3}
+                  />
                   <div className="flex justify-between text-xs text-gray-500">
                     <span>Máximo 250 caracteres</span>
                     <span>{data.observation.length}/250</span>
@@ -232,7 +224,6 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
           </div>
         </div>
 
-        {/* Botones inferiores */}
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
           <button
             onClick={onClose}

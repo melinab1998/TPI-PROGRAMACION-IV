@@ -79,7 +79,6 @@ export default function AdminSchedule() {
 
         try {
             setLoading(true)
-            // 🔥 Ahora se obtienen solo los turnos del dentista logueado:
             const turns = await new Promise((resolve, reject) => {
                 getDentistTurns(token, userId, resolve, reject)
             })
