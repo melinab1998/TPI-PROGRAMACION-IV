@@ -208,20 +208,20 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Observaciones
-                  </label>
-                  <textarea
-                    value={data.observation}
-                    onChange={(e) =>
-                      handleObservationChange(section, e.target.value)
-                    }
-                    placeholder={`Describe el estado de la parte ${sectionLabels[
-                      section
-                    ].toLowerCase()}...`}
-                    className="w-full text-sm border border-gray-300 bg-white rounded-lg p-3 resize-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 min-h-[80px]"
-                    rows={3}
-                  />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-black mb-2">
+  Observaciones
+</label>
+<textarea
+  value={data.observation}
+  onChange={(e) =>
+    handleObservationChange(section, e.target.value)
+  }
+  placeholder={`Describe el estado de la parte ${sectionLabels[
+    section
+  ].toLowerCase()}...`}
+  className="w-full text-sm border border-gray-300 bg-white text-black dark:text-black rounded-lg p-3 resize-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 min-h-[80px]"
+  rows={3}
+/>
                   <div className="flex justify-between text-xs text-gray-500">
                     <span>Máximo 250 caracteres</span>
                     <span>{data.observation.length}/250</span>
