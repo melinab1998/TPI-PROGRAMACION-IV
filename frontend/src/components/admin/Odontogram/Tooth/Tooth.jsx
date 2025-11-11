@@ -20,11 +20,12 @@ const Tooth = ({ label, data, onClick }) => {
   };
 
   return (
-    <div
+    <div 
       className="flex flex-col items-center m-1 cursor-pointer transition-transform hover:scale-105"
       onClick={onClick}
     >
       <span className="text-xs font-medium mb-1">{label}</span>
+      
       <svg width="40" height="40" viewBox="0 0 100 100" className="drop-shadow-sm">
         {/* Secciones */}
         <polygon points="20,20 80,20 60,40 40,40" fill={getFillColor(getColor("top"))} stroke="black" strokeWidth="1" />
@@ -32,7 +33,7 @@ const Tooth = ({ label, data, onClick }) => {
         <polygon points="20,20 20,80 40,60 40,40" fill={getFillColor(getColor("left"))} stroke="black" strokeWidth="1" />
         <polygon points="80,20 80,80 60,60 60,40" fill={getFillColor(getColor("right"))} stroke="black" strokeWidth="1" />
         <polygon points="40,40 60,40 60,60 40,60" fill={getFillColor(getColor("center"))} stroke="black" strokeWidth="1" />
-
+        
         {/* Estados generales */}
         {data?.general?.status === "ausente" && (
           <>
@@ -50,15 +51,7 @@ const Tooth = ({ label, data, onClick }) => {
           <circle cx="50" cy="50" r="35" stroke="#B22222" strokeWidth="4" fill="none" />
         )}
         {data?.general?.status === "necesita_corona" && (
-          <circle
-            cx="50"
-            cy="50"
-            r="35"
-            stroke="#1E3A8A"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray="6 4"
-          />
+          <circle cx="50" cy="50" r="35" stroke="#1E3A8A" strokeWidth="4" fill="none" strokeDasharray="6 4" />
         )}
       </svg>
     </div>
@@ -66,5 +59,3 @@ const Tooth = ({ label, data, onClick }) => {
 };
 
 export default Tooth;
-
-
