@@ -40,12 +40,16 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
 
   useEffect(() => {
     if (!token) return;
-    getAllPatients(token,
+
+    getAllPatients(
+      token,
       (patients) => {
         setAllPatients(patients);
         setFilteredPatients(patients);
       },
-      (err) => console.error("Error cargando pacientes:", err)
+      (err) => {
+        errorToast(err?.message || "Error del servidor");
+      }
     );
   }, [token]);
 
@@ -65,7 +69,9 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
       (slots) => {
         setAvailableSlots(slots || {});
       },
-      (err) => console.error("Error cargando slots:", err)
+      (err) => {
+        errorToast(err?.message || "Error al cargar los horarios disponibles");
+      }
     );
   }, [open, userId, token]);
 
@@ -170,7 +176,6 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
       if (editMode) {
         await updateTurn(token, appointment.id_turn, payload,
           (turnFromBackend) => {
-            successToast("Turno actualizado con éxito");
             onSave(turnFromBackend);
             onClose();
           },
@@ -179,7 +184,6 @@ export default function AppointmentFormModal({ open, onClose, onSave, appointmen
       } else {
         await createTurn(token, payload,
           (turnFromBackend) => {
-            successToast("Turno creado con éxito");
             onSave(turnFromBackend);
             onClose();
           },

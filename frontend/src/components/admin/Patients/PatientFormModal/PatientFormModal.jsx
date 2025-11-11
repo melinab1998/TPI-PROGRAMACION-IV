@@ -125,8 +125,6 @@ export default function PatientFormModal({
       healthInsuranceId: data.healthInsuranceId ? parseInt(data.healthInsuranceId) : null,
       healthPlanId: data.healthPlanId ? parseInt(data.healthPlanId) : null,
     };
-
-    console.log("Datos a guardar:", patientData);
     onSave(patientData);
     onClose();
   };
@@ -141,7 +139,6 @@ export default function PatientFormModal({
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Nombre y Apellido */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="firstName">Nombre *</Label>

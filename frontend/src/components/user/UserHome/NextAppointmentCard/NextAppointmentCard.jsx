@@ -52,7 +52,6 @@ export default function NextAppointmentCard({ appointment, onCancelled }) {
                 if (onCancelled) onCancelled(appointment.id);
             },
             (err) => {
-                console.error(err);
                 errorToast(err?.message || "Error al cancelar el turno");
             }
         );

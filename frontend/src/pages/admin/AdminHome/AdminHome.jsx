@@ -24,55 +24,80 @@ export default function AdminHome() {
   const cardVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
   const actionVariants = { hidden: { opacity: 0, y: 10 }, visible: i => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.3 } }) }
 
-  useEffect(() => {
-    if (!token || !userId) return;
+useEffect(() => {
+  if (!token || !userId) return;
 
-    const handleError = (err) => console.error(err);
+  const handleError = (err) => {
+    errorToast(err?.message || "Error del servidor");
+  };
 
-    getAllDentists(token, (dentists) => {
+  getAllDentists(
+    token,
+    (dentists) => {
       const currentDentist = dentists.find(d => d.id === parseInt(userId));
-      if (!currentDentist) return console.warn("No se encontró el dentista logueado");
+      if (!currentDentist) {
+        warnToast("No se encontró el dentista logueado");
+        return;
+      }
+
       setDentistName(currentDentist.firstName);
-      getDentistTurns(token, currentDentist.id, (turns) => {
-        const today = new Date();
-        const todaysTurns = turns.filter(t => {
-          const turnDate = new Date(t.appointmentDate);
-          return (
-            turnDate.getFullYear() === today.getFullYear() &&
-            turnDate.getMonth() === today.getMonth() &&
-            turnDate.getDate() === today.getDate()
-          );
-        });
 
-        const total = todaysTurns.length;
-        const pending = todaysTurns.filter(t => t.status === "Pending").length;
-        const cancelled = todaysTurns.filter(t => t.status === "Cancelled").length;
-        setTodayStats({ total, pending, cancelled });
-
-        const now = new Date();
-        const next = turns
-          .filter(t => t.status === "Pending" && new Date(t.appointmentDate) >= now)
-          .sort((a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate))[0];
-
-        if (next) {
-          const fechaObj = new Date(next.appointmentDate);
-          getPatientById(next.patientId, token, (patient) => {
-            setNextAppointment({
-              paciente: `${patient.firstName} ${patient.lastName}`,
-              tipo: next.consultationType,
-              fecha: fechaObj.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" }),
-              hora: fechaObj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })
-            });
-          }, (err) => {
-            console.error("Error cargando paciente del próximo turno:", err);
+      getDentistTurns(
+        token,
+        currentDentist.id,
+        (turns) => {
+          const today = new Date();
+          const todaysTurns = turns.filter(t => {
+            const turnDate = new Date(t.appointmentDate);
+            return (
+              turnDate.getFullYear() === today.getFullYear() &&
+              turnDate.getMonth() === today.getMonth() &&
+              turnDate.getDate() === today.getDate()
+            );
           });
-        } else {
-          setNextAppointment(null);
-        }
-      }, handleError);
-    }, handleError);
-  }, [token, userId]);
 
+          const total = todaysTurns.length;
+          const pending = todaysTurns.filter(t => t.status === "Pending").length;
+          const cancelled = todaysTurns.filter(t => t.status === "Cancelled").length;
+          setTodayStats({ total, pending, cancelled });
+
+          const now = new Date();
+          const next = turns
+            .filter(t => t.status === "Pending" && new Date(t.appointmentDate) >= now)
+            .sort((a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate))[0];
+
+          if (next) {
+            const fechaObj = new Date(next.appointmentDate);
+            getPatientById(
+              next.patientId,
+              token,
+              (patient) => {
+                setNextAppointment({
+                  paciente: `${patient.firstName} ${patient.lastName}`,
+                  tipo: next.consultationType,
+                  fecha: fechaObj.toLocaleDateString("es-ES", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  }),
+                  hora: fechaObj.toLocaleTimeString("es-ES", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }),
+                });
+              },
+              handleError
+            );
+          } else {
+            setNextAppointment(null);
+          }
+        },
+        handleError
+      );
+    },
+    handleError
+  );
+}, [token, userId]);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-10 max-w-6xl mx-auto">

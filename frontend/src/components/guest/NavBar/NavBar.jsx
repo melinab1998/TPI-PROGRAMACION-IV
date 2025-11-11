@@ -123,8 +123,7 @@ export default function NavBar() {
             </span>
           </Link>
         </div>
-
-        {/* Desktop Menu */}
+        
         <div className="hidden md:flex gap-3 items-center">
           <Link to="/">
             <Button variant="ghost" size="default" className="text-sm font-medium">

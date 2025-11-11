@@ -29,7 +29,6 @@ export default function SuperAdminPage() {
     getAllDentists(
       token,
       (response) => {
-        console.log("Respuesta completa de la API:", response);
 
         const normalized = response.map((d) => {
           const id = d.id || d.id_user;
@@ -84,8 +83,6 @@ export default function SuperAdminPage() {
   };
 
   const handleEditDentist = (dentist) => {
-    console.log("Editando dentista:", dentist);
-
     if (!dentist.id) {
       errorToast("El dentista aún no está sincronizado. Actualizando lista...");
       loadDentists();

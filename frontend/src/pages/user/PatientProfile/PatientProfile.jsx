@@ -51,19 +51,16 @@ export default function PatientProfile() {
                 setAppointments(formattedAppointments);
               },
               (err) => {
-                console.error(err);
                 errorToast(err.message || "Error del servidor");
               }
             );
           },
           (err) => {
-            console.error(err);
             errorToast(err.message || "Error del servidor");
           }
         );
       },
       (err) => {
-        console.error(err);
         errorToast(err.message || "Error del servidor");
       }
     );
@@ -79,7 +76,7 @@ export default function PatientProfile() {
         <PersonalInfoCard patientData={patientData} />
         <div className="flex flex-col sm:flex-row gap-3 mt-4 pt-6 border-t border-border">
           <UpdateEmailDialog currentEmail={patientData.email} onUpdate={newEmail => setPatientData(prev => ({ ...prev, email: newEmail }))} />
-          <UpdatePasswordDialog onUpdate={newPassword => console.log("Nueva contraseña:", newPassword)} />
+          <UpdatePasswordDialog onUpdate={() => {}} />
         </div>
       </motion.div>
 

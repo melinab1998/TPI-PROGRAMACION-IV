@@ -27,26 +27,21 @@ export default function CancelAppointmentModal({
             errorToast("No hay token disponible")
             return
         }
-
-        // 🔹 Verificar también el ID del turno
         const turnId = appointment.id_turn || appointment.id;
         if (!turnId) {
             errorToast("No se pudo identificar el turno a cancelar");
             return;
         }
 
-        console.log("🔍 Cancelando turno ID:", turnId, "Token:", !!token);
-
         cancelTurn(
             token,
-            turnId, // ✅ Usar la variable verificada
+            turnId, 
             () => {
                 successToast("Turno cancelado exitosamente")
-                onCancelled(turnId) // ✅ Usar el mismo ID
+                onCancelled(turnId) 
                 onClose()
             },
             (err) => {
-                console.error("Error al cancelar turno:", err)
                 errorToast(err.message || "No se pudo cancelar el turno")
             }
         )

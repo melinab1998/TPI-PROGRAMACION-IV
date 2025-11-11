@@ -44,9 +44,7 @@ export default function VisitsPage() {
             (allVisitRecords) => {
                 setVisitRecords(allVisitRecords || []);
             },
-            (err) => {
-                console.error("Error al cargar registros de visitas:", err);
-            }
+            (err) => errorToast(err.message || "Error al cargar registros de visitas")
         );
     }, [token]);
 
@@ -57,7 +55,7 @@ export default function VisitsPage() {
             patientId,
             token,
             (patient) => {
-                setPatientsData(prev => ({
+                setPatientsData((prev) => ({
                     ...prev,
                     [patientId]: {
                         name: `${patient.firstName} ${patient.lastName}`,
@@ -66,7 +64,8 @@ export default function VisitsPage() {
                 }));
             },
             (err) => {
-                setPatientsData(prev => ({
+                errorToast(err.message || "Error al cargar datos del paciente");
+                setPatientsData((prev) => ({
                     ...prev,
                     [patientId]: { name: `ID: ${patientId}`, dni: "No disponible" }
                 }));
@@ -74,7 +73,6 @@ export default function VisitsPage() {
         );
     };
 
-    // 🗓️ Cargar turnos del dentista
     useEffect(() => {
         if (!token || !userId) return;
 
@@ -85,36 +83,31 @@ export default function VisitsPage() {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
-                const todaysTurns = fetchedTurns.filter(turn => {
+                const todaysTurns = fetchedTurns.filter((turn) => {
                     const turnDate = new Date(turn.appointmentDate);
                     turnDate.setHours(0, 0, 0, 0);
                     const isToday = turnDate.getTime() === today.getTime();
-                    const isValidStatus = turn.status === "Pending" || turn.status === "Completed";
+                    const isValidStatus =
+                        turn.status === "Pending" || turn.status === "Completed";
                     return isToday && isValidStatus;
                 });
 
-                console.log("📅 Turnos de hoy:", todaysTurns);
                 setTurns(todaysTurns);
-                todaysTurns.forEach(turn => loadPatientData(turn.patientId));
+                todaysTurns.forEach((turn) => loadPatientData(turn.patientId));
             },
-            (err) => {
-                errorToast("No se pudieron cargar los turnos del día.");
-            }
+            (err) => errorToast(err.message || "Error al cargar los turnos del día")
         );
     }, [token, userId]);
 
     const getVisitRecordForTurn = (turnId) => {
         const record = visitRecords.find(record => record.turnId === turnId);
-        console.log(`🔍 Buscando registro para turnId ${turnId}:`, record);
         return record;
     };
 
     const handleCreateVisitRecord = (turn) => {
-        console.log("🔄 Creando/Editando registro para turno:", turn);
         setSelectedTurn(turn);
         const existingRecord = getVisitRecordForTurn(turn.id);
-        console.log("📝 Registro existente:", existingRecord);
-        
+
         const formData = existingRecord || {
             treatment: "",
             diagnosis: "",
@@ -144,7 +137,6 @@ export default function VisitsPage() {
         setIsSubmitting(true);
 
         const existingRecord = getVisitRecordForTurn(selectedTurn.id);
-        console.log("💾 Guardando registro. Existente?:", existingRecord);
 
         const payload = {
             visitDate: new Date().toISOString().split("T")[0],
@@ -156,19 +148,16 @@ export default function VisitsPage() {
         };
 
         const handleSuccess = (savedRecord) => {
-            console.log("✅ Registro guardado exitosamente:", savedRecord);
-            
+
             const processedRecord = {
                 ...savedRecord,
                 turnId: savedRecord.turnId || selectedTurn.id
             };
 
-            // 🔹 ACTUALIZAR EL ESTADO CORRECTAMENTE
             setVisitRecords(prev => {
                 const newRecords = existingRecord
                     ? prev.map(r => r.turnId === selectedTurn.id ? processedRecord : r)
                     : [...prev, processedRecord];
-                console.log("📊 Nuevo estado de visitRecords:", newRecords);
                 return newRecords;
             });
 
@@ -184,20 +173,16 @@ export default function VisitsPage() {
         };
 
         const handleError = (err) => {
-            console.error("❌ Error al guardar:", err);
             errorToast(err.message || "Error al guardar el registro");
         };
 
         try {
             if (existingRecord && existingRecord.id) {
-                console.log("🔄 Actualizando registro existente ID:", existingRecord.id);
                 await updateVisitRecord(token, existingRecord.id, payload, handleSuccess, handleError);
             } else {
-                console.log("🆕 Creando nuevo registro");
                 await createVisitRecord(token, payload, handleSuccess, handleError);
             }
         } catch (error) {
-            console.error("❌ Error inesperado:", error);
             errorToast("Error inesperado al procesar la solicitud");
         } finally {
             setIsSubmitting(false);

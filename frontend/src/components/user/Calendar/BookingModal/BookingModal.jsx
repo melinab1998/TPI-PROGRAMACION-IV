@@ -32,12 +32,10 @@ export default function BookingModal({ time, date, doctor, formData, setFormData
             newTurn,
             (res) => {
                 successToast("Turno confirmado con éxito.");
-                console.log("Turno creado:", res);
                 setTime(null);
             },
             (err) => {
                 errorToast(err.message || "Error al confirmar el turno.");
-                console.error("Error creando turno:", err);
             }
         );
     };

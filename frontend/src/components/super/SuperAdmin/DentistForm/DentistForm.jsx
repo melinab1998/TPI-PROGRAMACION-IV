@@ -53,7 +53,6 @@ export default function DentistForm({ isOpen, onClose, onSubmit, dentist }) {
       reset();
       onClose();
     } catch (error) {
-      console.log("Error manejado por el componente padre:", error);
     } finally {
       setIsSubmitting(false);
     }

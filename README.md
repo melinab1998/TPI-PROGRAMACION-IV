@@ -17,7 +17,7 @@ En su versión actual, se encuentra orientado a la administración de turnos par
 
 - Filtrado por profesional o especialidad
 
-- Persistencia de datos mediante API .NET y base SQLite
+- Persistencia de datos mediante API .NET y base SQL Server
 
 - Diseño responsive y adaptable a distintos dispositivos
 
@@ -37,13 +37,13 @@ En su versión actual, se encuentra orientado a la administración de turnos par
 
 - ![.NET](https://img.shields.io/badge/-.net-333333?style=flat&logo=.net)
 
-- ![SQlite](https://img.shields.io/badge/-SQlite-333333?style=flat&logo=sqlite)
+- ![SQL Server](https://img.shields.io/badge/-SQL_Server-333333?style=flat&logo=sql-server)
 
 ## Objetivo del proyecto
 El objetivo de Turnando es brindar una herramienta modular que pueda adaptarse fácilmente a distintos rubros (salud, belleza, talleres, servicios, etc.), facilitando la gestión de reservas y la administración de horarios desde un mismo entorno.
 
 ## Arquitectura general
-Frontend (React)  <-->  API REST (.NET)  <-->  SQLite Database
+Frontend (React)  <-->  API REST (.NET)  <-->  SQL Server Database
 
 ## Contribuciones
 Las contribuciones son bienvenidas.

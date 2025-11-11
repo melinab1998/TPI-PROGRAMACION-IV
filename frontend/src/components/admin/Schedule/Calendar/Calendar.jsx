@@ -16,7 +16,7 @@ export default function Calendar({ selectedDate, onDateChange, appointments }) {
   const emptyDays = Array.from({ length: offset })
 
   const daysWithPendingAppointments = appointments.reduce((acc, appointment) => {
-    if (appointment.status !== "Pending") return acc  // solo Pending
+    if (appointment.status !== "Pending") return acc 
     const date = format(parseISO(appointment.appointment_date), "yyyy-MM-dd")
     acc[date] = (acc[date] || 0) + 1
     return acc

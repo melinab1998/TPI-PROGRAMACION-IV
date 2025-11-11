@@ -32,7 +32,6 @@ export default function Availability() {
   const [availabilities, setAvailabilities] = useState([]);
   const [errors, setErrors] = useState({});
 
-  // ---------- Helpers ----------
   const timeToMinutes = (time) => {
     const [h, m] = time.split(":").map(Number);
     return h * 60 + m;
@@ -134,7 +133,6 @@ export default function Availability() {
                         token,
                         slot.id_availability,
                         () => {
-                            console.log(`Slot ${slot.id_availability} eliminado`);
                         },
                         (err) => errorToast(`Error al eliminar horario: ${err?.message}`)
                     );
@@ -192,7 +190,6 @@ export default function Availability() {
     });
   };
 
-  // ---------- Guardar en backend ----------
 const handleSave = () => {
     if (!validateAllAvailabilities()) {
         errorToast("Por favor, corrige los errores en los horarios antes de guardar");
