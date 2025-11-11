@@ -58,12 +58,6 @@ export default function CalendarPage() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("Turno reservado:", {
-            doctor: `${doctor.firstName} ${doctor.lastName}`,
-            date: format(date, "yyyy-MM-dd"),
-            time,
-            ...formData,
-        });
         setTime(null);
         setFormData({ email: "", motivoConsulta: "Consulta" });
     };

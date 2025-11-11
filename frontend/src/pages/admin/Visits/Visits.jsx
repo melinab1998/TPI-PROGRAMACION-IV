@@ -91,8 +91,6 @@ export default function VisitsPage() {
                     const isValidStatus = turn.status === "Pending" || turn.status === "Completed";
                     return isToday && isValidStatus;
                 });
-
-                console.log("📅 Turnos de hoy:", todaysTurns);
                 setTurns(todaysTurns);
                 todaysTurns.forEach(turn => loadPatientData(turn.patientId));
             },
@@ -104,15 +102,12 @@ export default function VisitsPage() {
 
     const getVisitRecordForTurn = (turnId) => {
         const record = visitRecords.find(record => record.turnId === turnId);
-        console.log(`🔍 Buscando registro para turnId ${turnId}:`, record);
         return record;
     };
 
     const handleCreateVisitRecord = (turn) => {
-        console.log("🔄 Creando/Editando registro para turno:", turn);
         setSelectedTurn(turn);
         const existingRecord = getVisitRecordForTurn(turn.id);
-        console.log("📝 Registro existente:", existingRecord);
         
         const formData = existingRecord || {
             treatment: "",
@@ -143,7 +138,6 @@ export default function VisitsPage() {
         setIsSubmitting(true);
 
         const existingRecord = getVisitRecordForTurn(selectedTurn.id);
-        console.log("💾 Guardando registro. Existente?:", existingRecord);
 
         const payload = {
             visitDate: new Date().toISOString().split("T")[0],
@@ -155,7 +149,6 @@ export default function VisitsPage() {
         };
 
         const handleSuccess = (savedRecord) => {
-            console.log("✅ Registro guardado exitosamente:", savedRecord);
             
             const processedRecord = {
                 ...savedRecord,
@@ -166,7 +159,6 @@ export default function VisitsPage() {
                 const newRecords = existingRecord
                     ? prev.map(r => r.turnId === selectedTurn.id ? processedRecord : r)
                     : [...prev, processedRecord];
-                console.log("📊 Nuevo estado de visitRecords:", newRecords);
                 return newRecords;
             });
 
@@ -188,10 +180,8 @@ export default function VisitsPage() {
 
         try {
             if (existingRecord && existingRecord.id) {
-                console.log("🔄 Actualizando registro existente ID:", existingRecord.id);
                 await updateVisitRecord(token, existingRecord.id, payload, handleSuccess, handleError);
             } else {
-                console.log("🆕 Creando nuevo registro");
                 await createVisitRecord(token, payload, handleSuccess, handleError);
             }
         } catch (error) {

@@ -133,7 +133,6 @@ export default function Availability() {
                         token,
                         slot.id_availability,
                         () => {
-                            console.log(`Slot ${slot.id_availability} eliminado`);
                         },
                         (err) => errorToast(`Error al eliminar horario: ${err?.message}`)
                     );

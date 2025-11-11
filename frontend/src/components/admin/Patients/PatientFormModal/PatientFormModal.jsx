@@ -125,8 +125,6 @@ export default function PatientFormModal({
       healthInsuranceId: data.healthInsuranceId ? parseInt(data.healthInsuranceId) : null,
       healthPlanId: data.healthPlanId ? parseInt(data.healthPlanId) : null,
     };
-
-    console.log("Datos a guardar:", patientData);
     onSave(patientData);
     onClose();
   };
