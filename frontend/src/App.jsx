@@ -65,7 +65,6 @@ function App() {
           </Route>
 
           <Route path="*" element={<NotFound />} />
-          <Route path="odontogram" element={<Odontogram/>}/>
         </Route>
       </Routes>
       <ToastContainer
