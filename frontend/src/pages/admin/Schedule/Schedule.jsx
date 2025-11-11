@@ -1,39 +1,45 @@
-import { useState, useEffect, useContext } from "react"
-import { parseISO, isSameDay } from "date-fns"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import Calendar from "@/components/admin/Schedule/Calendar/Calendar"
-import DaySummary from "@/components/admin/Schedule/DaySummary/DaySummary"
-import AppointmentList from "@/components/admin/Schedule/AppointmentList/AppointmentList"
-import AppointmentFormModal from "@/components/admin/Schedule/AppointmentFormModal/AppointmentFormModal"
-import CancelAppointmentModal from "@/components/admin/Schedule/CancelAppointmentModal/CancelAppointmentModal"
-import { motion } from "framer-motion"
-import { Plus } from "lucide-react"
-import Header from "@/components/common/Header/Header"
-import { getDentistTurns, getPatientById, getDentistById, cancelTurn } from "@/services/api.services"
-import { AuthContext } from "@/services/auth/AuthContextProvider"
+import { useState, useEffect, useContext } from "react";
+import { parseISO, isSameDay } from "date-fns";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Calendar from "@/components/admin/Schedule/Calendar/Calendar";
+import DaySummary from "@/components/admin/Schedule/DaySummary/DaySummary";
+import AppointmentList from "@/components/admin/Schedule/AppointmentList/AppointmentList";
+import AppointmentFormModal from "@/components/admin/Schedule/AppointmentFormModal/AppointmentFormModal";
+import CancelAppointmentModal from "@/components/admin/Schedule/CancelAppointmentModal/CancelAppointmentModal";
+import { motion } from "framer-motion";
+import { Plus } from "lucide-react";
+import Header from "@/components/common/Header/Header";
+import {
+    getDentistTurns,
+    getPatientById,
+    getDentistById,
+    cancelTurn
+} from "@/services/api.services";
+import { AuthContext } from "@/services/auth/AuthContextProvider";
+import { errorToast, successToast } from "@/utils/notifications"
 
 export default function AdminSchedule() {
-    const today = new Date()
-    const [selectedDate, setSelectedDate] = useState(today)
-    const [appointments, setAppointments] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [filters, setFilters] = useState({ patient: "", status: "Todos" })
-    const [modalOpen, setModalOpen] = useState(false)
-    const [cancelModalOpen, setCancelModalOpen] = useState(false)
-    const [editingAppointment, setEditingAppointment] = useState(null)
-    const [cancelingAppointment, setCancelingAppointment] = useState(null)
+    const today = new Date();
+    const [selectedDate, setSelectedDate] = useState(today);
+    const [appointments, setAppointments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [filters, setFilters] = useState({ patient: "", status: "Todos" });
+    const [modalOpen, setModalOpen] = useState(false);
+    const [cancelModalOpen, setCancelModalOpen] = useState(false);
+    const [editingAppointment, setEditingAppointment] = useState(null);
+    const [cancelingAppointment, setCancelingAppointment] = useState(null);
 
     const { token, userId } = useContext(AuthContext);
 
     const enrichTurnData = async (turn) => {
         try {
             const patientData = await new Promise((resolve, reject) => {
-                getPatientById(turn.patientId, token, resolve, reject)
-            })
+                getPatientById(turn.patientId, token, resolve, reject);
+            });
 
             const dentistData = await new Promise((resolve, reject) => {
-                getDentistById(turn.dentistId, token, resolve, reject)
-            })
+                getDentistById(turn.dentistId, token, resolve, reject);
+            });
 
             return {
                 id_turn: turn.id,
@@ -46,9 +52,9 @@ export default function AdminSchedule() {
                 dentist_name: `Dr. ${dentistData.firstName} ${dentistData.lastName}`,
                 patientId: turn.patientId,
                 dentistId: turn.dentistId
-            }
-        } catch (error) {
-            console.error("Error enriqueciendo datos del turno:", error)
+            };
+        } catch (err) {
+            errorToast(err.message || "Error al cargar datos del paciente o dentista");
             return {
                 id_turn: turn.id,
                 appointment_date: turn.appointmentDate,
@@ -60,118 +66,124 @@ export default function AdminSchedule() {
                 dentist_name: "Dentista no encontrado",
                 patientId: turn.patientId,
                 dentistId: turn.dentistId
-            }
+            };
         }
-    }
+    };
 
     useEffect(() => {
         if (token && userId) {
-            loadAppointments()
+            loadAppointments();
         }
-    }, [token, userId])
+    }, [token, userId]);
 
     const loadAppointments = async () => {
         if (!token || !userId) {
-            console.error("No hay token o ID de usuario disponibles")
-            setLoading(false)
-            return
+            errorToast("No hay token o ID de usuario disponibles");
+            setLoading(false);
+            return;
         }
 
         try {
-            setLoading(true)
+            setLoading(true);
             const turns = await new Promise((resolve, reject) => {
-                getDentistTurns(token, userId, resolve, reject)
-            })
+                getDentistTurns(token, userId, resolve, reject);
+            });
 
             const enrichedAppointments = await Promise.all(
-                turns.map(turn => enrichTurnData(turn))
-            )
+                turns.map((turn) => enrichTurnData(turn))
+            );
 
-            setAppointments(enrichedAppointments)
-        } catch (error) {
-            console.error("Error cargando turnos:", error)
+            setAppointments(enrichedAppointments);
+        } catch (err) {
+            errorToast(err.message || "Error al cargar los turnos");
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
 
     const handleCancelClick = (id) => {
-        const appointment = appointments.find(a => a.id_turn === id)
-        setCancelingAppointment(appointment)
-        setCancelModalOpen(true)
-    }
+        const appointment = appointments.find((a) => a.id_turn === id);
+        setCancelingAppointment(appointment);
+        setCancelModalOpen(true);
+    };
 
     const handleConfirmCancel = async (id) => {
         try {
             await new Promise((resolve, reject) => {
-                cancelTurn(token, id, resolve, reject)
-            })
+                cancelTurn(token, id, resolve, reject);
+            });
 
-            setAppointments(prev => prev.map(a =>
-                a.id_turn === id ? { ...a, status: "Cancelled" } : a
-            ))
-            setCancelModalOpen(false)
-            setCancelingAppointment(null)
-        } catch (error) {
-            console.error("Error cancelando turno:", error)
+            setAppointments((prev) =>
+                prev.map((a) =>
+                    a.id_turn === id ? { ...a, status: "Cancelled" } : a
+                )
+            );
+            successToast("Turno cancelado correctamente.");
+            setCancelModalOpen(false);
+            setCancelingAppointment(null);
+        } catch (err) {
+            errorToast(err.message || "Error al cancelar el turno");
         }
-    }
+    };
 
     const handleEdit = (id) => {
-        const appt = appointments.find(a => a.id_turn === id)
-        setEditingAppointment(appt)
-        setModalOpen(true)
-    }
+        const appt = appointments.find((a) => a.id_turn === id);
+        setEditingAppointment(appt);
+        setModalOpen(true);
+    };
 
     const handleCreate = () => {
-        setEditingAppointment(null)
-        setModalOpen(true)
-    }
+        setEditingAppointment(null);
+        setModalOpen(true);
+    };
 
     const handleSave = async (turnFromBackend) => {
         try {
-            const enrichedTurn = await enrichTurnData(turnFromBackend)
+            const enrichedTurn = await enrichTurnData(turnFromBackend);
 
             if (editingAppointment) {
-                setAppointments(prev =>
-                    prev.map(a =>
+                setAppointments((prev) =>
+                    prev.map((a) =>
                         a.id_turn === enrichedTurn.id_turn ? enrichedTurn : a
                     )
-                )
+                );
+                successToast("Turno actualizado correctamente.");
             } else {
-                setAppointments(prev => [...prev, enrichedTurn])
+                setAppointments((prev) => [...prev, enrichedTurn]);
+                successToast("Turno creado correctamente.");
             }
 
-            setModalOpen(false)
-            setEditingAppointment(null)
-        } catch (error) {
-            console.error("Error guardando turno:", error)
+            setModalOpen(false);
+            setEditingAppointment(null);
+        } catch (err) {
+            errorToast(err.message || "Error al guardar el turno");
         }
-    }
+    };
 
-    const filteredAppointments = appointments.filter(a => {
-        const appointmentDate = parseISO(a.appointment_date)
-        if (!isSameDay(appointmentDate, selectedDate)) return false
-        if (!a.patient_name.toLowerCase().includes(filters.patient.toLowerCase())) return false
-        if (filters.status !== "Todos" && a.status !== filters.status) return false
-        return true
-    })
+    const filteredAppointments = appointments.filter((a) => {
+        const appointmentDate = parseISO(a.appointment_date);
+        if (!isSameDay(appointmentDate, selectedDate)) return false;
+        if (!a.patient_name.toLowerCase().includes(filters.patient.toLowerCase()))
+            return false;
+        if (filters.status !== "Todos" && a.status !== filters.status) return false;
+        return true;
+    });
 
     const appointmentsForSelectedDay = appointments.filter(
-        a =>
+        (a) =>
             isSameDay(parseISO(a.appointment_date), selectedDate) &&
             a.status === "Pending"
-    )
+    );
 
     const fadeSlideUp = {
         hidden: { opacity: 0, y: 20 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
-    }
+    };
 
     const fadeSlideDown = {
         hidden: { opacity: 0, y: -20 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-    }
+    };
 
     if (loading) {
         return (
@@ -180,7 +192,7 @@ export default function AdminSchedule() {
                     <div className="text-lg">Cargando turnos...</div>
                 </div>
             </div>
-        )
+        );
     }
 
     return (
@@ -242,8 +254,8 @@ export default function AdminSchedule() {
             <AppointmentFormModal
                 open={modalOpen}
                 onClose={() => {
-                    setModalOpen(false)
-                    setEditingAppointment(null)
+                    setModalOpen(false);
+                    setEditingAppointment(null);
                 }}
                 onSave={handleSave}
                 appointment={editingAppointment}
@@ -252,18 +264,20 @@ export default function AdminSchedule() {
             <CancelAppointmentModal
                 open={cancelModalOpen}
                 onClose={() => {
-                    setCancelModalOpen(false)
-                    setCancelingAppointment(null)
+                    setCancelModalOpen(false);
+                    setCancelingAppointment(null);
                 }}
                 appointment={cancelingAppointment}
                 onCancelled={(id) => {
-                    setAppointments(prev =>
-                        prev.map(a => a.id_turn === id ? { ...a, status: "Cancelled" } : a)
-                    )
-                    setCancelModalOpen(false)
-                    setCancelingAppointment(null)
+                    setAppointments((prev) =>
+                        prev.map((a) =>
+                            a.id_turn === id ? { ...a, status: "Cancelled" } : a
+                        )
+                    );
+                    setCancelModalOpen(false);
+                    setCancelingAppointment(null);
                 }}
             />
         </div>
-    )
+    );
 }

@@ -44,9 +44,7 @@ export default function VisitsPage() {
             (allVisitRecords) => {
                 setVisitRecords(allVisitRecords || []);
             },
-            (err) => {
-                console.error("Error al cargar registros de visitas:", err);
-            }
+            (err) => errorToast(err.message || "Error al cargar registros de visitas")
         );
     }, [token]);
 
@@ -57,7 +55,7 @@ export default function VisitsPage() {
             patientId,
             token,
             (patient) => {
-                setPatientsData(prev => ({
+                setPatientsData((prev) => ({
                     ...prev,
                     [patientId]: {
                         name: `${patient.firstName} ${patient.lastName}`,
@@ -66,7 +64,8 @@ export default function VisitsPage() {
                 }));
             },
             (err) => {
-                setPatientsData(prev => ({
+                errorToast(err.message || "Error al cargar datos del paciente");
+                setPatientsData((prev) => ({
                     ...prev,
                     [patientId]: { name: `ID: ${patientId}`, dni: "No disponible" }
                 }));
@@ -84,19 +83,19 @@ export default function VisitsPage() {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
-                const todaysTurns = fetchedTurns.filter(turn => {
+                const todaysTurns = fetchedTurns.filter((turn) => {
                     const turnDate = new Date(turn.appointmentDate);
                     turnDate.setHours(0, 0, 0, 0);
                     const isToday = turnDate.getTime() === today.getTime();
-                    const isValidStatus = turn.status === "Pending" || turn.status === "Completed";
+                    const isValidStatus =
+                        turn.status === "Pending" || turn.status === "Completed";
                     return isToday && isValidStatus;
                 });
+
                 setTurns(todaysTurns);
-                todaysTurns.forEach(turn => loadPatientData(turn.patientId));
+                todaysTurns.forEach((turn) => loadPatientData(turn.patientId));
             },
-            (err) => {
-                errorToast("No se pudieron cargar los turnos del día.");
-            }
+            (err) => errorToast(err.message || "Error al cargar los turnos del día")
         );
     }, [token, userId]);
 
@@ -108,7 +107,7 @@ export default function VisitsPage() {
     const handleCreateVisitRecord = (turn) => {
         setSelectedTurn(turn);
         const existingRecord = getVisitRecordForTurn(turn.id);
-        
+
         const formData = existingRecord || {
             treatment: "",
             diagnosis: "",
@@ -149,7 +148,7 @@ export default function VisitsPage() {
         };
 
         const handleSuccess = (savedRecord) => {
-            
+
             const processedRecord = {
                 ...savedRecord,
                 turnId: savedRecord.turnId || selectedTurn.id
@@ -174,7 +173,6 @@ export default function VisitsPage() {
         };
 
         const handleError = (err) => {
-            console.error("❌ Error al guardar:", err);
             errorToast(err.message || "Error al guardar el registro");
         };
 
@@ -185,7 +183,6 @@ export default function VisitsPage() {
                 await createVisitRecord(token, payload, handleSuccess, handleError);
             }
         } catch (error) {
-            console.error("❌ Error inesperado:", error);
             errorToast("Error inesperado al procesar la solicitud");
         } finally {
             setIsSubmitting(false);

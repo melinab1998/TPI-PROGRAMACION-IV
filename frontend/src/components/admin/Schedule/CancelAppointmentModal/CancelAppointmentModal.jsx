@@ -42,7 +42,6 @@ export default function CancelAppointmentModal({
                 onClose()
             },
             (err) => {
-                console.error("Error al cancelar turno:", err)
                 errorToast(err.message || "No se pudo cancelar el turno")
             }
         )

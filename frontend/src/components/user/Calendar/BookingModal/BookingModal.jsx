@@ -36,7 +36,6 @@ export default function BookingModal({ time, date, doctor, formData, setFormData
             },
             (err) => {
                 errorToast(err.message || "Error al confirmar el turno.");
-                console.error("Error creando turno:", err);
             }
         );
     };

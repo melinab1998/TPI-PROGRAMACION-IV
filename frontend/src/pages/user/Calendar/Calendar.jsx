@@ -11,7 +11,7 @@ import { AuthContext } from "@/services/auth/AuthContextProvider";
 export default function CalendarPage() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { token } = useContext(AuthContext); 
+    const { token } = useContext(AuthContext);
 
     const [doctor, setDoctor] = useState({
         firstName: "",
@@ -34,6 +34,7 @@ export default function CalendarPage() {
                 const found = data.find(d => d.id === parseInt(id));
                 if (found) {
                     setDoctor(found);
+
                     const startDate = new Date().toISOString().split("T")[0];
                     const nextMonth = new Date();
                     nextMonth.setMonth(nextMonth.getMonth() + 1);
@@ -45,11 +46,11 @@ export default function CalendarPage() {
                         startDate,
                         endDate,
                         (avail) => setDoctorAvailability(avail || {}),
-                        (err) => console.error("Error cargando disponibilidad:", err)
+                        (err) => errorToast(err.message || "Error al cargar disponibilidad")
                     );
                 }
             },
-            (err) => console.error("Error cargando dentistas:", err)
+            (err) => errorToast(err.message || "Error al cargar dentistas")
         );
     }, [id, token]);
 
@@ -63,7 +64,7 @@ export default function CalendarPage() {
     };
 
     const handleGoBack = () => {
-        navigate(-1); 
+        navigate(-1);
     };
 
     return (
@@ -101,7 +102,7 @@ export default function CalendarPage() {
                     />
                 </div>
             </motion.div>
-            
+
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -112,17 +113,17 @@ export default function CalendarPage() {
                     onClick={handleGoBack}
                     className="flex items-center gap-2 px-6 py-3 text-sm font-medium text-primary hover:text-primary/80 border border-primary/30 hover:border-primary/50 rounded-lg transition-all duration-200 hover:bg-primary/5 hover:shadow-sm"
                 >
-                    <svg 
-                        className="w-4 h-4" 
-                        fill="none" 
-                        stroke="currentColor" 
+                    <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
                         viewBox="0 0 24 24"
                     >
-                        <path 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round" 
-                            strokeWidth={2} 
-                            d="M10 19l-7-7m0 0l7-7m-7 7h18" 
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18"
                         />
                     </svg>
                     Volver

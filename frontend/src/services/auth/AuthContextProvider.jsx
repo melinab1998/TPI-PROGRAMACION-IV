@@ -20,7 +20,6 @@ export function AuthContextProvider({ children }) {
             setIsLoggedIn(true);
             return decoded;
         } catch (error) {
-            console.error("Token inválido", error);
             handleLogout();
             return null;
         }

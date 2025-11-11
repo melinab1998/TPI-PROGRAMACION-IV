@@ -51,19 +51,16 @@ export default function PatientProfile() {
                 setAppointments(formattedAppointments);
               },
               (err) => {
-                console.error(err);
                 errorToast(err.message || "Error del servidor");
               }
             );
           },
           (err) => {
-            console.error(err);
             errorToast(err.message || "Error del servidor");
           }
         );
       },
       (err) => {
-        console.error(err);
         errorToast(err.message || "Error del servidor");
       }
     );
