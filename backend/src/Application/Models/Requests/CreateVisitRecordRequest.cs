@@ -20,7 +20,6 @@ namespace Application.Models.Requests
         [Range(1, int.MaxValue, ErrorMessage = "El ID del turno debe ser válido")]
         int TurnId,
 
-        // NUEVO: odontograma que viene del front como objeto JSON
         object? OdontogramData
     );
 }

@@ -29,7 +29,6 @@ export default function VisitForm({
     visible: { opacity: 1, scale: 1, transition: { duration: 0.4 } }
   };
 
-  // ⚠️ Hook SIEMPRE antes de cualquier return condicional
   useEffect(() => {
     if (!selectedTurn) return;
 
@@ -48,7 +47,6 @@ export default function VisitForm({
     }
   }, [selectedTurn, getVisitRecordForTurn, handleOdontogramChange]);
 
-  // Ahora sí, recién acá el return condicional
   if (!showVisitForm || !selectedTurn) return null;
 
   const existingRecord = getVisitRecordForTurn(selectedTurn.id);
@@ -71,11 +69,11 @@ export default function VisitForm({
           <CardDescription>
             {patientData
               ? `${patientData.name} - ${new Date(
-                  selectedTurn.appointmentDate
-                ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+                selectedTurn.appointmentDate
+              ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
               : `ID: ${selectedTurn.patientId} - ${new Date(
-                  selectedTurn.appointmentDate
-                ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`}
+                selectedTurn.appointmentDate
+              ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -134,7 +132,6 @@ export default function VisitForm({
               </div>
             </div>
 
-            {/* Odontograma integrado */}
             <div className="space-y-2">
               <Label>Odontograma (opcional)</Label>
               <Odontogram

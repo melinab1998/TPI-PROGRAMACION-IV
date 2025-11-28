@@ -7,7 +7,7 @@ export default function PatientOdontogramModal({
   open,
   onClose,
   patient,
-  odontogramData, // 👈 odontograma de UNA visita
+  odontogramData, 
 }) {
   if (!patient) return null;
 
@@ -35,7 +35,7 @@ export default function PatientOdontogramModal({
             <div className="min-w-max p-4">
               <Odontogram
                 readOnly={true}
-                toothData={odontogramData || {}} // 👈 mostramos el estado de esa visita
+                toothData={odontogramData || {}} 
               />
             </div>
           </div>

@@ -11,7 +11,6 @@ const Odontogram = ({
   const [toothData, setToothData] = useState({});
   const [showObservationsModal, setShowObservationsModal] = useState(false);
 
-  // Sincronizar datos iniciales (vienen del form / back)
   useEffect(() => {
     if (initialToothData && typeof initialToothData === "object") {
       setToothData(initialToothData);
@@ -30,7 +29,7 @@ const Odontogram = ({
   const bottomChildLeft = ["71", "72", "73", "74", "75"];
 
   const handleToothClick = (toothNumber) => {
-    if (readOnly) return; // 🔒 modo solo lectura
+    if (readOnly) return;
     setSelectedTooth(toothNumber);
   };
 
@@ -43,7 +42,6 @@ const Odontogram = ({
     setToothData(newToothData);
     setSelectedTooth(null);
 
-    // Notificar al padre (VisitForm / useForm)
     if (onToothDataChange) {
       onToothDataChange(newToothData);
     }
@@ -62,7 +60,7 @@ const Odontogram = ({
           section: "general",
           color:
             data.general.status === "ausente" ||
-            data.general.status === "corona"
+              data.general.status === "corona"
               ? "red"
               : "blue",
           observation: data.general.status
@@ -246,18 +244,18 @@ const Odontogram = ({
                               obs.color === "blue"
                                 ? "#1E3A8A"
                                 : obs.color === "red"
-                                ? "#B22222"
-                                : obs.color === "green"
-                                ? "#2E7D32"
-                                : "white",
+                                  ? "#B22222"
+                                  : obs.color === "green"
+                                    ? "#2E7D32"
+                                    : "white",
                             borderColor:
                               obs.color === "blue"
                                 ? "#1E3A8A"
                                 : obs.color === "red"
-                                ? "#B22222"
-                                : obs.color === "green"
-                                ? "#2E7D32"
-                                : "#D1D5DB",
+                                  ? "#B22222"
+                                  : obs.color === "green"
+                                    ? "#2E7D32"
+                                    : "#D1D5DB",
                           }}
                         />
                         <div className="flex-1">
@@ -294,7 +292,6 @@ const Odontogram = ({
         </div>
       )}
 
-      {/* 🔒 Solo abrimos ToothModal si NO es readOnly */}
       {selectedTooth && !readOnly && (
         <ToothModal
           toothNumber={selectedTooth}

@@ -10,7 +10,7 @@ namespace Application.Models
         string? Notes,
         string? Prescription,
         int TurnId,
-        object? OdontogramData // NUEVO
+        object? OdontogramData 
     )
     {
         public static VisitRecordDto Create(VisitRecord entity)

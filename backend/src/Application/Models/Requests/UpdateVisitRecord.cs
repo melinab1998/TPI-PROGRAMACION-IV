@@ -16,7 +16,6 @@ namespace Application.Models.Requests
 
         int? TurnId,
 
-        // NUEVO: opcional también al actualizar
         object? OdontogramData
     );
 }

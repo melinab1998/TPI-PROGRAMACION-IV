@@ -82,7 +82,6 @@ export default function PatientVisitsModal({ open, onClose, patient, token }) {
       return;
     }
 
-    // Filtrar visitas que tengan odontograma
     const visitsWithOdonto = visitRecords.filter(
       (v) =>
         v.odontogramData &&
@@ -95,7 +94,6 @@ export default function PatientVisitsModal({ open, onClose, patient, token }) {
       return;
     }
 
-    // Tomar la visita más reciente según la fecha del turno
     const sorted = [...visitsWithOdonto].sort((a, b) => {
       if (!a.visit_date || !b.visit_date) return 0;
       return new Date(b.visit_date).getTime() - new Date(a.visit_date).getTime();
@@ -116,7 +114,6 @@ export default function PatientVisitsModal({ open, onClose, patient, token }) {
             </DialogTitle>
           </DialogHeader>
 
-          {/* 🔙 Botón Ver Odontograma en el mismo lugar que tenías */}
           <div className="flex justify-end mb-4 gap-2">
             <Button
               size="sm"
@@ -220,8 +217,6 @@ export default function PatientVisitsModal({ open, onClose, patient, token }) {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Modal con el odontograma de la visita seleccionada (última con datos) */}
       <PatientOdontogramModal
         open={isOdontogramOpen && !!selectedVisitForOdontogram}
         onClose={() => {
