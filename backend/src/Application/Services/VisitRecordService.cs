@@ -43,7 +43,6 @@ namespace Application.Services
             var turn = _turnRepository.GetById(request.TurnId)
                 ?? throw new NotFoundException("TURN_NOT_FOUND");
 
-            // Serializamos el objeto del front a string JSON
             var odontogramJson = request.OdontogramData is null
                 ? null
                 : JsonSerializer.Serialize(request.OdontogramData);
@@ -73,7 +72,6 @@ namespace Application.Services
 
             string? odontogramJson = null;
 
-            // Solo tocamos el odontograma si el front manda algo (incluye {}).
             if (request.OdontogramData is not null)
             {
                 odontogramJson = JsonSerializer.Serialize(request.OdontogramData);
