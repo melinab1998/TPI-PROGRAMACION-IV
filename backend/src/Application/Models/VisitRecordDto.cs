@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Domain.Entities;
 
 namespace Application.Models
@@ -8,7 +9,8 @@ namespace Application.Models
         string Diagnosis,
         string? Notes,
         string? Prescription,
-        int TurnId
+        int TurnId,
+        object? OdontogramData // NUEVO
     )
     {
         public static VisitRecordDto Create(VisitRecord entity)
@@ -19,7 +21,10 @@ namespace Application.Models
                 entity.Diagnosis,
                 entity.Notes,
                 entity.Prescription,
-                entity.TurnId
+                entity.TurnId,
+                string.IsNullOrWhiteSpace(entity.OdontogramData)
+                    ? null
+                    : JsonSerializer.Deserialize<object>(entity.OdontogramData)
             );
         }
 

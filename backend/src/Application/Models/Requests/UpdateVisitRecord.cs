@@ -14,6 +14,9 @@ namespace Application.Models.Requests
 
         string? Prescription,
 
-        int? TurnId
+        int? TurnId,
+
+        // NUEVO: opcional también al actualizar
+        object? OdontogramData
     );
 }

@@ -12,18 +12,36 @@ namespace Domain.Entities
         public int TurnId { get; set; }
         public Turn? Turn { get; set; }
 
+        // NUEVO: JSON crudo del odontograma
+        public string? OdontogramData { get; set; }
+
         public VisitRecord() { }
 
-        public VisitRecord(string treatment, string diagnosis, string? notes, string? prescription, int turnId)
+        public VisitRecord(
+            string treatment,
+            string diagnosis,
+            string? notes,
+            string? prescription,
+            int turnId,
+            string? odontogramData // nuevo parámetro
+        )
         {
             Treatment = treatment;
             Diagnosis = diagnosis;
             Notes = notes;
             Prescription = prescription;
             TurnId = turnId;
+            OdontogramData = odontogramData;
         }
 
-        public void UpdateInfo(string? treatment, string? diagnosis, string? notes, string? prescription, int? turnId)
+        public void UpdateInfo(
+            string? treatment,
+            string? diagnosis,
+            string? notes,
+            string? prescription,
+            int? turnId,
+            string? odontogramData // nuevo parámetro
+        )
         {
             if (!string.IsNullOrEmpty(treatment)) Treatment = treatment;
             if (!string.IsNullOrEmpty(diagnosis)) Diagnosis = diagnosis;
@@ -31,6 +49,11 @@ namespace Domain.Entities
             if (!string.IsNullOrEmpty(prescription)) Prescription = prescription;
             if (turnId.HasValue)
                 TurnId = turnId.Value;
+
+            // Si viene null → no tocar; si viene string (incluye "{}") → actualizar
+            if (odontogramData is not null)
+                OdontogramData = odontogramData;
         }
     }
 }
+
