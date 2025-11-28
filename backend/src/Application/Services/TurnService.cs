@@ -77,12 +77,17 @@ namespace Application.Services
             var dentist = _dentistRepository.GetById(request.DentistId);
             if (dentist == null)
                 throw new NotFoundException("DENTIST_NOT_FOUND");
-            
+
             if (!dentist.IsActive)
                 throw new AppValidationException("DENTIST_NOT_AVAILABLE");
 
-            // Validar que la fecha del turno no sea en el pasado
-            if (request.AppointmentDate < DateTime.Now)
+            // Validar que la fecha no sea un día pasado
+            if (request.AppointmentDate.Date < DateTime.Now.Date)
+                throw new AppValidationException("INVALID_APPOINTMENT_DATE");
+
+            // Si es hoy, validar que la hora no sea pasada
+            if (request.AppointmentDate.Date == DateTime.Now.Date &&
+                request.AppointmentDate.TimeOfDay <= DateTime.Now.TimeOfDay)
                 throw new AppValidationException("INVALID_APPOINTMENT_DATE");
 
             // Validar disponibilidad del dentista para el día solicitado
