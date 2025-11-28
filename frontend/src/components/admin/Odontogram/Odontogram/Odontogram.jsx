@@ -2,12 +2,16 @@ import React, { useState, useEffect } from "react";
 import Tooth from "../Tooth/Tooth";
 import ToothModal from "../ToothModal/ToothModal";
 
-const Odontogram = ({ toothData: initialToothData = {}, onToothDataChange }) => {
+const Odontogram = ({
+  toothData: initialToothData = {},
+  onToothDataChange,
+  readOnly = false,
+}) => {
   const [selectedTooth, setSelectedTooth] = useState(null);
   const [toothData, setToothData] = useState({});
   const [showObservationsModal, setShowObservationsModal] = useState(false);
 
-  // Sincronizar datos iniciales (cuando viene del back / form)
+  // Sincronizar datos iniciales (vienen del form / back)
   useEffect(() => {
     if (initialToothData && typeof initialToothData === "object") {
       setToothData(initialToothData);
@@ -26,6 +30,7 @@ const Odontogram = ({ toothData: initialToothData = {}, onToothDataChange }) => 
   const bottomChildLeft = ["71", "72", "73", "74", "75"];
 
   const handleToothClick = (toothNumber) => {
+    if (readOnly) return; // 🔒 modo solo lectura
     setSelectedTooth(toothNumber);
   };
 
@@ -209,7 +214,7 @@ const Odontogram = ({ toothData: initialToothData = {}, onToothDataChange }) => 
               <button
                 type="button"
                 onClick={() => setShowObservationsModal(false)}
-                className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 text-xl"
+                className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center transición-all duration-200 text-xl"
               >
                 ×
               </button>
@@ -231,7 +236,7 @@ const Odontogram = ({ toothData: initialToothData = {}, onToothDataChange }) => 
                   {observations.map((obs, index) => (
                     <div
                       key={index}
-                      className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all duración-200"
+                      className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all duration-200"
                     >
                       <div className="flex items-start gap-3">
                         <div
@@ -289,7 +294,8 @@ const Odontogram = ({ toothData: initialToothData = {}, onToothDataChange }) => 
         </div>
       )}
 
-      {selectedTooth && (
+      {/* 🔒 Solo abrimos ToothModal si NO es readOnly */}
+      {selectedTooth && !readOnly && (
         <ToothModal
           toothNumber={selectedTooth}
           initialData={toothData[selectedTooth]}
@@ -302,3 +308,4 @@ const Odontogram = ({ toothData: initialToothData = {}, onToothDataChange }) => 
 };
 
 export default Odontogram;
+
