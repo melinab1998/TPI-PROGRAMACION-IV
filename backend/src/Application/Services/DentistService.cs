@@ -76,10 +76,8 @@ namespace Application.Services
             var dentist = _dentistRepository.GetById(id)
                 ?? throw new NotFoundException("DENTIST_NOT_FOUND");
 
-            // Limpiamos las actuales
             dentist.DentistHealthInsurances.Clear();
 
-            // Agregamos las nuevas (si mandan null o lista vacía, queda sin obras sociales)
             if (request.HealthInsuranceIds != null)
             {
                 foreach (var healthInsuranceId in request.HealthInsuranceIds.Distinct())
@@ -94,11 +92,9 @@ namespace Application.Services
 
             _dentistRepository.Update(dentist);
 
-            // Re-cargamos el dentista desde la BD con los Include
             var reloadedDentist = _dentistRepository.GetById(id)
                 ?? throw new NotFoundException("DENTIST_NOT_FOUND");
 
-            // Ahora sí, HealthInsurance.Name viene cargado
             return DentistDto.Create(reloadedDentist);
         }
 

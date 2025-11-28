@@ -25,7 +25,6 @@ export default function Appointments() {
   const navigate = useNavigate();
   const { token } = useContext(AuthContext);
 
-  // Cargar dentistas
   useEffect(() => {
     if (!token) return;
 
@@ -39,7 +38,6 @@ export default function Appointments() {
     );
   }, [token]);
 
-  // Cargar obras sociales
   useEffect(() => {
     if (!token) return;
 
@@ -50,7 +48,6 @@ export default function Appointments() {
     );
   }, [token]);
 
-  // (Opcional) cargar planes según la obra social seleccionada
   useEffect(() => {
     if (!selectedSocial || selectedSocial === "all" || !token) {
       setPlans([]);
@@ -97,7 +94,6 @@ export default function Appointments() {
     setFilteredDoctors(filtered);
   };
 
-  // Recalcular cuando cambian filtros
   useEffect(() => {
     if (!dentists.length) return;
     handleSearch();
