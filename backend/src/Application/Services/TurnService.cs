@@ -85,11 +85,6 @@ namespace Application.Services
             if (request.AppointmentDate.Date < DateTime.Now.Date)
                 throw new AppValidationException("INVALID_APPOINTMENT_DATE");
 
-            // Si es hoy, validar que la hora no sea pasada
-            if (request.AppointmentDate.Date == DateTime.Now.Date &&
-                request.AppointmentDate.TimeOfDay <= DateTime.Now.TimeOfDay)
-                throw new AppValidationException("INVALID_APPOINTMENT_DATE");
-
             // Validar disponibilidad del dentista para el día solicitado
             var availabilities = _availabilityRepository
                 .GetByDentistAndDay(request.DentistId, request.AppointmentDate.DayOfWeek);
