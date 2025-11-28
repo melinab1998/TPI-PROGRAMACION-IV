@@ -15,6 +15,7 @@ namespace Infrastructure.Data
         public DbSet<HealthPlan> HealthPlans { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<DentistHealthInsurance> DentistHealthInsurances { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -88,3 +89,4 @@ namespace Infrastructure.Data
         }
     }
 }
+

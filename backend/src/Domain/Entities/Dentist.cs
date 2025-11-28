@@ -4,6 +4,8 @@ namespace Domain.Entities
     {
         public string LicenseNumber { get; set; } = string.Empty;
         public bool IsActive { get; set; } = false;
+        public ICollection<DentistHealthInsurance> DentistHealthInsurances { get; set; } 
+            = new List<DentistHealthInsurance>();
 
         public Dentist() : base() { }
 
@@ -34,5 +36,6 @@ namespace Domain.Entities
         }
     }
 }
+
 
 

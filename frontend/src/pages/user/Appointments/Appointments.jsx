@@ -9,6 +9,7 @@ import {
   getHealthInsuranceById,
 } from "@/services/api.services";
 import { AuthContext } from "@/services/auth/AuthContextProvider";
+import { errorToast } from "@/utils/notifications"; 
 
 export default function Appointments() {
   const [dentists, setDentists] = useState([]);
@@ -24,46 +25,49 @@ export default function Appointments() {
   const navigate = useNavigate();
   const { token } = useContext(AuthContext);
 
+  // Cargar dentistas
   useEffect(() => {
-  if (!token) return;
+    if (!token) return;
 
-  getAllDentists(
-    token,
-    (data) => {
-      setDentists(data);
-      setFilteredDoctors(data);
-    },
-    (err) => errorToast(err.message || "Error al cargar dentistas")
-  );
-}, [token]);
+    getAllDentists(
+      token,
+      (data) => {
+        setDentists(data || []);
+        setFilteredDoctors(data || []);
+      },
+      (err) => errorToast(err.message || "Error al cargar dentistas")
+    );
+  }, [token]);
 
-useEffect(() => {
-  if (!token) return;
+  // Cargar obras sociales
+  useEffect(() => {
+    if (!token) return;
 
-  getAllHealthInsurances(
-    token,
-    (data) => setHealthInsurances(data),
-    (err) => errorToast(err.message || "Error al cargar obras sociales")
-  );
-}, [token]);
+    getAllHealthInsurances(
+      token,
+      (data) => setHealthInsurances(data || []),
+      (err) => errorToast(err.message || "Error al cargar obras sociales")
+    );
+  }, [token]);
 
-useEffect(() => {
-  if (!selectedSocial || selectedSocial === "all" || !token) {
-    setPlans([]);
-    setSelectedPlan("");
-    return;
-  }
-
-  getHealthInsuranceById(
-    token,
-    selectedSocial,
-    (data) => {
-      setPlans(data.plans || []);
+  // (Opcional) cargar planes según la obra social seleccionada
+  useEffect(() => {
+    if (!selectedSocial || selectedSocial === "all" || !token) {
+      setPlans([]);
       setSelectedPlan("");
-    },
-    (err) => errorToast(err.message || "Error al cargar planes de salud")
-  );
-}, [selectedSocial, token]);
+      return;
+    }
+
+    getHealthInsuranceById(
+      token,
+      selectedSocial,
+      (data) => {
+        setPlans(data?.plans || []);
+        setSelectedPlan("");
+      },
+      (err) => errorToast(err.message || "Error al cargar planes de salud")
+    );
+  }, [selectedSocial, token]);
 
   const handleSearch = () => {
     const prof =
@@ -71,17 +75,29 @@ useEffect(() => {
         ? selectedProfessional.trim().toLowerCase()
         : null;
 
-    const filtered = dentists
-      .filter(doc => doc.isActive)
+    const socialId =
+      selectedSocial && selectedSocial !== "all"
+        ? Number(selectedSocial)
+        : null;
+
+    const filtered = (dentists || [])
+      .filter((doc) => doc.isActive)
       .filter((doc) => {
         const fullName = `${doc.firstName} ${doc.lastName}`.toLowerCase();
         const matchProfessional = prof ? fullName.includes(prof) : true;
-        return matchProfessional;
+
+        const matchSocial = socialId
+          ? Array.isArray(doc.acceptedInsurances) &&
+            doc.acceptedInsurances.some((ins) => ins.id === socialId)
+          : true;
+
+        return matchProfessional && matchSocial;
       });
 
     setFilteredDoctors(filtered);
   };
 
+  // Recalcular cuando cambian filtros
   useEffect(() => {
     if (!dentists.length) return;
     handleSearch();
@@ -171,3 +187,4 @@ useEffect(() => {
     </div>
   );
 }
+
