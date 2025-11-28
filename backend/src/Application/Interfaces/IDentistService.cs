@@ -11,4 +11,5 @@ public interface IDentistService
     DentistDto UpdateDentist(int id, UpdateDentistRequest request);
     void ActivateDentist(string token, string password);
     DentistDto SetActiveStatusByAdmin(int id, bool isActive);
+    DentistDto UpdateDentistInsurances(int id, UpdateDentistInsurancesRequest request);
 }

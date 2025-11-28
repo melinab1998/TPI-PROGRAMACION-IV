@@ -14,6 +14,8 @@ namespace Application.Models.Requests
 
         string? Prescription,
 
-        int? TurnId
+        int? TurnId,
+
+        object? OdontogramData
     );
 }

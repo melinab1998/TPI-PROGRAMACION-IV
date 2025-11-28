@@ -4,6 +4,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251128150656_AddOdontogramDataToVisitRecord")]
+    partial class AddOdontogramDataToVisitRecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,29 +76,6 @@ namespace Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ContactMessages");
-                });
-
-            modelBuilder.Entity("Domain.Entities.DentistHealthInsurance", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DentistId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("HealthInsuranceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DentistId");
-
-                    b.HasIndex("HealthInsuranceId");
-
-                    b.ToTable("DentistHealthInsurances");
                 });
 
             modelBuilder.Entity("Domain.Entities.HealthInsurance", b =>
@@ -353,25 +333,6 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("SuperAdmins", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.DentistHealthInsurance", b =>
-                {
-                    b.HasOne("Domain.Entities.Dentist", "Dentist")
-                        .WithMany("DentistHealthInsurances")
-                        .HasForeignKey("DentistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.HealthInsurance", "HealthInsurance")
-                        .WithMany("DentistHealthInsurances")
-                        .HasForeignKey("HealthInsuranceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Dentist");
-
-                    b.Navigation("HealthInsurance");
-                });
-
             modelBuilder.Entity("Domain.Entities.HealthPlan", b =>
                 {
                     b.HasOne("Domain.Entities.HealthInsurance", "HealthInsurance")
@@ -448,14 +409,7 @@ namespace Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Domain.Entities.HealthInsurance", b =>
                 {
-                    b.Navigation("DentistHealthInsurances");
-
                     b.Navigation("Plans");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Dentist", b =>
-                {
-                    b.Navigation("DentistHealthInsurances");
                 });
 #pragma warning restore 612, 618
         }

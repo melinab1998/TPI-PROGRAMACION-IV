@@ -5,131 +5,161 @@ using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
 
-namespace Application.Services;
-
-public class DentistService : IDentistService
+namespace Application.Services
 {
-    private readonly IDentistRepository _dentistRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly IPasswordHasher _hasher;
-    private readonly IEmailService _emailService;
-    private readonly IJwtService _jwtService;
-
-    public DentistService(
-        IDentistRepository dentistRepository,
-        IUserRepository userRepository,
-        IPasswordHasher hasher,
-        IEmailService emailService,
-        IJwtService jwtService)
+    public class DentistService : IDentistService
     {
-        _dentistRepository = dentistRepository;
-        _userRepository = userRepository;
-        _hasher = hasher;
-        _emailService = emailService;
-        _jwtService = jwtService;
-    }
+        private readonly IDentistRepository _dentistRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IPasswordHasher _hasher;
+        private readonly IEmailService _emailService;
+        private readonly IJwtService _jwtService;
 
-    // Obtiene todos los dentistas registrados en el sistema.
-    public List<DentistDto> GetAllDentists()
-    {
-        var dentists = _dentistRepository.List();
-        if (!dentists.Any())
-            return new List<DentistDto>();
+        public DentistService(
+            IDentistRepository dentistRepository,
+            IUserRepository userRepository,
+            IPasswordHasher hasher,
+            IEmailService emailService,
+            IJwtService jwtService)
+        {
+            _dentistRepository = dentistRepository;
+            _userRepository = userRepository;
+            _hasher = hasher;
+            _emailService = emailService;
+            _jwtService = jwtService;
+        }
 
-        return DentistDto.CreateList(dentists);
-    }
+        // Obtiene todos los dentistas registrados en el sistema.
+        public List<DentistDto> GetAllDentists()
+        {
+            var dentists = _dentistRepository.List();
+            if (!dentists.Any())
+                return new List<DentistDto>();
 
-    // Obtiene la información de un dentista específico por su identificador.
-    public DentistDto GetDentistById(int id)
-    {
-        var dentist = _dentistRepository.GetById(id)
-            ?? throw new NotFoundException("DENTIST_NOT_FOUND");
+            return DentistDto.CreateList(dentists);
+        }
 
-        return DentistDto.Create(dentist);
-    }
+        // Obtiene la información de un dentista específico por su identificador.
+        public DentistDto GetDentistById(int id)
+        {
+            var dentist = _dentistRepository.GetById(id)
+                ?? throw new NotFoundException("DENTIST_NOT_FOUND");
 
-    // Actualiza los datos de un dentista, validando que el correo y la matrícula sean únicos.
-    public DentistDto UpdateDentist(int id, UpdateDentistRequest request)
-    {
-        var dentist = _dentistRepository.GetById(id)
-            ?? throw new NotFoundException("DENTIST_NOT_FOUND");
+            return DentistDto.Create(dentist);
+        }
 
-        if (!string.IsNullOrEmpty(request.Email) &&
-            _userRepository.GetByEmail(request.Email) != null &&
-            request.Email != dentist.Email)
-            throw new AppValidationException("EMAIL_ALREADY_EXISTS");
+        // Actualiza los datos de un dentista, validando que el correo y la matrícula sean únicos.
+        public DentistDto UpdateDentist(int id, UpdateDentistRequest request)
+        {
+            var dentist = _dentistRepository.GetById(id)
+                ?? throw new NotFoundException("DENTIST_NOT_FOUND");
 
-        if (!string.IsNullOrEmpty(request.LicenseNumber) &&
-            _dentistRepository.LicenseExists(request.LicenseNumber) &&
-            request.LicenseNumber != dentist.LicenseNumber)
-            throw new AppValidationException("LICENSE_ALREADY_EXISTS");
+            if (!string.IsNullOrEmpty(request.Email) &&
+                _userRepository.GetByEmail(request.Email) != null &&
+                request.Email != dentist.Email)
+                throw new AppValidationException("EMAIL_ALREADY_EXISTS");
 
-        dentist.UpdateInfo(request.FirstName, request.LastName, request.Email, request.LicenseNumber);
+            if (!string.IsNullOrEmpty(request.LicenseNumber) &&
+                _dentistRepository.LicenseExists(request.LicenseNumber) &&
+                request.LicenseNumber != dentist.LicenseNumber)
+                throw new AppValidationException("LICENSE_ALREADY_EXISTS");
 
-        _dentistRepository.Update(dentist);
-        return DentistDto.Create(dentist);
-    }
+            dentist.UpdateInfo(request.FirstName, request.LastName, request.Email, request.LicenseNumber);
 
-    // Activa la cuenta de un dentista utilizando un token de activación y establece su contraseña.
-    public void ActivateDentist(string token, string password)
-    {
-        var principal = _jwtService.ValidateToken(token);
-        var dentistIdClaim = principal.FindFirst("dentistId");
+            _dentistRepository.Update(dentist);
+            return DentistDto.Create(dentist);
+        }
 
-        if (dentistIdClaim == null)
-            throw new UnauthorizedException("INVALID_TOKEN");
+        // Actualizar obras sociales que acepta un dentista
+        public DentistDto UpdateDentistInsurances(int id, UpdateDentistInsurancesRequest request)
+        {
+            var dentist = _dentistRepository.GetById(id)
+                ?? throw new NotFoundException("DENTIST_NOT_FOUND");
 
-        int dentistId = int.Parse(dentistIdClaim.Value);
-        var dentist = _dentistRepository.GetById(dentistId);
-        if (dentist == null)
-            throw new NotFoundException("DENTIST_NOT_FOUND");
+            dentist.DentistHealthInsurances.Clear();
 
-        dentist.Activate(_hasher.HashPassword(password));
-        _dentistRepository.Update(dentist);
-    }
+            if (request.HealthInsuranceIds != null)
+            {
+                foreach (var healthInsuranceId in request.HealthInsuranceIds.Distinct())
+                {
+                    dentist.DentistHealthInsurances.Add(new DentistHealthInsurance
+                    {
+                        DentistId = dentist.Id,
+                        HealthInsuranceId = healthInsuranceId
+                    });
+                }
+            }
 
-    // Crea un nuevo dentista (por parte del SuperAdmin), valida duplicados y envía un correo de activación.
-    public ActivationResponseDto<DentistDto> CreateDentist(CreateDentistRequest request)
-    {
-        if (_userRepository.GetByEmail(request.Email) != null)
-            throw new AppValidationException("EMAIL_ALREADY_EXISTS");
+            _dentistRepository.Update(dentist);
 
-        if (_dentistRepository.LicenseExists(request.LicenseNumber))
-            throw new AppValidationException("LICENSE_ALREADY_EXISTS");
+            var reloadedDentist = _dentistRepository.GetById(id)
+                ?? throw new NotFoundException("DENTIST_NOT_FOUND");
 
-        var dentist = new Dentist(request.FirstName, request.LastName, request.Email, request.LicenseNumber);
+            return DentistDto.Create(reloadedDentist);
+        }
 
-        var tempPassword = GenerateTemporaryPassword();
-        dentist.Activate(_hasher.HashPassword(tempPassword));
+        // Activa la cuenta de un dentista utilizando un token de activación y establece su contraseña.
+        public void ActivateDentist(string token, string password)
+        {
+            var principal = _jwtService.ValidateToken(token);
+            var dentistIdClaim = principal.FindFirst("dentistId");
 
-        _dentistRepository.Add(dentist);
+            if (dentistIdClaim == null)
+                throw new UnauthorizedException("INVALID_TOKEN");
 
-        var activationToken = _jwtService.GenerateActivationTokenForDentist(dentist.Id);
-        _emailService.SendActivationEmailAsync(dentist.Email, activationToken);
+            int dentistId = int.Parse(dentistIdClaim.Value);
+            var dentist = _dentistRepository.GetById(dentistId);
+            if (dentist == null)
+                throw new NotFoundException("DENTIST_NOT_FOUND");
 
-        return new ActivationResponseDto<DentistDto>(DentistDto.Create(dentist), activationToken);
-    }
+            dentist.Activate(_hasher.HashPassword(password));
+            _dentistRepository.Update(dentist);
+        }
 
-    // Permite al SuperAdmin activar o desactivar la cuenta de un dentista.
-    public DentistDto SetActiveStatusByAdmin(int id, bool isActive)
-    {
-        var dentist = _dentistRepository.GetById(id)
-            ?? throw new NotFoundException("DENTIST_NOT_FOUND");
+        // Crea un nuevo dentista (por parte del SuperAdmin), valida duplicados y envía un correo de activación.
+        public ActivationResponseDto<DentistDto> CreateDentist(CreateDentistRequest request)
+        {
+            if (_userRepository.GetByEmail(request.Email) != null)
+                throw new AppValidationException("EMAIL_ALREADY_EXISTS");
 
-        dentist.SetActiveStatus(isActive);
-        _dentistRepository.Update(dentist);
+            if (_dentistRepository.LicenseExists(request.LicenseNumber))
+                throw new AppValidationException("LICENSE_ALREADY_EXISTS");
 
-        return DentistDto.Create(dentist);
-    }
+            var dentist = new Dentist(request.FirstName, request.LastName, request.Email, request.LicenseNumber);
 
-    // Genera una contraseña temporal aleatoria para nuevos dentistas.
-    private string GenerateTemporaryPassword()
-    {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        var random = new Random();
-        return "Tmp-" + new string(Enumerable.Repeat(chars, 10)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
+            var tempPassword = GenerateTemporaryPassword();
+            dentist.Activate(_hasher.HashPassword(tempPassword));
+
+            _dentistRepository.Add(dentist);
+
+            var activationToken = _jwtService.GenerateActivationTokenForDentist(dentist.Id);
+            _emailService.SendActivationEmailAsync(dentist.Email, activationToken);
+
+            return new ActivationResponseDto<DentistDto>(DentistDto.Create(dentist), activationToken);
+        }
+
+        // Permite al SuperAdmin activar o desactivar la cuenta de un dentista.
+        public DentistDto SetActiveStatusByAdmin(int id, bool isActive)
+        {
+            var dentist = _dentistRepository.GetById(id)
+                ?? throw new NotFoundException("DENTIST_NOT_FOUND");
+
+            dentist.SetActiveStatus(isActive);
+            _dentistRepository.Update(dentist);
+
+            return DentistDto.Create(dentist);
+        }
+
+        // Genera una contraseña temporal aleatoria para nuevos dentistas.
+        private string GenerateTemporaryPassword()
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random();
+            return "Tmp-" + new string(Enumerable.Repeat(chars, 10)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
     }
 }
+
 
 
