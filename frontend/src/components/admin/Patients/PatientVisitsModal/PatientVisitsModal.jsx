@@ -79,7 +79,7 @@ export default function PatientVisitsModal({ open, onClose, patient, token }) {
                         </DialogTitle>
                     </DialogHeader>
 
-                {/*   <div className="flex justify-end mb-4 gap-2">
+                <div className="flex justify-end mb-4 gap-2">
                         <Button
                             size="sm"
                             onClick={() => setIsOdontogramOpen(true)}
@@ -87,7 +87,7 @@ export default function PatientVisitsModal({ open, onClose, patient, token }) {
                         >
                             Ver Odontograma
                         </Button>
-                    </div> */}
+                    </div> 
 
                     <div className="flex-1 min-h-0 overflow-y-auto pr-2 space-y-4">
                         {loading ? (
