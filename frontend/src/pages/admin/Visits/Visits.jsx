@@ -6,7 +6,13 @@ import TurnsList from "@/components/admin/Visits/TurnsList/TurnsList";
 import VisitForm from "@/components/admin/Visits/VisitForm/VisitForm";
 import { successToast, errorToast } from "@/utils/notifications";
 import { AuthContext } from "@/services/auth/AuthContextProvider";
-import { getDentistTurns, getPatientById, createVisitRecord, updateVisitRecord, getAllVisitRecords } from "@/services/api.services";
+import {
+    getDentistTurns,
+    getPatientById,
+    createVisitRecord,
+    updateVisitRecord,
+    getAllVisitRecords,
+} from "@/services/api.services";
 
 export default function VisitsPage() {
     const { token, userId } = useContext(AuthContext);
@@ -25,15 +31,15 @@ export default function VisitsPage() {
         formState: { errors },
         setValue,
         watch,
-        reset
+        reset,
     } = useForm({
         defaultValues: {
             treatment: "",
             diagnosis: "",
             notes: "",
             prescription: "",
-            odontogramData: {}
-        }
+            odontogramData: {},
+        },
     });
 
     useEffect(() => {
@@ -59,15 +65,15 @@ export default function VisitsPage() {
                     ...prev,
                     [patientId]: {
                         name: `${patient.firstName} ${patient.lastName}`,
-                        dni: patient.dni
-                    }
+                        dni: patient.dni,
+                    },
                 }));
             },
             (err) => {
                 errorToast(err.message || "Error al cargar datos del paciente");
                 setPatientsData((prev) => ({
                     ...prev,
-                    [patientId]: { name: `ID: ${patientId}`, dni: "No disponible" }
+                    [patientId]: { name: `ID: ${patientId}`, dni: "No disponible" },
                 }));
             }
         );
@@ -100,7 +106,10 @@ export default function VisitsPage() {
     }, [token, userId]);
 
     const getVisitRecordForTurn = (turnId) => {
-        const record = visitRecords.find(record => record.turnId === turnId);
+        const numericTurnId = Number(turnId);
+        const record = visitRecords.find(
+            (record) => Number(record.turnId) === numericTurnId
+        );
         return record;
     };
 
@@ -108,13 +117,19 @@ export default function VisitsPage() {
         setSelectedTurn(turn);
         const existingRecord = getVisitRecordForTurn(turn.id);
 
-        const formData = existingRecord || {
-            treatment: "",
-            diagnosis: "",
-            notes: "",
-            prescription: "",
-            odontogramData: {}
-        };
+        const formData = existingRecord
+            ? {
+                ...existingRecord,
+                odontogramData: existingRecord.odontogramData || {},
+            }
+            : {
+                treatment: "",
+                diagnosis: "",
+                notes: "",
+                prescription: "",
+                odontogramData: {},
+            };
+
         reset(formData);
         setShowVisitForm(true);
     };
@@ -144,19 +159,28 @@ export default function VisitsPage() {
             diagnosis: data.diagnosis.trim(),
             notes: data.notes?.trim() || "",
             prescription: data.prescription?.trim() || "",
-            turnId: Number(selectedTurn.id)
+            turnId: Number(selectedTurn.id),
+            odontogramData: data.odontogramData || {},
         };
 
         const handleSuccess = (savedRecord) => {
-
             const processedRecord = {
                 ...savedRecord,
-                turnId: savedRecord.turnId || selectedTurn.id
+                turnId: savedRecord.turnId || Number(selectedTurn.id),
+                odontogramData:
+                    savedRecord.odontogramData ??
+                    data.odontogramData ??
+                    existingRecord?.odontogramData ??
+                    {},
             };
 
-            setVisitRecords(prev => {
+            setVisitRecords((prev) => {
                 const newRecords = existingRecord
-                    ? prev.map(r => r.turnId === selectedTurn.id ? processedRecord : r)
+                    ? prev.map((r) =>
+                        Number(r.turnId) === Number(selectedTurn.id)
+                            ? processedRecord
+                            : r
+                    )
                     : [...prev, processedRecord];
                 return newRecords;
             });
@@ -178,9 +202,20 @@ export default function VisitsPage() {
 
         try {
             if (existingRecord && existingRecord.id) {
-                await updateVisitRecord(token, existingRecord.id, payload, handleSuccess, handleError);
+                await updateVisitRecord(
+                    token,
+                    existingRecord.id,
+                    payload,
+                    handleSuccess,
+                    handleError
+                );
             } else {
-                await createVisitRecord(token, payload, handleSuccess, handleError);
+                await createVisitRecord(
+                    token,
+                    payload,
+                    handleSuccess,
+                    handleError
+                );
             }
         } catch (error) {
             errorToast("Error inesperado al procesar la solicitud");
@@ -192,17 +227,20 @@ export default function VisitsPage() {
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
             <Header totalTurns={turns.length} />
+
             <SearchBar
                 searchTerm={searchTerm}
                 onChange={setSearchTerm}
                 placeholder="Buscar por nombre, apellido o DNI..."
             />
+
             <TurnsList
                 turns={turns}
                 patientsData={patientsData}
                 getVisitRecordForTurn={getVisitRecordForTurn}
                 handleCreateVisitRecord={handleCreateVisitRecord}
             />
+
             <VisitForm
                 selectedTurn={selectedTurn}
                 showVisitForm={showVisitForm}

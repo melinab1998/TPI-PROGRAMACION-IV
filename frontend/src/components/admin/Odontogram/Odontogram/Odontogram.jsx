@@ -1,11 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Tooth from "../Tooth/Tooth";
 import ToothModal from "../ToothModal/ToothModal";
 
-const Odontogram = () => {
+const Odontogram = ({ toothData: initialToothData = {}, onToothDataChange }) => {
   const [selectedTooth, setSelectedTooth] = useState(null);
   const [toothData, setToothData] = useState({});
   const [showObservationsModal, setShowObservationsModal] = useState(false);
+
+  // Sincronizar datos iniciales (cuando viene del back / form)
+  useEffect(() => {
+    if (initialToothData && typeof initialToothData === "object") {
+      setToothData(initialToothData);
+    } else {
+      setToothData({});
+    }
+  }, [initialToothData]);
 
   const topRowRight = ["18", "17", "16", "15", "14", "13", "12", "11"];
   const topRowLeft = ["21", "22", "23", "24", "25", "26", "27", "28"];
@@ -21,11 +30,18 @@ const Odontogram = () => {
   };
 
   const handleSaveToothData = (toothNumber, data) => {
-    setToothData((prev) => ({
-      ...prev,
+    const newToothData = {
+      ...toothData,
       [toothNumber]: data,
-    }));
+    };
+
+    setToothData(newToothData);
     setSelectedTooth(null);
+
+    // Notificar al padre (VisitForm / useForm)
+    if (onToothDataChange) {
+      onToothDataChange(newToothData);
+    }
   };
 
   const handleCloseModal = () => {
@@ -39,7 +55,11 @@ const Odontogram = () => {
         observations.push({
           toothNumber,
           section: "general",
-          color: data.general.status === "ausente" || data.general.status === "corona" ? "red" : "blue",
+          color:
+            data.general.status === "ausente" ||
+            data.general.status === "corona"
+              ? "red"
+              : "blue",
           observation: data.general.status
             .replaceAll("_", " ")
             .replace(/^\w/, (c) => c.toUpperCase()),
@@ -75,55 +95,100 @@ const Odontogram = () => {
       <h1 className="text-2xl font-extrabold tracking-wide mb-8 mt-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70 drop-shadow-sm">
         ODONTOGRAMA
       </h1>
+
       <div className="flex mb-4">
         {topRowRight.map((t) => (
-          <Tooth key={t} label={t} data={toothData[t]} onClick={() => handleToothClick(t)} />
+          <Tooth
+            key={t}
+            label={t}
+            data={toothData[t]}
+            onClick={() => handleToothClick(t)}
+          />
         ))}
         <div className="w-4" />
         {topRowLeft.map((t) => (
-          <Tooth key={t} label={t} data={toothData[t]} onClick={() => handleToothClick(t)} />
+          <Tooth
+            key={t}
+            label={t}
+            data={toothData[t]}
+            onClick={() => handleToothClick(t)}
+          />
         ))}
       </div>
+
       <div className="flex mb-8">
         {bottomRowRight.map((t) => (
-          <Tooth key={t} label={t} data={toothData[t]} onClick={() => handleToothClick(t)} />
+          <Tooth
+            key={t}
+            label={t}
+            data={toothData[t]}
+            onClick={() => handleToothClick(t)}
+          />
         ))}
         <div className="w-4" />
         {bottomRowLeft.map((t) => (
-          <Tooth key={t} label={t} data={toothData[t]} onClick={() => handleToothClick(t)} />
+          <Tooth
+            key={t}
+            label={t}
+            data={toothData[t]}
+            onClick={() => handleToothClick(t)}
+          />
         ))}
       </div>
+
       <div className="flex mb-4">
         {topChildRight.map((t) => (
-          <Tooth key={t} label={t} data={toothData[t]} onClick={() => handleToothClick(t)} />
+          <Tooth
+            key={t}
+            label={t}
+            data={toothData[t]}
+            onClick={() => handleToothClick(t)}
+          />
         ))}
         <div className="w-4" />
         {topChildLeft.map((t) => (
-          <Tooth key={t} label={t} data={toothData[t]} onClick={() => handleToothClick(t)} />
+          <Tooth
+            key={t}
+            label={t}
+            data={toothData[t]}
+            onClick={() => handleToothClick(t)}
+          />
         ))}
       </div>
 
       <div className="flex mb-12">
         {bottomChildRight.map((t) => (
-          <Tooth key={t} label={t} data={toothData[t]} onClick={() => handleToothClick(t)} />
+          <Tooth
+            key={t}
+            label={t}
+            data={toothData[t]}
+            onClick={() => handleToothClick(t)}
+          />
         ))}
         <div className="w-4" />
         {bottomChildLeft.map((t) => (
-          <Tooth key={t} label={t} data={toothData[t]} onClick={() => handleToothClick(t)} />
+          <Tooth
+            key={t}
+            label={t}
+            data={toothData[t]}
+            onClick={() => handleToothClick(t)}
+          />
         ))}
       </div>
 
       {observations.length > 0 && (
         <div className="mb-8">
           <button
-            type="button" // Agregar type="button" aquí
+            type="button"
             onClick={() => setShowObservationsModal(true)}
             className="flex items-center gap-2 px-6 py-3 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md font-medium"
           >
             <span className="text-lg">📝</span>
             <div className="flex flex-col items-start">
               <span className="text-sm">Ver Observaciones</span>
-              <span className="text-xs opacity-80">{observations.length} registrada(s)</span>
+              <span className="text-xs opacity-80">
+                {observations.length} registrada(s)
+              </span>
             </div>
           </button>
         </div>
@@ -142,7 +207,7 @@ const Odontogram = () => {
                 </p>
               </div>
               <button
-                type="button" // Agregar type="button" aquí también
+                type="button"
                 onClick={() => setShowObservationsModal(false)}
                 className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 text-xl"
               >
@@ -166,20 +231,28 @@ const Odontogram = () => {
                   {observations.map((obs, index) => (
                     <div
                       key={index}
-                      className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all duration-200"
+                      className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all duración-200"
                     >
                       <div className="flex items-start gap-3">
                         <div
                           className="w-4 h-4 rounded-full border-2 mt-1 flex-shrink-0 shadow-sm"
                           style={{
                             backgroundColor:
-                              obs.color === "blue" ? "#1E3A8A" :
-                                obs.color === "red" ? "#B22222" :
-                                  obs.color === "green" ? "#2E7D32" : "white",
+                              obs.color === "blue"
+                                ? "#1E3A8A"
+                                : obs.color === "red"
+                                ? "#B22222"
+                                : obs.color === "green"
+                                ? "#2E7D32"
+                                : "white",
                             borderColor:
-                              obs.color === "blue" ? "#1E3A8A" :
-                                obs.color === "red" ? "#B22222" :
-                                  obs.color === "green" ? "#2E7D32" : "#D1D5DB"
+                              obs.color === "blue"
+                                ? "#1E3A8A"
+                                : obs.color === "red"
+                                ? "#B22222"
+                                : obs.color === "green"
+                                ? "#2E7D32"
+                                : "#D1D5DB",
                           }}
                         />
                         <div className="flex-1">
@@ -205,7 +278,7 @@ const Odontogram = () => {
 
             <div className="flex justify-end px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-2xl">
               <button
-                type="button" // Y aquí también
+                type="button"
                 onClick={() => setShowObservationsModal(false)}
                 className="px-6 py-2.5 bg-primary hover:bg-primary/90 text-white font-medium rounded-xl transition-all duration-200"
               >

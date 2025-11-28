@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FileText } from "lucide-react";
@@ -29,6 +29,26 @@ export default function VisitForm({
     visible: { opacity: 1, scale: 1, transition: { duration: 0.4 } }
   };
 
+  // ⚠️ Hook SIEMPRE antes de cualquier return condicional
+  useEffect(() => {
+    if (!selectedTurn) return;
+
+    const record = getVisitRecordForTurn(selectedTurn.id);
+
+    if (record && record.odontogramData) {
+      setToothData(record.odontogramData);
+      if (handleOdontogramChange) {
+        handleOdontogramChange(record.odontogramData);
+      }
+    } else {
+      setToothData({});
+      if (handleOdontogramChange) {
+        handleOdontogramChange({});
+      }
+    }
+  }, [selectedTurn, getVisitRecordForTurn, handleOdontogramChange]);
+
+  // Ahora sí, recién acá el return condicional
   if (!showVisitForm || !selectedTurn) return null;
 
   const existingRecord = getVisitRecordForTurn(selectedTurn.id);
@@ -50,8 +70,12 @@ export default function VisitForm({
           </CardTitle>
           <CardDescription>
             {patientData
-              ? `${patientData.name} - ${new Date(selectedTurn.appointmentDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
-              : `ID: ${selectedTurn.patientId} - ${new Date(selectedTurn.appointmentDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`}
+              ? `${patientData.name} - ${new Date(
+                  selectedTurn.appointmentDate
+                ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+              : `ID: ${selectedTurn.patientId} - ${new Date(
+                  selectedTurn.appointmentDate
+                ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -66,7 +90,11 @@ export default function VisitForm({
                   className={errors.treatment ? "border-red-500" : ""}
                   rows={3}
                 />
-                {errors.treatment && <p className="text-red-500 text-xs">{errors.treatment.message}</p>}
+                {errors.treatment && (
+                  <p className="text-red-500 text-xs">
+                    {errors.treatment.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -78,33 +106,54 @@ export default function VisitForm({
                   className={errors.diagnosis ? "border-red-500" : ""}
                   rows={3}
                 />
-                {errors.diagnosis && <p className="text-red-500 text-xs">{errors.diagnosis.message}</p>}
+                {errors.diagnosis && (
+                  <p className="text-red-500 text-xs">
+                    {errors.diagnosis.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="notes">Notas Adicionales (opcional)</Label>
-                <Textarea id="notes" placeholder="Ingrese notas adicionales..." {...register("notes")} rows={3} />
+                <Textarea
+                  id="notes"
+                  placeholder="Ingrese notas adicionales..."
+                  {...register("notes")}
+                  rows={3}
+                />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="prescription">Prescripción Médica (opcional)</Label>
-                <Textarea id="prescription" placeholder="Ingrese la prescripción médica..." {...register("prescription")} rows={3} />
+                <Textarea
+                  id="prescription"
+                  placeholder="Ingrese la prescripción médica..."
+                  {...register("prescription")}
+                  rows={3}
+                />
               </div>
             </div>
 
             {/* Odontograma integrado */}
             <div className="space-y-2">
               <Label>Odontograma (opcional)</Label>
-              <Odontogram 
-                toothData={toothData} 
-                onToothDataChange={handleToothDataChange} 
+              <Odontogram
+                toothData={toothData}
+                onToothDataChange={handleToothDataChange}
               />
             </div>
 
-            <div className="text-xs text-muted-foreground pt-2">* Campos obligatorios</div>
+            <div className="text-xs text-muted-foreground pt-2">
+              * Campos obligatorios
+            </div>
 
             <div className="flex justify-end gap-2 pt-4">
-              <Button type="button" variant="outline" onClick={() => setShowVisitForm(false)} disabled={isSubmitting}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowVisitForm(false)}
+                disabled={isSubmitting}
+              >
                 Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting}>
@@ -117,4 +166,6 @@ export default function VisitForm({
     </motion.div>
   );
 }
+
+
 
