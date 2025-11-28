@@ -36,7 +36,15 @@ public class DentistController : ControllerBase
         return Ok(_dentistService.UpdateDentist(id, request));
     }
 
-
+    [HttpPut("{id}/insurances")]
+    [Authorize(Roles = "SuperAdmin")]
+    public ActionResult<DentistDto> UpdateDentistInsurances(
+        [FromRoute] int id,
+        [FromBody] UpdateDentistInsurancesRequest request
+    )
+    {
+        return Ok(_dentistService.UpdateDentistInsurances(id, request));
+    }
 
     [HttpPatch("{id}/activate")]
     [Authorize(Roles = "SuperAdmin")]

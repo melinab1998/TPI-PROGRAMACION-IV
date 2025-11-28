@@ -1,6 +1,7 @@
 import React from "react";
 import { Phone, Mail, MapPin, Facebook, Instagram } from "lucide-react";
 import { FaXTwitter } from 'react-icons/fa6';
+import { Link } from "react-router-dom";
 
 export default function Footer() {
     return (
@@ -27,11 +28,28 @@ export default function Footer() {
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Enlaces rápidos</h3>
                         <div className="space-y-2">
-                            {["Inicio", "Servicios", "Equipo médico", "Contacto"].map((link, i) => (
-                                <p key={i} className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-                                    {link}
-                                </p>
-                            ))}
+
+                            <Link
+                                to="/"
+                                className="block text-muted-foreground hover:text-primary transition-colors"
+                            >
+                                Inicio
+                            </Link>
+
+                            <Link
+                                to="/services"
+                                className="block text-muted-foreground hover:text-primary transition-colors"
+                            >
+                                Servicios
+                            </Link>
+
+                            <Link
+                                to="/contact"
+                                className="block text-muted-foreground hover:text-primary transition-colors"
+                            >
+                                Contacto
+                            </Link>
+
                         </div>
                     </div>
                     <div className="space-y-4">

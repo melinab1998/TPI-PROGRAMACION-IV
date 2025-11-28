@@ -98,12 +98,14 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 text-xl"
           >
             ×
           </button>
         </div>
+
         <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
           <h3 className="text-sm font-semibold text-gray-700 mb-3">
             Estado general de la pieza
@@ -111,14 +113,16 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {wholeToothOptions.map((opt) => (
               <button
+                type="button"
                 key={opt.key}
                 onClick={() =>
                   setGeneral({ status: opt.key === general.status ? null : opt.key })
                 }
-                className={`flex flex-col items-center justify-center gap-1 p-3 border rounded-lg text-sm font-medium transition-all duration-150 ${general.status === opt.key
-                  ? "bg-primary/10 border-primary"
-                  : "bg-white border-gray-300 hover:bg-gray-50"
-                  }`}
+                className={`flex flex-col items-center justify-center gap-1 p-3 border rounded-lg text-sm font-medium transition-all duración-150 ${
+                  general.status === opt.key
+                    ? "bg-primary/10 border-primary"
+                    : "bg-white border-gray-300 hover:bg-gray-50"
+                }`}
               >
                 <div>{opt.icon}</div>
                 <span className="text-gray-800 text-xs text-center">{opt.label}</span>
@@ -143,10 +147,8 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
                 <div
                   className="w-4 h-4 rounded-full border-2 flex-shrink-0"
                   style={{
-                    backgroundColor:
-                      key === "white" ? "#FFFFFF" : customColors[key],
-                    borderColor:
-                      key === "white" ? "#D1D5DB" : customColors[key],
+                    backgroundColor: key === "white" ? "#FFFFFF" : customColors[key],
+                    borderColor: key === "white" ? "#D1D5DB" : customColors[key],
                   }}
                 />
                 <div className="flex flex-col">
@@ -183,12 +185,14 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
                   <div className="flex gap-1">
                     {Object.keys(colors).map((c) => (
                       <button
+                        type="button"
                         key={c}
                         onClick={() => handleColorChange(section, c)}
-                        className={`w-7 h-7 rounded-full border-2 transition-all duration-150 transform hover:scale-110 ${data.color === c
-                          ? "ring-2 ring-primary ring-offset-1 scale-110"
-                          : "border-gray-300 hover:border-gray-400"
-                          }`}
+                        className={`w-7 h-7 rounded-full border-2 transition-all duration-150 transform hover:scale-110 ${
+                          data.color === c
+                            ? "ring-2 ring-primary ring-offset-1 scale-110"
+                            : "border-gray-300 hover:border-gray-400"
+                        }`}
                         style={{
                           backgroundColor: c === "white" ? "#FFFFFF" : customColors[c],
                           borderColor: c === "white" ? "#D1D5DB" : customColors[c],
@@ -226,12 +230,14 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
 
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
           <button
+            type="button"
             onClick={onClose}
             className="px-6 py-2.5 text-sm border border-gray-300 bg-white text-gray-700 rounded-xl hover:bg-gray-100 transition-all duration-200"
           >
             Cancelar
           </button>
           <button
+            type="button"
             onClick={handleSave}
             className="px-6 py-2.5 text-sm bg-primary text-white font-medium rounded-xl hover:bg-primary/90 transition-all duration-200"
           >
@@ -244,3 +250,4 @@ const ToothModal = ({ toothNumber, initialData, onSave, onClose }) => {
 };
 
 export default ToothModal;
+

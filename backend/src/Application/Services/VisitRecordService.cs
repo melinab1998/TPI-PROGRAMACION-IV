@@ -4,6 +4,7 @@ using Application.Models.Requests;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
+using System.Text.Json;
 
 namespace Application.Services
 {
@@ -20,7 +21,6 @@ namespace Application.Services
             _turnRepository = turnRepository;
         }
 
-        // Obtener todos los registros de visitas del sistema.
         public List<VisitRecordDto> GetAllVisitRecord()
         {
             var visitRecords = _visitRecordRepository.List();
@@ -30,7 +30,6 @@ namespace Application.Services
             return VisitRecordDto.CreateList(visitRecords);
         }
 
-        // Obtener un registro de visita específico por ID.
         public VisitRecordDto GetVisitRecordById(int id)
         {
             var visitRecord = _visitRecordRepository.GetById(id)
@@ -39,26 +38,28 @@ namespace Application.Services
             return VisitRecordDto.Create(visitRecord);
         }
 
-        // Crear un nuevo registro de visita del paciente.
         public VisitRecordDto CreateVisitRecord(CreateVisitRecordRequest request)
         {
             var turn = _turnRepository.GetById(request.TurnId)
                 ?? throw new NotFoundException("TURN_NOT_FOUND");
 
+            var odontogramJson = request.OdontogramData is null
+                ? null
+                : JsonSerializer.Serialize(request.OdontogramData);
 
             var visitRecord = new VisitRecord(
                 request.Treatment,
                 request.Diagnosis,
                 request.Notes,
                 request.Prescription,
-                request.TurnId
+                request.TurnId,
+                odontogramJson
             );
 
             _visitRecordRepository.Add(visitRecord);
             return VisitRecordDto.Create(visitRecord);
         }
 
-        // Actualizar la información de un registro existente.
         public VisitRecordDto UpdateVisitRecord(int id, UpdateVisitRecordRequest request)
         {
             var visitRecord = _visitRecordRepository.GetById(id)
@@ -69,14 +70,20 @@ namespace Application.Services
                     ?? throw new NotFoundException("TURN_NOT_FOUND")
                 : _turnRepository.GetById(visitRecord.TurnId);
 
-            
+            string? odontogramJson = null;
+
+            if (request.OdontogramData is not null)
+            {
+                odontogramJson = JsonSerializer.Serialize(request.OdontogramData);
+            }
 
             visitRecord.UpdateInfo(
                 request.Treatment,
                 request.Diagnosis,
                 request.Notes,
                 request.Prescription,
-                request.TurnId ?? visitRecord.TurnId
+                request.TurnId ?? visitRecord.TurnId,
+                odontogramJson
             );
 
             _visitRecordRepository.Update(visitRecord);
@@ -84,4 +91,5 @@ namespace Application.Services
         }
     }
 }
+
 
