@@ -1,11 +1,23 @@
-import React from "react"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Button } from "@/components/ui/button"
+import React from "react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
 
 export default function TimeSlots({ date, doctorAvailability, time, setTime }) {
-    const slots = doctorAvailability[format(date, "yyyy-MM-dd")] || []
+    const slots = doctorAvailability[format(date, "yyyy-MM-dd")] || [];
+
+    const now = new Date();
+    const today = format(new Date(), "yyyy-MM-dd");
+    const selectedDay = format(date, "yyyy-MM-dd");
+
+    const validSlots = slots.filter((slot) => {
+        if (selectedDay !== today) return true; 
+
+        const slotDate = new Date(`${selectedDay}T${slot}:00`);
+
+        return slotDate > now; 
+    });
 
     return (
         <div className="md:w-1/2">
@@ -17,18 +29,18 @@ export default function TimeSlots({ date, doctorAvailability, time, setTime }) {
                 </div>
 
                 <ScrollArea className="h-80">
-                    {slots.length > 0 ? (
+                    {validSlots.length > 0 ? (
                         <div className="grid grid-cols-2 gap-3 p-1">
-                            {slots.map((timeSlot) => (
+                            {validSlots.map((timeSlot) => (
                                 <Button
                                     key={timeSlot}
                                     variant={time === timeSlot ? "default" : "outline"}
                                     size="lg"
                                     className={`h-12 rounded-lg text-base transition-all border-2 
-                    ${time === timeSlot
-                                            ? "border-primary ring-2 ring-primary/50"
-                                            : "border-border hover:ring-primary/30"
-                                        }`}
+                                    ${time === timeSlot
+                                        ? "border-primary ring-2 ring-primary/50"
+                                        : "border-border hover:ring-primary/30"
+                                    }`}
                                     onClick={() => setTime(timeSlot)}
                                 >
                                     {timeSlot}
@@ -43,5 +55,6 @@ export default function TimeSlots({ date, doctorAvailability, time, setTime }) {
                 </ScrollArea>
             </div>
         </div>
-    )
+    );
 }
+
