@@ -7,13 +7,13 @@ export default function PatientOdontogramModal({
   open,
   onClose,
   patient,
-  odontogramData, 
+  odontogramData,
 }) {
   if (!patient) return null;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-6xl max-h-[95vh] w-[95vw] flex flex-col p-0 sm:p-6">
+      <DialogContent className="sm:max-w-6xl max-h-[95vh] w-[95vw] flex flex-col p-0 sm:p-6 overflow-y-auto">
         <DialogHeader className="flex-shrink-0 px-4 sm:px-0 pt-4 sm:pt-0">
           <DialogTitle className="flex items-center gap-2 text-base sm:text-xl">
             <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -30,14 +30,9 @@ export default function PatientOdontogramModal({
           <X className="w-4 h-4" />
         </Button>
 
-        <div className="flex-1 overflow-hidden min-h-0">
-          <div className="h-full overflow-auto">
-            <div className="min-w-max p-4">
-              <Odontogram
-                readOnly={true}
-                toothData={odontogramData || {}} 
-              />
-            </div>
+        <div className="flex-1 min-h-0 overflow-auto px-4 sm:px-0">
+          <div className="min-w-max p-4">
+            <Odontogram readOnly={true} toothData={odontogramData || {}} />
           </div>
         </div>
 
