@@ -56,7 +56,11 @@ namespace Application.Services
             if (userRole == "Patient" && request.PatientId != parsedUserId)
                 throw new AppValidationException("PATIENT_ID_MISMATCH");
 
-            if (request.AppointmentDate.Minute % 30 != 0 || request.AppointmentDate.Second != 0)
+            // Convertir a UTC para validaciones consistentes
+            DateTime appointmentDateUtc = request.AppointmentDate.ToUniversalTime();
+            DateTime nowUtc = DateTime.UtcNow;
+
+            if (appointmentDateUtc.Minute % 30 != 0 || appointmentDateUtc.Second != 0)
                 throw new AppValidationException("APPOINTMENT_MUST_BE_ON_HALF_HOUR");
 
             var patient = _patientRepository.GetById(request.PatientId);
@@ -70,8 +74,11 @@ namespace Application.Services
             if (!dentist.IsActive)
                 throw new AppValidationException("DENTIST_NOT_AVAILABLE");
 
-            if (request.AppointmentDate.Date < DateTime.UtcNow.Date)
+            if (appointmentDateUtc.Date < nowUtc.Date)
                 throw new AppValidationException("INVALID_APPOINTMENT_DATE");
+
+            if (appointmentDateUtc < nowUtc)
+                throw new AppValidationException("CANNOT_CREATE_PAST_TURN");
 
             var availabilities = _availabilityRepository
                 .GetByDentistAndDay(request.DentistId, request.AppointmentDate.DayOfWeek);
