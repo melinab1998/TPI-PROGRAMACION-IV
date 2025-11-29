@@ -20,10 +20,14 @@ export default function BookingModal({ time, date, doctor, formData, setFormData
             return;
         }
 
+        const [hours, minutes] = time.split(':').map(Number);
+        const appointmentDate = new Date(date);
+        appointmentDate.setHours(hours, minutes, 0, 0);
+        
         const newTurn = {
             patientId: userId,
             dentistId: doctor.id,
-            appointmentDate: `${format(date, "yyyy-MM-dd")}T${time}:00`,
+            appointmentDate: appointmentDate.toISOString(),
             consultationType: formData.motivoConsulta,
         };
 

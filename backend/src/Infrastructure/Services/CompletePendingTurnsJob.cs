@@ -47,7 +47,7 @@ namespace Infrastructure.Services
             var now = DateTime.UtcNow;
 
             var pendingTurns = allTurns
-                .Where(t => t.Status == TurnStatus.Pending && t.AppointmentDate <= now)
+                .Where(t => t.Status == TurnStatus.Pending && t.AppointmentDate.ToUniversalTime() <= now)
                 .ToList();
 
             _logger.LogInformation("Turnos pendientes encontrados: {Count}", pendingTurns.Count);
@@ -56,14 +56,12 @@ namespace Infrastructure.Services
             {
                 _logger.LogInformation("Marcando turno {Id} de {AppointmentDate} como Completado", turn.Id, turn.AppointmentDate);
 
-                var updatedTurn = turn with { Status = TurnStatus.Completed };
-
-                turnService.UpdateTurn(updatedTurn.Id, new Application.Models.Requests.UpdateTurnRequest
+                turnService.UpdateTurn(turn.Id, new Application.Models.Requests.UpdateTurnRequest
                 {
                     Status = TurnStatus.Completed
                 });
 
-                _logger.LogInformation("Turno {Id} actualizado correctamente", updatedTurn.Id);
+                _logger.LogInformation("Turno {Id} actualizado correctamente", turn.Id);
             }
         }
     }
