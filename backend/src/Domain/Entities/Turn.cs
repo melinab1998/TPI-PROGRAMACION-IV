@@ -16,7 +16,7 @@ namespace Domain.Entities
         public Turn() { }
         public Turn(DateTime appointmentDate, TurnStatus status, string? consultationType, int patientId, int dentistId)
         {
-            if (appointmentDate < DateTime.Now)
+            if (appointmentDate < DateTime.UtcNow)
                 throw new AppValidationException("CANNOT_CREATE_PAST_TURN");
 
             AppointmentDate = appointmentDate;
@@ -31,7 +31,7 @@ namespace Domain.Entities
             if (Status == TurnStatus.Cancelled)
                 throw new AppValidationException("TURN_ALREADY_CANCELLED");
 
-            if (AppointmentDate < DateTime.Now)
+            if (AppointmentDate < DateTime.UtcNow)
                 throw new AppValidationException("CANNOT_CANCEL_PAST_TURN");
 
             Status = TurnStatus.Cancelled;
@@ -47,9 +47,8 @@ namespace Domain.Entities
 
         public void Reschedule(DateTime newDate, IEnumerable<Availability> availabilities, IEnumerable<Turn> existingTurns)
         {
-            if (newDate < DateTime.Now)
+            if (newDate < DateTime.UtcNow)
                 throw new AppValidationException("CANNOT_RESCHEDULE_PAST_TURN");
-
 
             var start = newDate.TimeOfDay;
 
